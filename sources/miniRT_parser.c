@@ -1,16 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minirt_parser.c                                    :+:      :+:    :+:   */
+/*   miniRT_parser.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/03 22:19:41 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/06 18:23:13 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minirt.h"
+
+static t_info	*ft_init_info(void)
+{
+	t_info	*info;
+
+	info = (t_info *)malloc(sizeof(t_info));
+	if (!info)
+		return (NULL);
+	info->light = NULL;
+	info->object = NULL;
+	info->camera = NULL;
+	info->mlx_ptr = NULL;
+	info->a_light = NULL;
+	info->wnd_ptr = NULL;
+	info->data.img = NULL;
+	info->data.addr = NULL;
+	return (info);
+}
 
 static int	ft_check_symbols(char **piece)
 {
@@ -53,7 +71,7 @@ static int	ft_fill_information(char **piece, t_info *info)
 	return (1);
 }
 
-int	ft_read_information(int fd, t_info *info)
+static int	ft_read_information(int fd, t_info *info)
 {
 	char	*line;
 	char	**piece;
@@ -75,4 +93,32 @@ int	ft_read_information(int fd, t_info *info)
 		ft_clear_char_array(piece);
 	}
 	return (0);
+}
+
+t_info	*ft_validate_file(char *filename)
+{
+	t_info	*info;
+	int		len;
+	int		fd;
+
+	fd = 0;
+	len = ft_strlen(filename);
+	if (len < 4 || ft_strrchr(filename, 't') != &filename[len - 1]
+		|| ft_strrchr(filename, 'r') != &filename[len - 2]
+		|| ft_strrchr(filename, '.') != &filename[len - 3])
+		return (NULL);
+	if (len < 5 && ft_strrchr(filename, '/') == &filename[len - 4])
+		return (NULL);
+	fd = open(filename, O_RDONLY);
+	if (fd < 0)
+		return (NULL);
+	info = ft_init_info();
+	if (info && ft_read_information(fd, info))
+	{
+		close(fd);
+		ft_clear_info(info);
+		return (NULL);
+	}
+	close(fd);
+	return (info);
 }

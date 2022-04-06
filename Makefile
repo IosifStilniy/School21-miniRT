@@ -1,5 +1,6 @@
 SRCS	=	sources/miniRT_main.c \
 			sources/miniRT_parser.c \
+			sources/miniRT_main_utils.c \
 			sources/miniRT_parser_utils.c \
 			sources/miniRT_elements_objs.c \
 			sources/miniRT_elements_main.c \

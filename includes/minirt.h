@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/03 21:58:46 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/06 18:28:35 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,14 @@ typedef struct s_obj
 	struct s_obj	*next;
 }	t_obj;
 
+typedef struct	s_data {
+	void	*img;
+	char	*addr;
+	int		bits_per_pixel;
+	int		line_length;
+	int		endian;
+}				t_data;
+
 typedef struct s_info
 {
 	void		*mlx_ptr;
@@ -91,17 +99,12 @@ typedef struct s_info
 	t_camera	*camera;
 	t_obj		*object;
 	t_light		*light;
+	t_data		data;
 }	t_info;
-
-// Get and format elements information.
-
-int		ft_get_position_values(char *str, t_cords *position);
-int		ft_get_vector_values(char *str, t_cords *vector);
-int		ft_get_color_values(char *str, t_colrs *color);
 
 // Parsing the file.
 
-int		ft_read_information(int fd, t_info *info);
+t_info	*ft_validate_file(char *filename);
 
 // Parsing utilities.
 
@@ -112,6 +115,12 @@ double	ft_atoidb(const char *num);
 We can modify atoi so it checks whether the string ends with the number. 
 So no 10.1 in simple integers.
 */
+
+// Get and format elements information.
+
+int		ft_get_position_values(char *str, t_cords *position);
+int		ft_get_vector_values(char *str, t_cords *vector);
+int		ft_get_color_values(char *str, t_colrs *color);
 
 // Main elements information.
 
@@ -124,5 +133,12 @@ int 	ft_fill_light_info(char **piece, t_info *info);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
 int		ft_fill_plane_info(char **piece, t_info *info);
+
+// Main execution utilities.
+
+int		ft_exit(void);
+int		ft_clear_info(t_info *info);
+int		ft_key_hook(int keycode, t_info *info);
+void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 #endif
