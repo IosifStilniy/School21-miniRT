@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_main_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 18:26:11 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/06 18:28:39 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/24 20:49:17 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minirt.h"
+#include "minirt.h"
 
 int	ft_clear_info(t_info *info)
 {

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_parser.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/07 00:02:30 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/24 20:49:01 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minirt.h"
+#include "minirt.h"
 
 static t_info	*ft_init_info(void)
 {

@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minirt_parser_utils.c                              :+:      :+:    :+:   */
+/*   miniRT_parser_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:20:57 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/03 21:11:05 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/24 20:49:06 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minirt.h"
+#include "minirt.h"
 
 double	ft_atoidb(const char *num)
 {

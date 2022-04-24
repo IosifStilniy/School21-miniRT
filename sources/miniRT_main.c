@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_main.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/09 02:00:36 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/24 20:49:11 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minirt.h"
+#include "minirt.h"
 
 static int	ft_create_trgb(int t, int r, int g, int b)
 {

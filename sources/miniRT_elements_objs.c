@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_elements_objs.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 19:10:56 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/07 00:03:20 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/24 20:49:22 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minirt.h"
+#include "minirt.h"
 
 static void	ft_iterate_objects(t_info *info, t_obj *obj)
 {

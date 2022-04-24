@@ -1,56 +1,59 @@
-SRCS	=	sources/miniRT_main.c \
-			sources/miniRT_parser.c \
-			sources/miniRT_main_utils.c \
-			sources/miniRT_parser_utils.c \
-			sources/miniRT_elements_objs.c \
-			sources/miniRT_elements_main.c \
-			get_next_line/get_next_line.c \
-			get_next_line/get_next_line_utils.c \
+SRCS		=	$(wildcard sources/*.c)			\
+				$(wildcard sources/*/*.c)			\
+				$(wildcard get_next_line/*.c)	\
 
-OBJS	=	$(SRCS:.c=.o)
+OBJS		=	$(SRCS:.c=.o)
 
-B_OBJS	=	$(B_SRCS:.c=.o)
+B_OBJS		=	$(B_SRCS:.c=.o)
 
-HEADS	=	./includes/
+HEADS		=	includes		\
+				get_next_line	\
 
-NAME	=	miniRT
+NAME		=	miniRT
 
-LNAME	=	libft/libft.a
+FRAMEWORKS	=	-framework OpenGL -framework AppKit
 
-MLBNAME	=	mlx/libmlx.a
+LIBNAME		=	libft.a
 
-GCC		=	gcc
+LIBPATH		=	libft
 
-FLAGS	=	-Wall -Werror -Wextra -Imlx -g # -fsanitize=address
+LIB			=	$(addprefix $(addsuffix /, $(LIBPATH)), $(LIBNAME))
 
-RM		=	rm -f
+MLX			=	mlx
 
-%.o: %.c
-	$(GCC) $(FLAGS) -c $< -o $@ 
+GCC			=	gcc
 
-$(NAME): $(OBJS)
-	$(MAKE) -C libft all
-	$(MAKE) -C mlx all
-	$(GCC) $(FLAGS) $(OBJS) $(LNAME) $(MLBNAME) -lz -framework OpenGL -framework AppKit -o $(NAME)
+FLAGS		=	-Wall -Werror -Wextra -Imlx -I$(HEADS) #-g -fsanitize=address
 
-$(B_NAME): $(B_OBJS)
-	$(MAKE) -C libft all
-	$(MAKE) -C mlx all
-	$(GCC) $(FLAGS) $(B_OBJS) $(LNAME) $(MLBNAME) -lz -framework OpenGL -framework AppKit -o $(B_NAME)
+RM			=	rm -f
+
+%.o:	%.c
+		$(GCC) $(FLAGS) -c $< -o $@ 
+
+$(NAME):	$(HEADS) $(LIB) $(OBJS)
+			$(GCC) $(FLAGS) $(OBJS) $(LIB) -L$(MLX) -l$(MLX) $(FRAMEWORKS) -o $(NAME)
+
+$(B_NAME):	$(B_HEADS) $(LIB) $(B_OBJS)
+			$(GCC) $(FLAGS) $(B_OBJS) $(LIB) -L$(MLX) -l$(MLX) $(FRAMEWORKS) -o $(B_NAME)
+
+$(LIB):		lib
+
+lib:		
+			@$(MAKE) -C $(LIBPATH)
+			@$(MAKE) -C $(MLX)
+			cp $(MLX)/libmlx.dylib ./
 
 all:	$(NAME)
 
 bonus:	$(B_NAME)
 	
 clean:
-		$(MAKE) -C libft clean
-		$(MAKE) -C mlx clean
+		@$(MAKE) -C $(LIBPATH) clean
 		$(RM) $(OBJS) $(B_OBJS)
 
 fclean: clean
-		$(RM) $(LNAME)
-		$(RM) $(NAME)
-		$(RM) $(B_NAME)
-		$(RM) $(MLBNAME)
+		@$(MAKE) -C $(MLX) clean
 
 re:		fclean all
+
+.PHONY:	all clean fclean lib bonus

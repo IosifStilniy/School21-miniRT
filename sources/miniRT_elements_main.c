@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_elements_main.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 19:09:44 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/07 00:03:12 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/24 20:49:28 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minirt.h"
+#include "minirt.h"
 
 int	ft_fill_amb_light_info(char **piece, t_info *info)
 {
