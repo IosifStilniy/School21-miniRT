@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/06 18:23:13 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/07 00:02:30 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ static t_info	*ft_init_info(void)
 	info->wnd_ptr = NULL;
 	info->data.img = NULL;
 	info->data.addr = NULL;
+	info->total = 0;
 	return (info);
 }
 

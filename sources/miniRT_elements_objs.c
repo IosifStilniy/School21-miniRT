@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 19:10:56 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/03 21:33:11 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/07 00:03:20 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ int	ft_fill_sphere_info(char **piece, t_info *info)
 		return (1);
 	if (piece[4] && piece[4][0] != '\n')
 		return (1);
+	++info->total;
 	return (0);
 }
 
@@ -71,6 +72,7 @@ int	ft_fill_plane_info(char **piece, t_info *info)
 		return (1);
 	if (piece[4] && piece[4][0] != '\n')
 		return (1);
+	++info->total;
 	return (0);
 }
 
@@ -98,5 +100,6 @@ int	ft_fill_cylinder_info(char **piece, t_info *info)
 		return (1);
 	if (piece[6] && piece[6][0] != '\n')
 		return (1);
+	++info->total;
 	return (0);
 }

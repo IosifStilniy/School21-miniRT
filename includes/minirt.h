@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/06 18:28:35 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/04/07 00:02:08 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ typedef struct s_info
 	t_camera	*camera;
 	t_obj		*object;
 	t_light		*light;
+	int			total;
 	t_data		data;
 }	t_info;
 
