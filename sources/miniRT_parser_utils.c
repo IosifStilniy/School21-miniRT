@@ -6,126 +6,82 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:20:57 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/24 20:49:06 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/04/28 20:44:29 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-double	ft_atoidb(const char *num)
+float	ft_atof(const char *num)
 {
-	double	result;
+	float	result;
 	int		sign;
-	int		i;
+	int		divider;
 
-	result = 0.0;
+	result = 0;
 	sign = 1;
-	i = 0;
-	while ((num[i] > 8 && num[i] < 14) || num[i] == 32)
-		i++;
-	if (num[i] == 43 || num[i] == 45)
-	{
-		if (num[i] == 45)
+	while (ft_strchr(SPACES, *num))
+		num++;
+	if ((*num == '-' || *num == '+') && *num++ == '-')
 			sign = -1;
-		i++;
-	}
-	while (num[i] > 47 && num[i] < 58)
-		result = result * 10 + num[i++] - 48;
-	if (num[i] && num[i] == '.')
-		i++;
-	while (num[i] > 47 && num[i] < 58)
-		result += (num[i++] - 48) / 10.0;
-	return (result * sign);
-}
-
-int	ft_clear_char_array(char **array)
-{
-	int	i;
-
-	if (!array)
-		return (1);
-	i = -1;
-	while (array[++i])
-		free(array[i]);
-	free(array);
-	return (1);
-}
-
-int	ft_get_position_values(char *str, t_cords *position)
-{
-	char	**nums;
-	int		i;
-
-	nums = ft_split(str, ',');
-	if (!nums)
-		return (1);
-	i = -1;
-	while (nums[++i])
+	while ('0' <= *num && *num <= '9')
+		result = result * 10 + *num - '0';
+	if (*num != '.')
+		return (sign * result);
+	divider = 10;
+	num += 2;
+	while ('0' <= *num && *num <= '9')
 	{
-		if (!i)
-			(*position).x = ft_atoidb(nums[i]);
-		else if (i == 1)
-			(*position).y = ft_atoidb(nums[i]);
-		else if (i == 2)
-			(*position).z = ft_atoidb(nums[i]);
-		else
-			return (ft_clear_char_array(nums));
+		result += ((float)(*num - '0')) / divider;
+		divider *= 10;
 	}
-	ft_clear_char_array(nums);
-	return (0);
+	return (sign * result);
 }
 
-int	ft_get_vector_values(char *str, t_cords *vector)
+char	*ft_get_color_values(char *str, t_colrs *color, char *prog)
 {
-	char	**nums;
-	int		i;
-
-	nums = ft_split(str, ',');
-	if (!nums)
-		return (1);
-	i = -1;
-	while (nums[++i])
-	{
-		if (!i)
-			(*vector).x = ft_atoidb(nums[i]);
-		else if (i == 1)
-			(*vector).y = ft_atoidb(nums[i]);
-		else if (i == 2)
-			(*vector).z = ft_atoidb(nums[i]);
-		else
-			return (ft_clear_char_array(nums));
-	}
-	ft_clear_char_array(nums);
-	if ((*vector).x > 1.0 || (*vector).y > 1.0 || (*vector).z > 1.0
-		|| (*vector).x < -1.0 || (*vector).y < -1.0 || (*vector).z < -1.0)
-		return (1);
-	return (0);
+	while (ft_strchr(SPACES, *str))
+		str++;
+	if (!ft_strchr("0123456789", *str))
+		customerr(prog, INVDEF, TRUE);
+	color->r = ft_atoi(str);
+	if (!(0 <= color->r && color->r <= 255))
+		customerr(prog, INVDEF, TRUE);
+	while (ft_strchr(NUMSPACES, *str))
+		str++;
+	if (*str++ != ',')
+		customerr(prog, INVCRD, TRUE);
+	color->g = ft_atoi(str);
+	if (!(0 <= color->r && color->r <= 255))
+		customerr(prog, INVDEF, TRUE);
+	while (ft_strchr(NUMSPACES, *str))
+		str++;
+	if (*str++ != ',')
+		customerr(prog, INVCRD, TRUE);
+	color->b = ft_atoi(str);
+	while (ft_strchr("0123456789", *str))
+		str++;
+	return (str);
 }
 
-int	ft_get_color_values(char *str, t_colrs *color)
+char	*ft_get_position_values(char *prog, char *str, t_cart *pos)
 {
-	char	**nums;
-	int		i;
-
-	nums = ft_split(str, ',');
-	if (!nums)
-		return (1);
-	i = -1;
-	while (nums[++i])
-	{
-		if (!i)
-			(*color).r = ft_atoi(nums[i]);
-		else if (i == 1)
-			(*color).g = ft_atoi(nums[i]);
-		else if (i == 2)
-			(*color).b = ft_atoi(nums[i]);
-		else
-			return (ft_clear_char_array(nums));
-	}
-	ft_clear_char_array(nums);
-	if ((*color).r < 0 || (*color).g < 0 || (*color).b < 0
-		|| (*color).r > 255 || (*color).g > 255
-		|| (*color).b > 255)
-		return (1);
-	return (0);
+	while (ft_strchr(SPACES, *str))
+		str++;
+	if (!ft_strchr("0123456789.", *str))
+		customerr(prog, INVDEF, TRUE);
+	pos->x = ft_atof(str);
+	while (ft_strchr(NUMSPACES, *str))
+		str++;
+	if (*str++ != ',')
+		customerr(prog, INVCRD, TRUE);
+	pos->y = ft_atof(str);
+	while (ft_strchr(NUMSPACES, *str))
+		str++;
+	if (*str++ != ',')
+		customerr(prog, INVCRD, TRUE);
+	pos->z = ft_atof(str);
+	while (ft_strchr("0123456789.", *str))
+		str++;
+	return (str);
 }

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/24 21:20:37 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/04/29 21:19:35 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,13 @@
 # include <mlx.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+# include <sys/errno.h>
 # include <fcntl.h>
 # include <stdio.h>
 # include <math.h>
 
+# define KEY_Q 12
+# define KEY_E 14
 # define KEY_A 0
 # define KEY_S 1
 # define KEY_D 2
@@ -67,55 +70,54 @@
 #  define DEFANG 15
 # endif
 
+# ifndef PRMTVS
+#  define PRMTVS "spplcy"
+# endif
+
+# ifndef NUMPRMTVS
+#  define NUMPRMTVS 3
+# endif
+
+# ifndef RNDSGMNTS
+#  define RNDSGMNTS 360
+# endif
+
+# ifndef INVINP
+#  define INVINP "needs one arg: [filename].rt"
+# endif
+
+# ifndef INVFILE
+#  define INVFILE "Error"
+# endif
+
+# ifndef DUPDET
+#  define DUPDET "ambient light, light or camera have more than one definition"
+# endif
+
+# ifndef INVDEF
+#  define INVDEF "invalid definition of scene parameters"
+# endif
+
+# ifndef INVNUM
+#  define INVNUM "invalid num type: float for coordinates and int for color"
+
+# ifndef INVCRD
+#  define INVCRD "for definition orientation in space needed 3 coords of float type in format 'X,Y,Z' [and additionally coords of norm vector for cameras and models]"
+# endif
+
+# ifndef SPACES
+#  define SPACES " \t\v\f\r"
+# endif
+
+# ifndef NUMSPACES
+#  define NUMSPACES "0123456789. \t\v\f\r"
+# endif
+
 typedef int	t_bool;
-
-typedef struct s_cords
-{
-	double	x;
-	double	y;
-	double	z;
-}	t_cords;
-
-typedef struct s_colrs
-{
-	int	r;
-	int	g;
-	int	b;
-}	t_colrs;
-
-typedef struct s_amlight
-{
-	double	light_ratio;
-	t_colrs	color;
-}	t_amlight;
-
-typedef struct s_camera
-{
-	t_cords	position;
-	t_cords	vector;
-	int		fov;
-}	t_camera;
-
-typedef struct s_light
-{
-	double	light_ratio;
-	t_cords	position;
-	t_colrs	color;
-}	t_light;
-
-typedef struct s_obj
-{
-	char			*identifier;
-	t_cords			position;
-	int				diameter;
-	int				height;
-	t_cords			vector;
-	t_colrs			color;
-	struct s_obj	*next;
-}	t_obj;
 
 typedef struct	s_data {
 	void	*img;
+	t_res	res;
 	char	*addr;
 	int		bits_per_pixel;
 	int		line_length;
@@ -128,18 +130,10 @@ typedef struct s_res {
 }	t_res;
 
 typedef struct s_cart {
-	int		x;
-	int		y;
-	int		z;
-	t_color	color;
-}	t_cart;
-
-typedef struct s_fcart {
 	float	x;
 	float	y;
 	float	z;
-	t_color	color;
-}	t_fcart;
+}	t_cart;
 
 typedef struct s_axis {
 	t_cart	vector;
@@ -147,37 +141,56 @@ typedef struct s_axis {
 	float	ang;
 }	t_axis;
 
-typedef struct s_scale {
-	float	def;
-	float	cur;
-	float	old;
-}	t_scale;
+typedef struct s_crdstm {
+	t_cart	pos;
+	t_axis	ox;
+	t_axis	oy;
+	t_axis	oz;
+}	t_crdstm;
 
-typedef struct s_view {
-	t_scale		scale;
-	t_res		poscrd;
+typedef struct s_colrs {
+	int	r;
+	int	g;
+	int	b;
+}	t_colrs;
+
+typedef struct s_light {
+	double		light_ratio;
+	t_colrs		color;
+	t_cart		pos;
+	t_bool		determined;
+}	t_light;
+
+typedef struct s_poly {
+	int		dotcount;
+	t_cart	**dots;
+	t_cart	*txtr;
+	t_axis	norm;
+}	t_poly;
+
+typedef struct s_obj {
+	int			dotsnum;
+	int			polynum;
+	t_cart		*dots;
+	t_data		*txtr;
+	t_poly		*poly;
+	t_colrs		colrs;
+	t_crdstm	crdstm;
+}	t_obj;
+
+typedef struct s_camera {
+	t_cart		pos;
 	t_axis		axis;
-	float		dstnc;
 	float		focus;
-	t_bool		legend;
-}	t_view;
-
-typedef struct s_shift {
-	t_res	crdstm;
-	t_res	sum;
-}	t_shift;
-
-typedef struct s_img {
-	t_data		img;
-	t_shift		shift;
-	t_res		res;
-}	t_img;
+	float		fov;
+	t_bool		determined;
+}	t_camera;
 
 typedef struct s_win {
-	void	*win;
-	t_res	res;
-	t_res	cntr;
-	t_view	view;
+	void		*win;
+	t_camera	camera;
+	t_res		res;
+	t_res		cntr;
 }	t_win;
 
 typedef struct s_trnaxs {
@@ -202,13 +215,13 @@ typedef struct s_keybrd {
 typedef struct s_info
 {
 	void		*mlx_ptr;
-	void		*wnd_ptr;
-	t_amlight	*a_light;
-	t_camera	*camera;
-	t_obj		*object;
-	t_light		*light;
+	t_win		win;
+	t_light		a_light;
+	t_list		*objects;
+	t_light		lights;
+	t_data		img;
+	char		*prog;
 	int			total;
-	t_data		data;
 }	t_info;
 
 // Parsing the file.
@@ -225,11 +238,11 @@ We can modify atoi so it checks whether the string ends with the number.
 So no 10.1 in simple integers.
 */
 
-// Get and format elements information.
+// Parse utils.
 
-int		ft_get_position_values(char *str, t_cords *position);
-int		ft_get_vector_values(char *str, t_cords *vector);
-int		ft_get_color_values(char *str, t_colrs *color);
+char	*ft_get_color_values(char *str, t_colrs *color, char *prog);
+char	*ft_get_position_values(char *prog, char *str, t_cart *pos);
+float	ft_atof(const char *num);
 
 // Main elements information.
 
@@ -253,8 +266,10 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 // Orientation and movement in space
 
 void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis);
+void	engine(t_win *win, t_cart *dots);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
-void	engine(t_win *win, t_dot *dots);
+void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_axis *norm);
+void	quartrot(t_cart *pos, t_axis *axis);
 
 // Hooks for orientation and movement in space
 
@@ -269,5 +284,12 @@ int		keydownhndlr(int keycode, t_cntrl *cntrl);
 int		keyuphndlr(int keycode, t_cntrl *cntrl);
 int		btnpress(int btn, int x, int y, t_cntrl *cntrl);
 int		btnup(int btn, int x, int y, t_cntrl *cntrl);
+
+//Utils
+
+void	customerr(char *prog, char *txt, t_bool infile);
+int		error_handler(char *prog, char *place, int funcres);
+int		file_check(char *file, char *prog);
+t_obj	*objcast(t_list *lst);
 
 #endif

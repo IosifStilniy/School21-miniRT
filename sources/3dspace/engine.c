@@ -6,13 +6,13 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/04/24 21:18:54 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/04/29 20:39:51 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-static void	quartrot(t_cart *pos, t_axis *axis)
+void	quartrot(t_cart *pos, t_axis *axis)
 {	
 	double	mlts[3][3];
 	t_cart	axsr;
@@ -93,4 +93,14 @@ void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis)
 	axis->vector.x /= axis->length;
 	axis->vector.y /= axis->length;
 	axis->vector.z /= axis->length;
+}
+
+void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_axis *norm)
+{
+	t_axis	v1;
+	t_axis	v2;
+
+	vectorbuilder(dot1->x - centraldot->x, dot1->y - centraldot->y, dot1->z - centraldot->z, &v1);
+	vectorbuilder(dot2->x - centraldot->x, dot2->y - centraldot->y, dot2->z - centraldot->z, &v2);
+	axisbuilder(&v2, &v1, norm);
 }
