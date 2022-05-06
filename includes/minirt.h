@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/29 21:19:35 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/06 21:45:46 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@
 #  define INVNUM "invalid num type: float for coordinates and int for color"
 
 # ifndef INVCRD
-#  define INVCRD "for definition orientation in space needed 3 coords of float type in format 'X,Y,Z' [and additionally coords of norm vector for cameras and models]"
+#  define INVCRD "for definition orientation in space needed 3 coords of float type in format 'X,Y,Z' [and additionally coords of norm vector with Length = 1 for cameras and models]"
 # endif
 
 # ifndef SPACES
@@ -226,7 +226,11 @@ typedef struct s_info
 
 // Parsing the file.
 
-t_info	*ft_validate_file(char *filename);
+void	cylinderparser(char *str, t_obj *obj, char *prog);
+int		file_check(char *file, char *prog);
+void	ft_read_information(int fd, t_info *info);
+void	planeparser(char *str, t_obj *obj, char *prog);
+void	sphereparser(char *str, t_obj *obj, char *prog);
 
 // Parsing utilities.
 
@@ -243,6 +247,7 @@ So no 10.1 in simple integers.
 char	*ft_get_color_values(char *str, t_colrs *color, char *prog);
 char	*ft_get_position_values(char *prog, char *str, t_cart *pos);
 float	ft_atof(const char *num);
+char	*skipnumnspaces(char *str);
 
 // Main elements information.
 
@@ -252,6 +257,10 @@ int 	ft_fill_light_info(char **piece, t_info *info);
 
 // Object-like elements information.
 
+int		circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols);
+void	cylinderbuilder(t_obj *obj, float radius, float height);
+void	definepols(t_cart *dots, float radius, t_axis *rotcircle);
+void	spherebuilder(t_obj *obj, float radius);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
 int		ft_fill_plane_info(char **piece, t_info *info);
@@ -266,8 +275,11 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 // Orientation and movement in space
 
 void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis);
+void	cartbuilder(float x, float y, float z, t_cart *dot);
 void	engine(t_win *win, t_cart *dots);
+void	flatanglehandler(t_axis *v1, t_axis *ref, t_axis *v2, t_axis *axis);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
+void	negativevector(t_cart *dot);
 void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_axis *norm);
 void	quartrot(t_cart *pos, t_axis *axis);
 
@@ -288,8 +300,8 @@ int		btnup(int btn, int x, int y, t_cntrl *cntrl);
 //Utils
 
 void	customerr(char *prog, char *txt, t_bool infile);
+t_bool	comparef(float num, float ref, float interval);
 int		error_handler(char *prog, char *place, int funcres);
-int		file_check(char *file, char *prog);
 t_obj	*objcast(t_list *lst);
 
 #endif

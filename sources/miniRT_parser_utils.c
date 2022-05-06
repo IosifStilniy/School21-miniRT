@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:20:57 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/28 20:44:29 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/06 20:49:33 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,17 @@ char	*ft_get_position_values(char *prog, char *str, t_cart *pos)
 		customerr(prog, INVCRD, TRUE);
 	pos->z = ft_atof(str);
 	while (ft_strchr("0123456789.", *str))
+		str++;
+	return (str);
+}
+
+char	*skipnumnspaces(char *str)
+{
+	while (ft_strchr(SPACES, *str))
+		str++;
+	while (ft_strchr("0123456789.", *str))
+		str++;
+	while (ft_strchr(SPACES, *str))
 		str++;
 	return (str);
 }

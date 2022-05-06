@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/28 21:33:55 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/06 21:50:24 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,26 +67,26 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, char *prog)
 static void	primitivebuilder(char *str, t_list **objs, char *prog)
 {
 	int		i;
-	t_cart	norm;
 
 	while (ft_strchr(SPACES, *str))
 		str++;
 	i = 0;
 	while (i < NUMPRMTVS)
-		if (!ft_strncmp(PRMTVS + i * 2, str, 2) || ++i)
+		if (!ft_strncmp(PRMTVS + i * 2, str, 2) || (++i && FALSE))
 			break ;
 	if (i == NUMPRMTVS)
 		customerr(prog, INVDEF, TRUE);
 	ft_lstadd_front(objs, ft_lstnew(malloc(sizeof(t_obj))));
 	str = ft_get_position_values(prog, str, &objcast(*objs)->crdstm.pos);
 	if (!i)
-		;
-	str = ft_get_position_values(prog, str, &norm);
-	vectorbuilder(norm.x, norm.y, norm.z, &objcast(*objs)->crdstm.oz);
-	
+		sphereparser(str, (*objs)->content, prog);
+	else if (i == 1)
+		planeparser(str, (*objs)->content, prog);
+	else if (i == 2)
+		cylinderparser(str, (*objs)->content, prog);
 }
 
-static int	ft_read_information(int fd, t_info *info)
+void	ft_read_information(int fd, t_info *info)
 {
 	char	*line;
 	char	*crsr;
@@ -95,21 +95,15 @@ static int	ft_read_information(int fd, t_info *info)
 	while (line)
 	{
 		crsr = line;
-		while (*crsr != '\n' && ft_strchr(SPACES, *crsr))
+		while (*crsr && *crsr != '\n' && ft_strchr(SPACES, *crsr))
 			crsr++;
-		if (*crsr == '\n')
-		{
-			free(line);
-			line = get_next_line(fd);
-		}
-		else if (ft_strchr("AL", *crsr))
+		if (ft_strchr("AL", *crsr))
 			light_definition(crsr, &info->a_light, &info->lights, info->prog);
 		else if (*crsr == 'C')
 			ft_fill_camera_info(++crsr, &info->win.camera, info->prog);
-		else
+		else if (*crsr && *crsr != '\n')
 			primitivesbuilder(crsr, &info->objects);
 		free(line);
 		line = get_next_line(fd);
 	}
-	return (0);
 }

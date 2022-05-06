@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/04/26 22:47:30 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/06 21:48:28 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,6 +178,7 @@ int	main(int argc, char **argv)
 	info.a_light.determined = FALSE;
 	info.lights.determined = FALSE;
 	info.win.camera.determined = FALSE;
+	ft_read_information(fd, &info);
 	backwards_ray_tracing(info);
 	return (0);
 }

@@ -1,5 +1,10 @@
 #include "minirt.h"
 
+t_bool	comparef(float num, float ref, float interval)
+{
+	return (ref - interval < num && num < ref + interval);
+}
+
 int	file_check(char *file, char *prog)
 {
 	int	fd;
@@ -16,16 +21,6 @@ int	file_check(char *file, char *prog)
 	if (fd < 0)
 		error_handler(prog, file, -1);
 	return (fd);
-}
-
-int	checknum(float num, char *str)
-{
-	int	count;
-
-	count = 1 + (num < 0) + (num != truncf(num));
-	while (num / 10 && count++)
-		num /= 10;
-	return (count);
 }
 
 t_obj	*objcast(t_list *lst)

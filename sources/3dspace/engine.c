@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/04/29 20:39:51 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/06 21:59:27 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,16 +62,6 @@ void	engine(t_win *win, t_dot *dots)
 	win->view.axis.ang = 0;
 }
 
-void	vectorbuilder(float x, float y, float z, t_axis *vector)
-{
-	vector->length = sqrtf(x * x + y * y + z * z);
-	vector->vector.x = x / vector->length;
-	vector->vector.y = y / vector->length;
-	vector->vector.z = z / vector->length;
-	if (!vector->ang)
-		vector->ang = DEFANG * M_PI / 180;
-}
-
 void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis)
 {
 	float	scalar;
@@ -82,7 +72,7 @@ void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis)
 	axis->length = sqrtf(powf(axis->vector.x, 2) + powf(axis->vector.y, 2)
 			+ powf(axis->vector.z, 2));
 	scalar = axis->length;
-	scalar /= (scalar * (scalar >= 1) + (scalar < 1));
+	scalar /= scalar * (scalar >= 1) + (scalar < 1);
 	axis->ang = asinf(scalar);
 	scalar = v1->vector.x * v2->vector.x + v1->vector.y * v2->vector.y
 		+ v1->vector.z * v2->vector.z;
@@ -95,12 +85,14 @@ void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis)
 	axis->vector.z /= axis->length;
 }
 
-void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_axis *norm)
+void	flatanglehandler(t_axis *v1, t_axis *ref, t_axis *v2, t_axis *axis)
 {
-	t_axis	v1;
-	t_axis	v2;
+	float	ang;
 
-	vectorbuilder(dot1->x - centraldot->x, dot1->y - centraldot->y, dot1->z - centraldot->z, &v1);
-	vectorbuilder(dot2->x - centraldot->x, dot2->y - centraldot->y, dot2->z - centraldot->z, &v2);
-	axisbuilder(&v2, &v1, norm);
+	axisbuilder(v1, v2, axis);
+	if (!comparef(axis->length, 0, 0.0001) && !comparef(axis->ang, M_PI, 0.001))
+		return ;
+	ang = axis->ang;
+	axisbuilder(ref, v2, axis);
+	axis->ang = ang;
 }
