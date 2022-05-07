@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/06 21:50:24 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/07 14:41:48 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, char *prog)
 		customerr(prog, INVDEF, TRUE);
 }
 
-static void	primitivebuilder(char *str, t_list **objs, char *prog)
+static void	primitivebuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 {
 	int		i;
 
@@ -77,6 +77,7 @@ static void	primitivebuilder(char *str, t_list **objs, char *prog)
 	if (i == NUMPRMTVS)
 		customerr(prog, INVDEF, TRUE);
 	ft_lstadd_front(objs, ft_lstnew(malloc(sizeof(t_obj))));
+	objcast(*objs)->rot = rot;
 	str = ft_get_position_values(prog, str, &objcast(*objs)->crdstm.pos);
 	if (!i)
 		sphereparser(str, (*objs)->content, prog);
@@ -84,6 +85,8 @@ static void	primitivebuilder(char *str, t_list **objs, char *prog)
 		planeparser(str, (*objs)->content, prog);
 	else if (i == 2)
 		cylinderparser(str, (*objs)->content, prog);
+	rot->end = &objcast(*objs)->crdstm.oz;
+	objrot(*objs, rot, &objcast(*objs)->crdstm.oz);
 }
 
 void	ft_read_information(int fd, t_info *info)
@@ -102,7 +105,7 @@ void	ft_read_information(int fd, t_info *info)
 		else if (*crsr == 'C')
 			ft_fill_camera_info(++crsr, &info->win.camera, info->prog);
 		else if (*crsr && *crsr != '\n')
-			primitivesbuilder(crsr, &info->objects);
+			primitivesbuilder(crsr, &info->objects, info->prog, &info->rot);
 		free(line);
 		line = get_next_line(fd);
 	}

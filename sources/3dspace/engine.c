@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/05/06 21:59:27 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/07 14:42:33 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,14 +85,42 @@ void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis)
 	axis->vector.z /= axis->length;
 }
 
-void	flatanglehandler(t_axis *v1, t_axis *ref, t_axis *v2, t_axis *axis)
+void	flatanglehandler(t_rot *rot, t_axis *ref)
 {
 	float	ang;
 
-	axisbuilder(v1, v2, axis);
-	if (!comparef(axis->length, 0, 0.0001) && !comparef(axis->ang, M_PI, 0.001))
-		return ;
-	ang = axis->ang;
-	axisbuilder(ref, v2, axis);
-	axis->ang = ang;
+	axisbuilder(rot->start, rot->end, rot->axis);
+	ang = rot->axis->ang;
+	if (!comparef(rot->axis->length, 0, 0.0001) && !comparef(rot->axis->ang, M_PI, 0.001))
+		;
+	else if (!ref)
+	{
+		vectorbuilder(1, 0, 0, rot->axis);
+		if (!comparef(rot->end->vector.x, 0, 0.001) || !comparef(rot->end->vector.z, 0, 0.001))
+			vectorbuilder(0, 1, 0, rot->axis);
+	}
+	else
+		axisbuilder(ref, rot->end, rot->axis);
+	rot->axis->ang = ang;
+}
+
+void	objrot(t_obj *obj, t_rot *rot, t_axis *end)
+{
+	int	i;
+
+	vectorbuilder(0, 0, 1, rot->start);
+	rot->end = end;
+	flatanglehandler(rot, &obj->crdstm.oz);
+	i = -1;
+	while (++i < obj->dotsnum)
+		quartrot(&obj->pos[i], rot->axis);
+	i = -1;
+	while (++i < obj->polynum)
+		quartrot(&obj->poly[i].norm.vector, rot->axis);
+	rot->start = &obj->crdstm.oz;
+	rot->end = end;
+	flatanglehandler(rot, NULL);
+	quartrot(&obj->crdstm.oz.vector, rot->axis);
+	quartrot(&obj->crdstm.oy.vector, rot->axis);
+	quartrot(&obj->crdstm.ox.vector, rot->axis);
 }

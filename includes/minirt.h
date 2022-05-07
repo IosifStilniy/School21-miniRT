@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/06 21:45:46 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/07 14:13:02 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,12 @@ typedef struct s_axis {
 	float	ang;
 }	t_axis;
 
+typedef struct s_rot {
+	t_axis *start;
+	t_axis *end;
+	t_axis *axis;
+}	t_rot;
+
 typedef struct s_crdstm {
 	t_cart	pos;
 	t_axis	ox;
@@ -172,10 +178,12 @@ typedef struct s_obj {
 	int			dotsnum;
 	int			polynum;
 	t_cart		*dots;
+	t_cart		*pos;
 	t_data		*txtr;
 	t_poly		*poly;
 	t_colrs		colrs;
 	t_crdstm	crdstm;
+	t_rot		*rot;
 }	t_obj;
 
 typedef struct s_camera {
@@ -219,6 +227,7 @@ typedef struct s_info
 	t_light		a_light;
 	t_list		*objects;
 	t_light		lights;
+	t_rot		rot;
 	t_data		img;
 	char		*prog;
 	int			total;
@@ -276,11 +285,14 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis);
 void	cartbuilder(float x, float y, float z, t_cart *dot);
+void	cartcopy(t_cart *src, t_cart *dst, int count);
 void	engine(t_win *win, t_cart *dots);
-void	flatanglehandler(t_axis *v1, t_axis *ref, t_axis *v2, t_axis *axis);
+void	flatanglehandler(t_rot *rot, t_axis *ref);
+void	gentlerot(t_cart *pos, t_rot *rot, t_axis *ref);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
 void	negativevector(t_cart *dot);
 void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_axis *norm);
+void	objrot(t_obj *obj, t_rot *rot, t_axis *end);
 void	quartrot(t_cart *pos, t_axis *axis);
 
 // Hooks for orientation and movement in space

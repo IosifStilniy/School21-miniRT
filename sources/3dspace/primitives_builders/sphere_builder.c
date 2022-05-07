@@ -12,7 +12,7 @@ static void	surfdefiner(t_cart *dots, t_poly *poly, int dotnum, int lttd)
 	poly->txtr = NULL;
 }
 
-static int	dotfiller(t_cart *dots, t_poly *polys, float radius)
+static int	dotfiller(t_cart *dots, t_cart *pos, t_poly *polys, float radius)
 {
 	int		lttd;
 	int		dotnum;
@@ -22,16 +22,18 @@ static int	dotfiller(t_cart *dots, t_poly *polys, float radius)
 
 	definepols(dots, radius, NULL);
 	dotnum = 2 + circledotsfiller(&dots[2], radius, NULL, TRUE);
+	cartcopy(dots, pos, RNDSGMNTS);
 	vectorbuilder(0, 1, 0, &rotltd);
 	polyindx = -1;
 	lttd = 0;
 	while (++lttd < RNDSGMNTS / 2)
 	{
 		rotltd.ang = 2 * M_PI / RNDSGMNTS * lttd;
-		dotsinround = circledotsfiller(&dots[dotnum++], radius, &rotltd, TRUE);
+		dotsinround = circledotsfiller(&dots[dotnum], radius, &rotltd, TRUE);
+		cartcopy(&dots[dotnum], &pos[dotnum++], dotsinround);
 		while (--dotsinround)
 			if ((dotsinround == (RNDSGMNTS - 2) / 2 + 1 && ++dotnum) || TRUE)
-				surfdefiner(dots, &polys[++polyindx], dotnum++, lttd);
+				surfdefiner(pos, &polys[++polyindx], dotnum++, lttd);
 		dotnum++;
 	}
 	return (polyindx);
@@ -87,9 +89,10 @@ void	spherebuilder(t_obj *obj, float radius)
 	obj->dotsnum = RNDSGMNTS / 2 * (RNDSGMNTS - 2) + 2;
 	obj->polynum = RNDSGMNTS / 2 * (RNDSGMNTS - 3) + 2 * RNDSGMNTS;
 	obj->dots = malloc(sizeof(*obj->dots) * obj->dotsnum);
+	obj->pos = malloc(sizeof(*obj->pos) * obj->dotsnum);
 	obj->poly = malloc(sizeof(*obj->poly) * obj->polynum);
-	polyindx = dotfiller(obj->dots, obj->poly, radius);
-	polyindx = jointing(obj->dots, &obj->poly, obj->dotsnum, polyindx);
+	polyindx = dotfiller(obj->dots, obj->pos, obj->poly, radius);
+	polyindx = jointing(obj->pos, &obj->poly, obj->dotsnum, polyindx);
 	lttd = 0;
 	while (++lttd < RNDSGMNTS / 2)
 	{

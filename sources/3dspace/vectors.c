@@ -1,17 +1,10 @@
 #include "minirt.h"
 
-void	cartbuilder(float x, float y, float z, t_cart *dot)
+void	rotfiller(t_rot *rot, t_axis *start, t_axis *end, t_axis *axis)
 {
-	dot->x = x;
-	dot->y = y;
-	dot->z = z;
-}
-
-void	negativevector(t_cart *dot)
-{
-	dot->x *= -1;
-	dot->y *= -1;
-	dot->z *= -1;
+	rot->start = start;
+	rot->end = end;
+	rot->axis = axis;
 }
 
 void	vectorbuilder(float x, float y, float z, t_axis *vector)
