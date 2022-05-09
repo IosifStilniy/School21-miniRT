@@ -50,25 +50,25 @@ static void	buttsurf(t_cart *central, t_cart *dots, t_poly *polys)
 	polys[i].txtr = NULL;
 }
 
-void	cylinderbuilder(t_obj *obj, float radius, float height)
+void	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height)
 {
 	int	i;
 
-	obj->dotsnum = RNDSGMNTS * 2 + 2;
-	obj->polynum = RNDSGMNTS * 3;
-	obj->dots = malloc(sizeof(*obj->dots) * obj->dotsnum);
-	cartbuilder(0, 0, -height / 2, obj->dots);
-	cartbuilder(0, 0, height / 2, obj->dots + 1);
-	circledotsfiller(&obj->dots[2], radius, NULL, FALSE);
-	circledotsfiller(&obj->dots[RNDSGMNTS + 2], radius, NULL, FALSE);
+	dots->dotsnum = RNDSGMNTS * 2 + 2;
+	polys->polynum = RNDSGMNTS * 3;
+	dots = malloc(sizeof(*dots) * dots->dotsnum);
+	cartbuilder(0, 0, -height / 2, dots);
+	cartbuilder(0, 0, height / 2, dots + 1);
+	circledotsfiller(&dots[2], radius, NULL, FALSE);
+	circledotsfiller(&dots[RNDSGMNTS + 2], radius, NULL, FALSE);
 	i = -1;
 	while (++i < RNDSGMNTS)
 	{
-		obj->dots[2 + i].z = -height / 2;
-		obj->dots[2 + RNDSGMNTS + i].z = height / 2;
+		dots->dots[2 + i].z = -height / 2;
+		dots->dots[2 + RNDSGMNTS + i].z = height / 2;
 	}
-	obj->poly = malloc(sizeof(*obj->poly) * obj->polynum);
-	surfdefiner(&obj->dots[2], &obj->dots[RNDSGMNTS + 2], obj->poly);
-	buttsurf(&obj->dots[0], &obj->dots[2], &obj->poly[RNDSGMNTS]);
-	buttsurf(&obj->dots[1], &obj->dots[RNDSGMNTS + 2], &obj->poly[2 * RNDSGMNTS]);
+	polys->poly = malloc(sizeof(*polys->poly) * polys->polynum);
+	surfdefiner(&dots->dots[2], &dots->dots[RNDSGMNTS + 2], polys->poly);
+	buttsurf(&dots->dots[0], &dots->dots[2], &polys->poly[RNDSGMNTS]);
+	buttsurf(&dots->dots[1], &dots->dots[RNDSGMNTS + 2], &polys->poly[2 * RNDSGMNTS]);
 }

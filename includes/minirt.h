@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/07 14:13:02 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/09 16:44:52 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,7 @@
 
 # ifndef INVNUM
 #  define INVNUM "invalid num type: float for coordinates and int for color"
+# endif
 
 # ifndef INVCRD
 #  define INVCRD "for definition orientation in space needed 3 coords of float type in format 'X,Y,Z' [and additionally coords of norm vector with Length = 1 for cameras and models]"
@@ -174,13 +175,22 @@ typedef struct s_poly {
 	t_axis	norm;
 }	t_poly;
 
-typedef struct s_obj {
-	int			dotsnum;
+typedef struct s_dots {
+	int		dotsnum;
+	t_cart	*dots;
+	t_cart	*pos;
+	float	scale;
+}	t_dots;
+
+typedef struct s_polys {
 	int			polynum;
-	t_cart		*dots;
-	t_cart		*pos;
 	t_data		*txtr;
 	t_poly		*poly;
+}	t_polys;
+
+typedef struct s_obj {
+	t_dots		dots;
+	t_polys		polys;
 	t_colrs		colrs;
 	t_crdstm	crdstm;
 	t_rot		*rot;
@@ -188,7 +198,7 @@ typedef struct s_obj {
 
 typedef struct s_camera {
 	t_cart		pos;
-	t_axis		axis;
+	t_crdstm	crdstm;
 	float		focus;
 	float		fov;
 	t_bool		determined;
@@ -199,6 +209,7 @@ typedef struct s_win {
 	t_camera	camera;
 	t_res		res;
 	t_res		cntr;
+	char		*header;
 }	t_win;
 
 typedef struct s_trnaxs {
@@ -235,6 +246,7 @@ typedef struct s_info
 
 // Parsing the file.
 
+void	crdstmdefiner(t_crdstm *crdstm);
 void	cylinderparser(char *str, t_obj *obj, char *prog);
 int		file_check(char *file, char *prog);
 void	ft_read_information(int fd, t_info *info);
@@ -267,9 +279,9 @@ int 	ft_fill_light_info(char **piece, t_info *info);
 // Object-like elements information.
 
 int		circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols);
-void	cylinderbuilder(t_obj *obj, float radius, float height);
+void	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
 void	definepols(t_cart *dots, float radius, t_axis *rotcircle);
-void	spherebuilder(t_obj *obj, float radius);
+void	spherebuilder(t_dots *dots, t_polys *polys, float radius);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
 int		ft_fill_plane_info(char **piece, t_info *info);
@@ -286,7 +298,7 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis);
 void	cartbuilder(float x, float y, float z, t_cart *dot);
 void	cartcopy(t_cart *src, t_cart *dst, int count);
-void	engine(t_win *win, t_cart *dots);
+void	engine(t_dots *dots, t_polys *polys, t_axis *axis);
 void	flatanglehandler(t_rot *rot, t_axis *ref);
 void	gentlerot(t_cart *pos, t_rot *rot, t_axis *ref);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);

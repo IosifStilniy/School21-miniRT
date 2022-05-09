@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/07 14:41:48 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/09 16:49:32 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,10 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, char *prog)
 		customerr(prog, DUPDET, TRUE);
 	str = ft_get_position_values(str, &camera->pos, prog);
 	str = ft_get_position_values(str, &norm, prog);
-	vectorbuilder(norm.x, norm.y, norm.z, &camera->axis);
-	if (camera->axis.length != 1)
+	vectorbuilder(norm.x, norm.y, norm.z, &camera->crdstm.oz);
+	if (camera->crdstm.oz.length != 1)
 		customerr(prog, INVDEF, TRUE);
+	crdstmdefiner(&camera->crdstm);
 	while (ft_strchr(SPACES, *str))
 		str++;
 	if (!ft_strchr("0123456789", *str))
@@ -85,6 +86,7 @@ static void	primitivebuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 		planeparser(str, (*objs)->content, prog);
 	else if (i == 2)
 		cylinderparser(str, (*objs)->content, prog);
+	objcast(*objs)->dots.scale = 1;
 	rot->end = &objcast(*objs)->crdstm.oz;
 	objrot(*objs, rot, &objcast(*objs)->crdstm.oz);
 }
@@ -109,4 +111,6 @@ void	ft_read_information(int fd, t_info *info)
 		free(line);
 		line = get_next_line(fd);
 	}
+	if (!(info->win.camera.determined * info->lights.determined * info->a_light.determined))
+		customerr(info->prog, "undefined camera and/or lights", TRUE);
 }

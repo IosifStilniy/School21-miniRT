@@ -81,32 +81,32 @@ static int	jointing(t_cart *dots, t_poly *polys, int dotsnum, int indx)
 	return (indx);
 }
 
-void	spherebuilder(t_obj *obj, float radius)
+void	spherebuilder(t_dots *dots, t_polys *polys, float radius)
 {
 	int	lttd;
 	int	polyindx;
 
-	obj->dotsnum = RNDSGMNTS / 2 * (RNDSGMNTS - 2) + 2;
-	obj->polynum = RNDSGMNTS / 2 * (RNDSGMNTS - 3) + 2 * RNDSGMNTS;
-	obj->dots = malloc(sizeof(*obj->dots) * obj->dotsnum);
-	obj->pos = malloc(sizeof(*obj->pos) * obj->dotsnum);
-	obj->poly = malloc(sizeof(*obj->poly) * obj->polynum);
-	polyindx = dotfiller(obj->dots, obj->pos, obj->poly, radius);
-	polyindx = jointing(obj->pos, &obj->poly, obj->dotsnum, polyindx);
+	dots->dotsnum = RNDSGMNTS / 2 * (RNDSGMNTS - 2) + 2;
+	polys->polynum = RNDSGMNTS / 2 * (RNDSGMNTS - 3) + 2 * RNDSGMNTS;
+	dots->dots = malloc(sizeof(*dots->dots) * dots->dotsnum);
+	dots->pos = malloc(sizeof(*dots->pos) * dots->dotsnum);
+	polys->poly = malloc(sizeof(*polys->poly) * polys->polynum);
+	polyindx = dotfiller(dots->dots, dots->pos, polys->poly, radius);
+	polyindx = jointing(dots->pos, &polys->poly, dots->dotsnum, polyindx);
 	lttd = 0;
 	while (++lttd < RNDSGMNTS / 2)
 	{
-		psurfpatch(&obj->poly[++polyindx], &obj->dots[0],
-			&obj->dots[1 + lttd * (RNDSGMNTS - 2)],
-				&obj->dots[1 + (lttd - 1) * (RNDSGMNTS - 2)]);
-		psurfpatch(&obj->poly[++polyindx], &obj->dots[0],
-			&obj->dots[1 + lttd * (RNDSGMNTS - 2) + RNDSGMNTS - 3],
-				&obj->dots[1 + (lttd - 1) * (RNDSGMNTS - 2) + RNDSGMNTS - 3]);
-		psurfpatch(&obj->poly[++polyindx], &obj->dots[1],
-			&obj->dots[1 + lttd * (RNDSGMNTS - 2) + RNDSGMNTS / 2],
-				&obj->dots[1 + (lttd - 1) * (RNDSGMNTS - 2) + RNDSGMNTS / 2]);
-		psurfpatch(&obj->poly[++polyindx], &obj->dots[1],
-			&obj->dots[1 + lttd * (RNDSGMNTS - 2) + RNDSGMNTS / 2 + 1],
-				&obj->dots[1 + (lttd - 1) * (RNDSGMNTS - 2) + RNDSGMNTS / 2 + 1]);
+		psurfpatch(&polys->poly[++polyindx], &dots->dots[0],
+				   &dots->dots[1 + lttd * (RNDSGMNTS - 2)],
+				   &dots->dots[1 + (lttd - 1) * (RNDSGMNTS - 2)]);
+		psurfpatch(&polys->poly[++polyindx], &dots->dots[0],
+				   &dots->dots[1 + lttd * (RNDSGMNTS - 2) + RNDSGMNTS - 3],
+				   &dots->dots[1 + (lttd - 1) * (RNDSGMNTS - 2) + RNDSGMNTS - 3]);
+		psurfpatch(&polys->poly[++polyindx], &dots->dots[1],
+				   &dots->dots[1 + lttd * (RNDSGMNTS - 2) + RNDSGMNTS / 2],
+				   &dots->dots[1 + (lttd - 1) * (RNDSGMNTS - 2) + RNDSGMNTS / 2]);
+		psurfpatch(&polys->poly[++polyindx], &dots->dots[1],
+				   &dots->dots[1 + lttd * (RNDSGMNTS - 2) + RNDSGMNTS / 2 + 1],
+				   &dots->dots[1 + (lttd - 1) * (RNDSGMNTS - 2) + RNDSGMNTS / 2 + 1]);
 	}
 }

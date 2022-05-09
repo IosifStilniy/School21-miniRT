@@ -1,6 +1,6 @@
 #include "minirt.h"
 
-static void crdstmdefiner(t_crdstm *crdstm)
+void	crdstmdefiner(t_crdstm *crdstm)
 {
 	t_axis	rot;
 
@@ -29,7 +29,7 @@ void	sphereparser(char *str, t_obj *obj, char *prog)
 	vectorbuilder(1, 0, 0, &obj->crdstm.ox);
 	vectorbuilder(0, 1, 0, &obj->crdstm.oy);
 	vectorbuilder(0, 0, 1, &obj->crdstm.oz);
-	spherebuilder(obj, rad);
+	spherebuilder(&obj->dots, &obj->polys, rad);
 }
 
 void	cylinderparser(char *str, t_obj *obj, char *prog)
@@ -48,7 +48,7 @@ void	cylinderparser(char *str, t_obj *obj, char *prog)
 	height = ft_atof(str);
 	str = skipnumnspaces(str);
 	ft_get_color_values(str, &obj->colrs, prog);
-	cylinderbuilder(obj, rad, height);
+	cylinderbuilder(&obj->dots, &obj->polys, rad, height);
 }
 
 void	planeparser(char *str, t_obj *obj, char *prog)
@@ -61,5 +61,5 @@ void	planeparser(char *str, t_obj *obj, char *prog)
 		customerr(prog, INVCRD, TRUE);
 	crdstmdefiner(&obj->crdstm);
 	ft_get_color_values(str, &obj->colrs, prog);
-	obj->dotsnum = 0;
+	obj->dots.dotsnum = 0;
 }

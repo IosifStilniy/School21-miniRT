@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/07 12:45:23 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/09 17:18:49 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,8 +153,6 @@ static void	ft_ray_tracer(t_info *info)
 
 static void	backwards_ray_tracing(t_info *info)
 {
-	info->mlx_ptr = mlx_init();
-	info->wnd_ptr = mlx_new_window(info->mlx_ptr, 1024, 768, "MiniRT");
 	info->data.img = mlx_new_image(info->mlx_ptr, 1024, 768);
 	info->data.addr = mlx_get_data_addr(info->data.img,
 			&info->data.bits_per_pixel, &info->data.line_length,
@@ -164,6 +162,30 @@ static void	backwards_ray_tracing(t_info *info)
 	mlx_hook(info->wnd_ptr, X_EVENT_KEY_PRESS, 0, &ft_key_hook, info);
 	mlx_hook(info->wnd_ptr, X_EVENT_KEY_EXIT, 0, &ft_exit, NULL);
 	mlx_loop(info->mlx_ptr);
+}
+
+void	wininit(t_win *win, void *mlx, char *prog, char *file)
+{
+	char	*buf;
+
+	buf = ft_strjoin(prog, ": ");
+	win->header = ft_strjoin(buf, file);
+	free(buf);
+	win->res.x = RESX;
+	win->res.y = RESY;
+	win->win = mlx_new_window(mlx, win->res.x, win->res.y, win->header);
+	win->cntr.x = win->res.x / 2;
+	win->cntr.y = win->res.y / 2;
+}
+
+void	visiblevolume(t_win *win)
+{
+	float	tn;
+
+	win->camera.focus = 0;
+	if (win->camera.fov < 180)
+		win->camera.focus = win->cntr.x / tanf(win->camera.fov / 2);
+	
 }
 
 int	main(int argc, char **argv)
@@ -179,6 +201,9 @@ int	main(int argc, char **argv)
 	info.lights.determined = FALSE;
 	info.win.camera.determined = FALSE;
 	ft_read_information(fd, &info);
-	backwards_ray_tracing(info);
+	visiblevolume(&info.win);
+	info.mlx_ptr = mlx_init();
+	wininit(&info.win, info.mlx_ptr, info.prog, *argv);
+	backwards_ray_tracing(&info);
 	return (0);
 }
