@@ -14,12 +14,12 @@ void	crdstmdefiner(t_crdstm *crdstm)
 	else if (!comparef(rot.ang, M_PI, M_PI / 180))
 		rot.ang -= M_PI_2;
 	else
-		vectorbuilder(0, 1, 0, &rot.vector);
+		vectorbuilder(0, 1, 0, &rot);
 	quartrot(&crdstm->ox.vector, &rot);
 	axisbuilder(&crdstm->oz, &crdstm->ox, &crdstm->oy);
 }
 
-void	sphereparser(char *str, t_obj *obj, char *prog)
+float	sphereparser(char *str, t_obj *obj, char *prog)
 {
 	float	rad;
 
@@ -29,10 +29,10 @@ void	sphereparser(char *str, t_obj *obj, char *prog)
 	vectorbuilder(1, 0, 0, &obj->crdstm.ox);
 	vectorbuilder(0, 1, 0, &obj->crdstm.oy);
 	vectorbuilder(0, 0, 1, &obj->crdstm.oz);
-	spherebuilder(&obj->dots, &obj->polys, rad);
+	return (spherebuilder(&obj->dots, &obj->polys, rad));
 }
 
-void	cylinderparser(char *str, t_obj *obj, char *prog)
+float	cylinderparser(char *str, t_obj *obj, char *prog)
 {
 	t_cart	norm;
 	float	rad;
@@ -48,7 +48,7 @@ void	cylinderparser(char *str, t_obj *obj, char *prog)
 	height = ft_atof(str);
 	str = skipnumnspaces(str);
 	ft_get_color_values(str, &obj->colrs, prog);
-	cylinderbuilder(&obj->dots, &obj->polys, rad, height);
+	return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
 }
 
 void	planeparser(char *str, t_obj *obj, char *prog)

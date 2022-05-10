@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/09 17:18:49 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/10 20:53:09 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,14 +178,81 @@ void	wininit(t_win *win, void *mlx, char *prog, char *file)
 	win->cntr.y = win->res.y / 2;
 }
 
-void	visiblevolume(t_win *win)
+t_bool	objinframe(t_obj *obj, t_camera *camera, t_res *cntr)
 {
-	float	tn;
+	t_axis	v1;
+	t_axis	v2;
+	t_axis	edge;
+	t_axis	visor;
+	t_axis	ang;
 
-	win->camera.focus = 0;
-	if (win->camera.fov < 180)
-		win->camera.focus = win->cntr.x / tanf(win->camera.fov / 2);
+	vectortoobj(&camera->pos, &obj->crdstm.pos, &v1);
+	axisbuilder(&v1, &camera->crdstm.oz, &ang);
+	if (ang.ang > M_PI_2)
+		return (v1.length < obj->outframe);
+	vectorsizing(v1.length * cosf(ang.ang), &camera->crdstm.oz.vector, &v2);
+	vectortoobj(&v1.vector, &v2.vector, &edge);
+	vectorsizing(obj->outframe, &edge.vector, &edge);
+	vectortoobj(&camera->pos, &edge.vector, &visor);
+	axisbuilder(&visor, &camera->crdstm.ox, &ang);
+	vectorsizing(visor.length * cosf(ang.ang), &camera->crdstm.ox, &v1);
+	if (fabsf(v1.length) > cntr->x)
+		return (FALSE);
+	axisbuilder(&visor, &camera->crdstm.oy, &ang);
+	vectorsizing(visor.length * cosf(ang.ang), &camera->crdstm.oy, &v2);
+	return (fabsf(v2.length) < cntr->y);
+}
+
+void	createview(t_info *info)
+{
+	t_list	*crsr;
+	t_list	*camcrsr;
+	t_cart	shift;
+	int		i;
+	int		j;
+
+	crsr = info->objects;
+	camcrsr = info->win.camera.camobjs;
+	cartcopy(&info->win.camera.pos, &shift, 1);
+	negativevector(&shift);
+	i = -1;
+	while (crsr)
+	{
+		info->win.camera.objsinframe[++i] = objinframe(objcast(crsr), &info->win.camera, &info->win.cntr);
+		if (!info->win.camera.objsinframe[i])
+		{
+			camcrsr = camcrsr->next;
+			crsr = crsr->next;
+			continue ;
+		}
+		j = -1;
+		while (++j < objcast(camcrsr)->polys.polynum)
+			cartcopy(&objcast(crsr)->polys.poly[j].norm.vector, &objcast(camcrsr)->polys.polynorms[j], 1);
+		cartcopy(&objcast(crsr)->crdstm.pos, &objcast(camcrsr)->crdstm.pos, 1);
+		cartcopy(&objcast(camcrsr)->dots.dots, &objcast(camcrsr)->dots.pos, objcast(camcrsr)->dots.dotsnum);
+	}
 	
+}
+
+void	createcamobjs(t_list **camobjs, t_list *objs, t_bool **objsinframe)
+{
+	t_obj	*camobj;
+
+	*objsinframe = malloc(sizeof(**objsinframe) * ft_lstsize(objs));
+	while (objs)
+	{
+		ft_lstadd_front(camobjs, ft_lstnew(malloc(sizeof(t_obj))));
+		camobj = objcast(*camobjs);
+		camobj->dots.dotsnum = objcast(objs)->dots.dotsnum;
+		camobj->dots.dots = objcast(objs)->dots.pos;
+		camobj->dots.pos = malloc(sizeof(*camobj->dots.pos) * camobj->dots.dotsnum);
+		camobj->dots.scale = 1;
+		camobj->polys.poly = objcast(objs)->polys.poly;
+		camobj->polys.txtr = objcast(objs)->polys.txtr;
+		camobj->polys.polynum = objcast(objs)->polys.polynum;
+		camobj->polys.polynorms = malloc(sizeof(*camobj->polys.polynorms) * camobj->polys.polynum);
+		objs = objs->next;
+	}
 }
 
 int	main(int argc, char **argv)
@@ -200,10 +267,11 @@ int	main(int argc, char **argv)
 	info.a_light.determined = FALSE;
 	info.lights.determined = FALSE;
 	info.win.camera.determined = FALSE;
-	ft_read_information(fd, &info);
-	visiblevolume(&info.win);
 	info.mlx_ptr = mlx_init();
 	wininit(&info.win, info.mlx_ptr, info.prog, *argv);
+	ft_read_information(fd, &info);
+	createcamobjs(&info.win.camera.camobjs, info.objects, &info.win.camera.objsinframe);
+	createview(&info);
 	backwards_ray_tracing(&info);
 	return (0);
 }

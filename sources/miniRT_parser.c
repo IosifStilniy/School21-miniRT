@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/09 16:49:32 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/10 20:53:07 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static void	light_definition(char *line, t_light *a_light, t_light *lights, char
 		customerr(prog, INVDEF, TRUE);
 }
 
-static void	ft_fill_camera_info(char *str, t_camera *camera, char *prog)
+static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *prog)
 {
 	t_cart	norm;
 
@@ -63,6 +63,7 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, char *prog)
 		str++;
 	if (*str != '\n' || *str)
 		customerr(prog, INVDEF, TRUE);
+	camera->rot = rot;
 }
 
 static void	primitivebuilder(char *str, t_list **objs, char *prog, t_rot *rot)
@@ -79,13 +80,14 @@ static void	primitivebuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 		customerr(prog, INVDEF, TRUE);
 	ft_lstadd_front(objs, ft_lstnew(malloc(sizeof(t_obj))));
 	objcast(*objs)->rot = rot;
+	objcast(*objs)->polys.polynorms = NULL;
 	str = ft_get_position_values(prog, str, &objcast(*objs)->crdstm.pos);
 	if (!i)
-		sphereparser(str, (*objs)->content, prog);
+		objcast(*objs)->outframe = sphereparser(str, (*objs)->content, prog);
 	else if (i == 1)
 		planeparser(str, (*objs)->content, prog);
 	else if (i == 2)
-		cylinderparser(str, (*objs)->content, prog);
+		objcast(*objs)->outframe = cylinderparser(str, (*objs)->content, prog);
 	objcast(*objs)->dots.scale = 1;
 	rot->end = &objcast(*objs)->crdstm.oz;
 	objrot(*objs, rot, &objcast(*objs)->crdstm.oz);
@@ -96,6 +98,7 @@ void	ft_read_information(int fd, t_info *info)
 	char	*line;
 	char	*crsr;
 
+	info->objects = NULL;
 	line = get_next_line(fd);
 	while (line)
 	{
@@ -105,7 +108,7 @@ void	ft_read_information(int fd, t_info *info)
 		if (ft_strchr("AL", *crsr))
 			light_definition(crsr, &info->a_light, &info->lights, info->prog);
 		else if (*crsr == 'C')
-			ft_fill_camera_info(++crsr, &info->win.camera, info->prog);
+			ft_fill_camera_info(++crsr, &info->win.camera, &info->rot, info->prog);
 		else if (*crsr && *crsr != '\n')
 			primitivesbuilder(crsr, &info->objects, info->prog, &info->rot);
 		free(line);
@@ -113,4 +116,7 @@ void	ft_read_information(int fd, t_info *info)
 	}
 	if (!(info->win.camera.determined * info->lights.determined * info->a_light.determined))
 		customerr(info->prog, "undefined camera and/or lights", TRUE);
+	info->win.camera.focus = 0;
+	if (info->win.camera.fov < 180)
+		info->win.camera.focus = info->win.cntr.x / tanf(info->win.camera.fov / 360 * M_PI);
 }

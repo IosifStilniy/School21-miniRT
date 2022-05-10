@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/09 16:44:52 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/10 21:19:43 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ typedef struct s_axis {
 typedef struct s_rot {
 	t_axis *start;
 	t_axis *end;
-	t_axis *axis;
+	t_axis axis;
 }	t_rot;
 
 typedef struct s_crdstm {
@@ -170,7 +170,7 @@ typedef struct s_light {
 
 typedef struct s_poly {
 	int		dotcount;
-	t_cart	**dots;
+	int		*dots;
 	t_cart	*txtr;
 	t_axis	norm;
 }	t_poly;
@@ -186,6 +186,7 @@ typedef struct s_polys {
 	int			polynum;
 	t_data		*txtr;
 	t_poly		*poly;
+	t_axis		*polynorms;
 }	t_polys;
 
 typedef struct s_obj {
@@ -193,6 +194,7 @@ typedef struct s_obj {
 	t_polys		polys;
 	t_colrs		colrs;
 	t_crdstm	crdstm;
+	float		outframe;
 	t_rot		*rot;
 }	t_obj;
 
@@ -202,6 +204,9 @@ typedef struct s_camera {
 	float		focus;
 	float		fov;
 	t_bool		determined;
+	t_list		*camobjs;
+	t_bool		*objsinframe;
+	t_rot		*rot;
 }	t_camera;
 
 typedef struct s_win {
@@ -247,11 +252,11 @@ typedef struct s_info
 // Parsing the file.
 
 void	crdstmdefiner(t_crdstm *crdstm);
-void	cylinderparser(char *str, t_obj *obj, char *prog);
+float	cylinderparser(char *str, t_obj *obj, char *prog);
 int		file_check(char *file, char *prog);
 void	ft_read_information(int fd, t_info *info);
 void	planeparser(char *str, t_obj *obj, char *prog);
-void	sphereparser(char *str, t_obj *obj, char *prog);
+float	sphereparser(char *str, t_obj *obj, char *prog);
 
 // Parsing utilities.
 
@@ -278,10 +283,12 @@ int 	ft_fill_light_info(char **piece, t_info *info);
 
 // Object-like elements information.
 
+void	backpsurfpatch(t_cart *dots, t_poly *poly, t_bool south, int lttd);
 int		circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols);
-void	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
+float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
 void	definepols(t_cart *dots, float radius, t_axis *rotcircle);
-void	spherebuilder(t_dots *dots, t_polys *polys, float radius);
+void	frontpsurfpatch(t_cart *dots, t_poly *poly, t_bool south, int lttd);
+float	spherebuilder(t_dots *dots, t_polys *polys, float radius);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
 int		ft_fill_plane_info(char **piece, t_info *info);
@@ -295,17 +302,24 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
+void	computeworldcoords(t_obj *obj, t_camera *camera);
+void	engine(t_dots *dots, t_polys *polys, t_axis *axis);
+void	gentlerot(t_cart *pos, t_rot *rot, t_axis *ref);
+void	objrot(t_obj *obj, t_rot *rot, t_axis *end);
+void	translateobj(t_obj *obj, t_cart *shift);
+void	quartrot(t_cart *pos, t_axis *axis);
+
+// Vector utils
+
 void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis);
 void	cartbuilder(float x, float y, float z, t_cart *dot);
 void	cartcopy(t_cart *src, t_cart *dst, int count);
-void	engine(t_dots *dots, t_polys *polys, t_axis *axis);
-void	flatanglehandler(t_rot *rot, t_axis *ref);
-void	gentlerot(t_cart *pos, t_rot *rot, t_axis *ref);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
+void	vectorsizing(float newlength, t_cart *src, t_axis *res);
+void	vectortoobj(t_cart *from, t_cart *to, t_axis *vector);
 void	negativevector(t_cart *dot);
 void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_axis *norm);
-void	objrot(t_obj *obj, t_rot *rot, t_axis *end);
-void	quartrot(t_cart *pos, t_axis *axis);
+void	flatanglehandler(t_rot *rot, t_axis *ref);
 
 // Hooks for orientation and movement in space
 

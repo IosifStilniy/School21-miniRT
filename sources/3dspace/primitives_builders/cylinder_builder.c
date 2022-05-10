@@ -50,17 +50,18 @@ static void	buttsurf(t_cart *central, t_cart *dots, t_poly *polys)
 	polys[i].txtr = NULL;
 }
 
-void	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height)
+float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height)
 {
 	int	i;
 
 	dots->dotsnum = RNDSGMNTS * 2 + 2;
 	polys->polynum = RNDSGMNTS * 3;
-	dots = malloc(sizeof(*dots) * dots->dotsnum);
+	dots->dots = malloc(sizeof(*dots->dots) * dots->dotsnum);
+	dots->pos = malloc(sizeof(*dots->pos) * dots->dotsnum);
 	cartbuilder(0, 0, -height / 2, dots);
 	cartbuilder(0, 0, height / 2, dots + 1);
-	circledotsfiller(&dots[2], radius, NULL, FALSE);
-	circledotsfiller(&dots[RNDSGMNTS + 2], radius, NULL, FALSE);
+	circledotsfiller(&dots->dots[2], radius, NULL, FALSE);
+	circledotsfiller(&dots->dots[RNDSGMNTS + 2], radius, NULL, FALSE);
 	i = -1;
 	while (++i < RNDSGMNTS)
 	{
@@ -71,4 +72,5 @@ void	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height)
 	surfdefiner(&dots->dots[2], &dots->dots[RNDSGMNTS + 2], polys->poly);
 	buttsurf(&dots->dots[0], &dots->dots[2], &polys->poly[RNDSGMNTS]);
 	buttsurf(&dots->dots[1], &dots->dots[RNDSGMNTS + 2], &polys->poly[2 * RNDSGMNTS]);
+	return (sqrtf(powf(height / 2, 2) + powf(radius, 2)));
 }
