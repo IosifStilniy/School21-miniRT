@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/05/10 22:37:15 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/11 22:05:35 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,18 @@ void	engine(t_dots *dots, t_polys *polys, t_axis *axis)
 void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_axis *start, t_axis *end)
 {
 	float	ang;
-	
+	t_axis	ref;
+
 	rot->start = start;
 	rot->end = end;
 	flatanglehandler(rot, NULL);
 	if (&crdstm->oz != start)
 	{
 		ang = rot->axis.ang;
+		axisbuilder(&crdstm->oz, &rot->axis, &ref);
 		rot->axis = crdstm->oz;
+		if (comparef(ref.ang, M_PI, 0.001))
+			negativevector(&rot->axis.vector);
 		rot->axis.ang = ang;
 	}
 	quartrot(&crdstm->oz.vector, &rot->axis);
@@ -73,40 +77,42 @@ void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_axis *start, t_axis *end)
 	quartrot(&crdstm->ox.vector, &rot->axis);
 }
 
-void	translateobj(t_obj *obj, t_cart *shift)
+void	rotnpersp(t_cart *pos, t_axis *zrot, t_axis *xyrot, float focus)
 {
-	obj->crdstm.pos.x += shift->x;
-	obj->crdstm.pos.y += shift->y;
-	obj->crdstm.pos.z += shift->z;
+	quartrot(pos, &zrot);
+	quartrot(pos, &xyrot);
+	if (comparef(pos->z, 0, 0.001) || comparef(focus, 0, 0.001) || focus == INFINITY)
+		return ;
+	pos->x *= focus / pos->z;
+	pos->y *= focus / pos->z;
 }
 
-void	computeworldcoords(t_obj *obj, t_camera *camera)
+void	wrldtocamcoords(t_dots *dots, t_polys *polys, t_cart *crdstm, t_camera *camera)
 {
 	t_crdstm	world;
 	t_axis		zrot;
 	t_axis		xyrot;
 	int			i;
 	
-	vectorbuilder(1, 0, 0, &world.ox);
-	vectorbuilder(0, 1, 0, &world.oy);
 	vectorbuilder(0, 0, 1, &world.oz);
+	crdstmdefiner(&world);
 	crdstmrot(&world, camera->rot, &world.oz, &camera->crdstm.oz);
 	zrot = camera->rot->axis;
 	crdstmrot(&world, camera->rot, &world.ox, &camera->crdstm.ox);
 	xyrot = camera->rot->axis;
 	i = -1;
-	while (++i < obj->dots.dotsnum)
+	while (++i < dots->dotsnum)
 	{
-		obj->dots.pos[i].x += obj->crdstm.pos.x - camera->pos.x;
-		obj->dots.pos[i].y += obj->crdstm.pos.y - camera->pos.y;
-		obj->dots.pos[i].z += obj->crdstm.pos.z - camera->pos.z;
-		quartrot(&obj->dots.pos[i], &zrot);
-		quartrot(&obj->dots.pos[i], &xyrot);
+		dots->pos[i].x = dots->dots[i].x + crdstm->x - camera->pos.x;
+		dots->pos[i].y = dots->dots[i].y + crdstm->y - camera->pos.y;
+		dots->pos[i].z = dots->dots[i].z + crdstm->z - camera->pos.z;
+		quartrot(dots->pos + i, &zrot);
+		quartrot(dots->pos + i, &xyrot);
 	}
 	i = -1;
-	while (++i < obj->polys.polynum)
+	while (++i < polys->polynum)
 	{
-		quartrot(&obj->polys.polynorms[i].vector, &zrot);
-		quartrot(&obj->polys.polynorms[i].vector, &xyrot);
+		quartrot(&polys->polynorms[i].vector, &zrot);
+		quartrot(&polys->polynorms[i].vector, &xyrot);
 	}
 }

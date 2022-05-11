@@ -23,3 +23,11 @@ void	negativevector(t_cart *dot)
 	dot->y *= -1;
 	dot->z *= -1;
 }
+
+t_cart	*vectodot(t_cart *vector, t_cart *start)
+{
+	vector->x += start->x;
+	vector->y += start->y;
+	vector->z += start->z;
+	return (vector);
+}

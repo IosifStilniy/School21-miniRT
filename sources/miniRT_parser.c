@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/10 20:53:07 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/11 21:54:54 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,5 @@ void	ft_read_information(int fd, t_info *info)
 	}
 	if (!(info->win.camera.determined * info->lights.determined * info->a_light.determined))
 		customerr(info->prog, "undefined camera and/or lights", TRUE);
-	info->win.camera.focus = 0;
-	if (info->win.camera.fov < 180)
-		info->win.camera.focus = info->win.cntr.x / tanf(info->win.camera.fov / 360 * M_PI);
+	info->win.camera.focus = info->win.cntr.x / tanf(info->win.camera.fov / 360 * M_PI) / 2;
 }

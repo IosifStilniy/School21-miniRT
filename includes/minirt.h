@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/10 21:19:43 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/11 21:18:41 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,11 +302,10 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
-void	computeworldcoords(t_obj *obj, t_camera *camera);
+void	wrldtocamcoords(t_dots *dots, t_polys *polys, t_cart *crdstm, t_camera *camera);
 void	engine(t_dots *dots, t_polys *polys, t_axis *axis);
 void	gentlerot(t_cart *pos, t_rot *rot, t_axis *ref);
 void	objrot(t_obj *obj, t_rot *rot, t_axis *end);
-void	translateobj(t_obj *obj, t_cart *shift);
 void	quartrot(t_cart *pos, t_axis *axis);
 
 // Vector utils
@@ -314,12 +313,13 @@ void	quartrot(t_cart *pos, t_axis *axis);
 void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis);
 void	cartbuilder(float x, float y, float z, t_cart *dot);
 void	cartcopy(t_cart *src, t_cart *dst, int count);
+void	flatanglehandler(t_rot *rot, t_axis *ref);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
 void	vectorsizing(float newlength, t_cart *src, t_axis *res);
 void	vectortoobj(t_cart *from, t_cart *to, t_axis *vector);
 void	negativevector(t_cart *dot);
 void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_axis *norm);
-void	flatanglehandler(t_rot *rot, t_axis *ref);
+t_cart	*vectodot(t_cart *vector, t_cart *start);
 
 // Hooks for orientation and movement in space
 
