@@ -9,30 +9,31 @@ void	vectorbuilder(float x, float y, float z, t_axis *vector)
 		vector->ang = DEFANG * M_PI / 180;
 }
 
-void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_axis *norm)
+void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm)
 {
 	t_axis	v1;
 	t_axis	v2;
+	t_axis	ref;
 
 	vectorbuilder(dot1->x - centraldot->x, dot1->y - centraldot->y, dot1->z - centraldot->z, &v1);
 	vectorbuilder(dot2->x - centraldot->x, dot2->y - centraldot->y, dot2->z - centraldot->z, &v2);
-	axisbuilder(&v2, &v1, norm);
+	axisbuilder(&v1.vector, &v2.vector, &ref);
+	*norm = ref.vector;
 }
 
-void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis)
+void	axisbuilder(t_cart *v1, t_cart *v2, t_axis *axis)
 {
 	float	scalar;
 
-	axis->vector.x = v1->vector.y * v2->vector.z - v1->vector.z * v2->vector.y;
-	axis->vector.y = v1->vector.z * v2->vector.x - v1->vector.x * v2->vector.z;
-	axis->vector.z = v1->vector.x * v2->vector.y - v1->vector.y * v2->vector.x;
+	axis->vector.x = v1->y * v2->z - v1->z * v2->y;
+	axis->vector.y = v1->z * v2->x - v1->x * v2->z;
+	axis->vector.z = v1->x * v2->y - v1->y * v2->x;
 	axis->length = sqrtf(powf(axis->vector.x, 2) + powf(axis->vector.y, 2)
 			+ powf(axis->vector.z, 2));
 	scalar = axis->length;
 	scalar /= scalar * (scalar >= 1) + (scalar < 1);
 	axis->ang = asinf(scalar);
-	scalar = v1->vector.x * v2->vector.x + v1->vector.y * v2->vector.y
-		+ v1->vector.z * v2->vector.z;
+	scalar = v1->x * v2->x + v1->y * v2->y + v1->z * v2->z;
 	if (scalar < 0)
 		axis->ang = M_PI - axis->ang;
 	if (!axis->length)
@@ -40,25 +41,6 @@ void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis)
 	axis->vector.x /= axis->length;
 	axis->vector.y /= axis->length;
 	axis->vector.z /= axis->length;
-}
-
-void	flatanglehandler(t_rot *rot, t_axis *ref)
-{
-	float	ang;
-
-	axisbuilder(rot->start, rot->end, &rot->axis);
-	ang = rot->axis.ang;
-	if (!comparef(rot->axis.length, 0, 0.0001) && !comparef(rot->axis.ang, M_PI, 0.001))
-		;
-	else if (!ref)
-	{
-		vectorbuilder(1, 0, 0, &rot->axis);
-		if (!comparef(rot->end->vector.x, 0, 0.001) || !comparef(rot->end->vector.z, 0, 0.001))
-			vectorbuilder(0, 1, 0, &rot->axis);
-	}
-	else if (ref != rot->start)
-		axisbuilder(ref, rot->end, &rot->axis);
-	rot->axis.ang = ang;
 }
 
 void	vectortoobj(t_cart *from, t_cart *to, t_axis *vector)

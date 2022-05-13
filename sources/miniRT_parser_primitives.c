@@ -5,7 +5,7 @@ void	crdstmdefiner(t_crdstm *crdstm)
 	t_axis	rot;
 
 	vectorbuilder(1, 0, 0, &crdstm->ox);
-	axisbuilder(&crdstm->ox, &crdstm->oz, &rot);
+	axisbuilder(&crdstm->ox.vector, &crdstm->oz.vector, &rot);
 	if (rot.ang < M_PI_2)
 	{
 		negativevector(&rot.vector);
@@ -16,7 +16,7 @@ void	crdstmdefiner(t_crdstm *crdstm)
 	else
 		vectorbuilder(0, 1, 0, &rot);
 	quartrot(&crdstm->ox.vector, &rot);
-	axisbuilder(&crdstm->oz, &crdstm->ox, &crdstm->oy);
+	axisbuilder(&crdstm->oz.vector, &crdstm->ox.vector, &crdstm->oy);
 }
 
 float	sphereparser(char *str, t_obj *obj, char *prog)

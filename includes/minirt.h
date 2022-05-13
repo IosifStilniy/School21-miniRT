@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/11 21:18:41 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/14 00:10:11 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,20 @@
 # define KEY_S 1
 # define KEY_D 2
 # define KEY_W 13
+# define KEY_L 37
+# define KEY_C 8
 # define KEY_UP 126
 # define KEY_LEFT 123
 # define KEY_DOWN 125
 # define KEY_RIGHT 124
 # define KEY_ESC 53
+# define KEY_CMND 259
+# define KEY_SHIFT 257
+# define KEY_CNTRL 256
+# define LMB 1
+# define MMB 3
+# define SCRL_UP 5
+# define SCRL_DOWN 4
 
 # define X_EVENT_KEY_EXIT 17
 # define X_EVENT_KEY_PRESS 2
@@ -79,7 +88,7 @@
 # endif
 
 # ifndef RNDSGMNTS
-#  define RNDSGMNTS 360
+#  define RNDSGMNTS 36
 # endif
 
 # ifndef INVINP
@@ -143,8 +152,8 @@ typedef struct s_axis {
 }	t_axis;
 
 typedef struct s_rot {
-	t_axis *start;
-	t_axis *end;
+	t_cart *start;
+	t_cart *end;
 	t_axis axis;
 }	t_rot;
 
@@ -172,7 +181,8 @@ typedef struct s_poly {
 	int		dotcount;
 	int		*dots;
 	t_cart	*txtr;
-	t_axis	norm;
+	t_cart	srcnorm;
+	t_cart	norm;
 }	t_poly;
 
 typedef struct s_dots {
@@ -186,7 +196,6 @@ typedef struct s_polys {
 	int			polynum;
 	t_data		*txtr;
 	t_poly		*poly;
-	t_axis		*polynorms;
 }	t_polys;
 
 typedef struct s_obj {
@@ -202,11 +211,14 @@ typedef struct s_camera {
 	t_cart		pos;
 	t_crdstm	crdstm;
 	float		focus;
-	float		fov;
+	float		xfov;
+	float		yfov;
 	t_bool		determined;
 	t_list		*camobjs;
 	t_bool		*objsinframe;
 	t_rot		*rot;
+	t_axis		zrot;
+	t_axis		xyrot;
 }	t_camera;
 
 typedef struct s_win {
@@ -233,6 +245,7 @@ typedef struct s_keybrd {
 	t_bool	zrot;
 	t_bool	zoom;
 	t_bool	focus;
+	t_bool	movecam;
 	t_bool	legend;
 }	t_keybrd;
 
@@ -247,6 +260,8 @@ typedef struct s_info
 	t_data		img;
 	char		*prog;
 	int			total;
+	t_mouse		mouse;
+	t_keybrd	keybrd;
 }	t_info;
 
 // Parsing the file.
@@ -302,38 +317,42 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
-void	wrldtocamcoords(t_dots *dots, t_polys *polys, t_cart *crdstm, t_camera *camera);
-void	engine(t_dots *dots, t_polys *polys, t_axis *axis);
-void	gentlerot(t_cart *pos, t_rot *rot, t_axis *ref);
-void	objrot(t_obj *obj, t_rot *rot, t_axis *end);
+void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, t_rot *rot);
+void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
+void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *axis);
+void	crdstmtranslation(t_cart *crdstm, t_cart *direction, float step);
+void	objrot(t_obj *camobj, t_crdstm *cam, t_crdstm *obj, t_cart *dst);
+void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot);
+void	objtoobjpos(t_cart *center, t_cart *dot);
 void	quartrot(t_cart *pos, t_axis *axis);
 
 // Vector utils
 
-void	axisbuilder(t_axis *v1, t_axis *v2, t_axis *axis);
+void	axisbuilder(t_cart *v1, t_cart *v2, t_axis *axis);
 void	cartbuilder(float x, float y, float z, t_cart *dot);
 void	cartcopy(t_cart *src, t_cart *dst, int count);
-void	flatanglehandler(t_rot *rot, t_axis *ref);
+void	crdstmcopy(t_crdstm *src, t_crdstm *dst);
+void	flatanglehandler(t_rot *rot, t_cart *ref);
+void	vectodot(t_cart *vector, t_cart *start);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
 void	vectorsizing(float newlength, t_cart *src, t_axis *res);
 void	vectortoobj(t_cart *from, t_cart *to, t_axis *vector);
 void	negativevector(t_cart *dot);
-void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_axis *norm);
-t_cart	*vectodot(t_cart *vector, t_cart *start);
+void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 
 // Hooks for orientation and movement in space
 
-int		mousemove(int x, int y, t_cntrl *cntrl);
-void	keyshifting(int keycode, t_cntrl *cntrl);
-void	keyrotating(int keycode, t_cntrl *cntrl);
-void	scrolling(int btn, t_cntrl *cntrl);
-void	mouserotating(t_cntrl *cntrl, int x, int y);
-void	mouseshifting(t_cntrl *cntrl, int x, int y);
-void	mousezooming(t_cntrl *cntrl, int y);
-int		keydownhndlr(int keycode, t_cntrl *cntrl);
-int		keyuphndlr(int keycode, t_cntrl *cntrl);
-int		btnpress(int btn, int x, int y, t_cntrl *cntrl);
-int		btnup(int btn, int x, int y, t_cntrl *cntrl);
+int		mousemove(int x, int y, t_info *info);
+void	keyshifting(int keycode, t_info *info);
+void	keyrotating(int keycode, t_info *info);
+void	scrolling(int btn, t_info *info);
+void	mouserotating(t_info *info, int x, int y);
+void	mouseshifting(t_info *info, int x, int y);
+void	mousezooming(t_info *info, int y);
+int		keydownhndlr(int keycode, t_info *info);
+int		keyuphndlr(int keycode, t_info *info);
+int		btnpress(int btn, int x, int y, t_info *info);
+int		btnup(int btn, int x, int y, t_info *info);
 
 //Utils
 

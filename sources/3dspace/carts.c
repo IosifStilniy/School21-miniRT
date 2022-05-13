@@ -24,10 +24,17 @@ void	negativevector(t_cart *dot)
 	dot->z *= -1;
 }
 
-t_cart	*vectodot(t_cart *vector, t_cart *start)
+void	vectodot(t_cart *vector, t_cart *start)
 {
 	vector->x += start->x;
 	vector->y += start->y;
 	vector->z += start->z;
-	return (vector);
+}
+
+void	crdstmcopy(t_crdstm *src, t_crdstm *dst)
+{
+	cartcopy(&src->pos, &dst->pos, 1);
+	cartcopy(&src->ox.vector, &dst->ox.vector, 1);
+	cartcopy(&src->oy.vector, &dst->oy.vector, 1);
+	cartcopy(&src->oz.vector, &dst->oz.vector, 1);
 }

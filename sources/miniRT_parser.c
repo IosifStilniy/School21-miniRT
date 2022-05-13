@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/11 21:54:54 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/13 20:27:44 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *p
 		str++;
 	if (!ft_strchr("0123456789", *str))
 		customerr(prog, INVDEF, TRUE);
-	camera->fov = ft_atoi(str);
-	if (!(0 <= camera->fov  && camera->fov <= 180))
+	camera->xfov = ft_atoi(str) * M_PI / 360;
+	if (!(-0.001 <= camera->xfov  && camera->xfov <= 180.001))
 		customerr(prog, INVDEF, TRUE);
 	while (ft_strchr("0123456789", *str))
 		str++;
@@ -89,8 +89,6 @@ static void	primitivebuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 	else if (i == 2)
 		objcast(*objs)->outframe = cylinderparser(str, (*objs)->content, prog);
 	objcast(*objs)->dots.scale = 1;
-	rot->end = &objcast(*objs)->crdstm.oz;
-	objrot(*objs, rot, &objcast(*objs)->crdstm.oz);
 }
 
 void	ft_read_information(int fd, t_info *info)
@@ -116,5 +114,7 @@ void	ft_read_information(int fd, t_info *info)
 	}
 	if (!(info->win.camera.determined * info->lights.determined * info->a_light.determined))
 		customerr(info->prog, "undefined camera and/or lights", TRUE);
-	info->win.camera.focus = info->win.cntr.x / tanf(info->win.camera.fov / 360 * M_PI) / 2;
+	info->win.camera.focus = info->win.cntr.x / tanf(info->win.camera.xfov / 180 * M_PI);
+	info->win.camera.focus += (!info->win.camera.focus);
+	info->win.camera.yfov = atanf(info->win.cntr.y / info->win.camera.focus);
 }

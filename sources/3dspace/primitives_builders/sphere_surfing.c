@@ -13,7 +13,7 @@ void	backpsurfpatch(t_cart *dots, t_poly *poly, t_bool south, int lttd)
 		poly->dots[2] = RNDSGMNTS / 2 * (RNDSGMNTS - 2) + 2 - (RNDSGMNTS - 2) - 1;
 	if (south)
 		poly->dots[2] += (RNDSGMNTS - 2) / 2 - 1;
-	normbuilder(&dots[poly->dots[0]], &dots[poly->dots[1]], &dots[poly->dots[2]], &poly->norm);
+	normbuilder(&dots[poly->dots[0]], &dots[poly->dots[1]], &dots[poly->dots[2]], &poly->srcnorm);
 	poly->txtr = NULL;
 }
 
@@ -30,6 +30,6 @@ void	frontpsurfpatch(t_cart *dots, t_poly *poly, t_bool south, int lttd)
 		poly->dots[2] = RNDSGMNTS / 2 * (RNDSGMNTS - 2) + 2 - 1;
 	if (south)
 		poly->dots[2] -= (RNDSGMNTS - 2) / 2 - 1;
-	normbuilder(&dots[poly->dots[0]], &dots[poly->dots[1]], &dots[poly->dots[2]], &poly->norm);
+	normbuilder(&dots[poly->dots[0]], &dots[poly->dots[1]], &dots[poly->dots[2]], &poly->srcnorm);
 	poly->txtr = NULL;
 }

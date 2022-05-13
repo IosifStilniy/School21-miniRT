@@ -8,7 +8,7 @@ static void	surfdefiner(t_cart *dots, t_poly *poly, int dotnum, int lttd)
 	poly->dots[1] = dotnum - 1;
 	poly->dots[2] = dotnum - 1 - (RNDSGMNTS - 2) * lttd;
 	poly->dots[3] = dotnum - (RNDSGMNTS - 2) * lttd;
-	normbuilder(&dots[poly->dots[0]], &dots[poly->dots[1]], &dots[poly->dots[3]], &poly->norm);
+	normbuilder(&dots[poly->dots[0]], &dots[poly->dots[1]], &dots[poly->dots[3]], &poly->srcnorm);
 	poly->txtr = NULL;
 }
 
@@ -52,7 +52,7 @@ static int	jointing(t_cart *dots, t_poly *polys, int dotsnum, int indx)
 		polys[indx].dots[1] = i - 1 + 2;
 		polys[indx].dots[2] = dotsnum - 2 - 1 - (i - 1) + 2;
 		polys[indx].dots[3] = dotsnum - 2 - 1 - i + 2;
-		normbuilder(&dots[i + 2], &dots[i - 1 + 2], &dots[dotsnum - 3 - i + 2], &polys[indx].norm);
+		normbuilder(&dots[i + 2], &dots[i - 1 + 2], &dots[dotsnum - 3 - i + 2], &polys[indx].srcnorm);
 		polys[indx].txtr = NULL;
 	}
 	frontpsurfpatch(dots, &polys[++indx], FALSE, 0);
@@ -70,7 +70,6 @@ float	spherebuilder(t_dots *dots, t_polys *polys, float radius)
 	dots->dotsnum = RNDSGMNTS / 2 * (RNDSGMNTS - 2) + 2;
 	polys->polynum = RNDSGMNTS / 2 * (RNDSGMNTS - 3) + 2 * RNDSGMNTS;
 	dots->dots = malloc(sizeof(*dots->dots) * dots->dotsnum);
-	dots->pos = malloc(sizeof(*dots->pos) * dots->dotsnum);
 	polys->poly = malloc(sizeof(*polys->poly) * polys->polynum);
 	polyindx = dotfiller(dots->dots, dots->pos, polys->poly, radius);
 	polyindx = jointing(dots->pos, &polys->poly, dots->dotsnum, polyindx);

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/05/11 22:05:35 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/13 23:23:55 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,85 +34,71 @@ void	quartrot(t_cart *pos, t_axis *axis)
 	pos->z = mlts[2][0] + mlts[2][1] + mlts[2][2];
 }
 
-void	engine(t_dots *dots, t_polys *polys, t_axis *axis)
+void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, t_rot *rot)
 {
 	int		i;
 
+	wrldtoobjaxis(crdstm, rot);
 	i = -1;
 	while (++i < dots->dotsnum)
 	{
 		dots->pos[i].x = dots->dots[i].x * dots->scale;
 		dots->pos[i].y = dots->dots[i].y * dots->scale;
 		dots->pos[i].z = dots->dots[i].z * dots->scale;
-		quartrot(&dots->pos[i], axis);
-	}
-	i = -1;
-	if (!polys->polynorms)
-		while (++i < polys->polynum)
-			quartrot(&polys->poly[i].norm.vector, axis);
-	else
-		while (++i < polys->polynum)
-			quartrot(&polys->polynorms[i].vector, axis);
-}
-
-void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_axis *start, t_axis *end)
-{
-	float	ang;
-	t_axis	ref;
-
-	rot->start = start;
-	rot->end = end;
-	flatanglehandler(rot, NULL);
-	if (&crdstm->oz != start)
-	{
-		ang = rot->axis.ang;
-		axisbuilder(&crdstm->oz, &rot->axis, &ref);
-		rot->axis = crdstm->oz;
-		if (comparef(ref.ang, M_PI, 0.001))
-			negativevector(&rot->axis.vector);
-		rot->axis.ang = ang;
-	}
-	quartrot(&crdstm->oz.vector, &rot->axis);
-	quartrot(&crdstm->oy.vector, &rot->axis);
-	quartrot(&crdstm->ox.vector, &rot->axis);
-}
-
-void	rotnpersp(t_cart *pos, t_axis *zrot, t_axis *xyrot, float focus)
-{
-	quartrot(pos, &zrot);
-	quartrot(pos, &xyrot);
-	if (comparef(pos->z, 0, 0.001) || comparef(focus, 0, 0.001) || focus == INFINITY)
-		return ;
-	pos->x *= focus / pos->z;
-	pos->y *= focus / pos->z;
-}
-
-void	wrldtocamcoords(t_dots *dots, t_polys *polys, t_cart *crdstm, t_camera *camera)
-{
-	t_crdstm	world;
-	t_axis		zrot;
-	t_axis		xyrot;
-	int			i;
-	
-	vectorbuilder(0, 0, 1, &world.oz);
-	crdstmdefiner(&world);
-	crdstmrot(&world, camera->rot, &world.oz, &camera->crdstm.oz);
-	zrot = camera->rot->axis;
-	crdstmrot(&world, camera->rot, &world.ox, &camera->crdstm.ox);
-	xyrot = camera->rot->axis;
-	i = -1;
-	while (++i < dots->dotsnum)
-	{
-		dots->pos[i].x = dots->dots[i].x + crdstm->x - camera->pos.x;
-		dots->pos[i].y = dots->dots[i].y + crdstm->y - camera->pos.y;
-		dots->pos[i].z = dots->dots[i].z + crdstm->z - camera->pos.z;
-		quartrot(dots->pos + i, &zrot);
-		quartrot(dots->pos + i, &xyrot);
+		quartrot(&dots->pos[i], &rot->axis);
 	}
 	i = -1;
 	while (++i < polys->polynum)
 	{
-		quartrot(&polys->polynorms[i].vector, &zrot);
-		quartrot(&polys->polynorms[i].vector, &xyrot);
+		polys->poly[i].norm = polys->poly[i].srcnorm;
+		quartrot(&polys->poly[i].norm, &rot->axis);
 	}
+}
+
+void	flatanglehandler(t_rot *rot, t_cart *ref)
+{
+	float	ang;
+
+	axisbuilder(rot->start, rot->end, &rot->axis);
+	ang = rot->axis.ang;
+	if (!comparef(rot->axis.length, 0, 0.0001) && !comparef(rot->axis.ang, M_PI, 0.001))
+		;
+	else if (!ref)
+	{
+		vectorbuilder(1, 0, 0, &rot->axis);
+		if (!comparef(rot->end->x, 0, 0.001) || !comparef(rot->end->z, 0, 0.001))
+			vectorbuilder(0, 1, 0, &rot->axis);
+	}
+	else if (ref != rot->start)
+		axisbuilder(ref, rot->end, &rot->axis);
+	rot->axis.ang = ang;
+}
+
+void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot)
+{
+	t_crdstm	world;
+	t_cart		ref;
+	t_cart		pos;
+	
+	vectorbuilder(1, 0, 0, &world.ox);
+	vectorbuilder(0, 1, 0, &world.oy);
+	vectorbuilder(0, 0, 1, &world.oz);
+	if (!src)
+		src = &world;
+	if (!dst)
+		dst = &world;
+	cartbuilder(1, 1, 1, &pos);
+	crdstmrot(src, rot, &src->oz, &dst->oz);
+	quartrot(&pos, &rot->axis);
+	crdstmrot(src, rot, &src->ox, &dst->ox);
+	quartrot(&pos, &rot->axis);
+	cartbuilder(1, 1, 1, &ref);
+	axisbuilder(&ref, &pos, &rot->axis);
+}
+
+void	objtoobjpos(t_cart *center, t_cart *dot)
+{
+	dot->x -= center->x;
+	dot->y -= center->y;
+	dot->z -= center->z;
 }
