@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/14 00:10:11 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/14 21:17:43 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,9 +152,10 @@ typedef struct s_axis {
 }	t_axis;
 
 typedef struct s_rot {
-	t_cart *start;
-	t_cart *end;
-	t_axis axis;
+	t_cart	*start;
+	t_cart	*end;
+	t_axis	axis;
+	t_axis	xyaxis;
 }	t_rot;
 
 typedef struct s_crdstm {
@@ -185,10 +186,16 @@ typedef struct s_poly {
 	t_cart	norm;
 }	t_poly;
 
+typedef struct s_vrtx {
+	t_cart	dot;
+	t_cart	norm;
+	t_list	*polynorms;
+}	t_vrtx;
+
 typedef struct s_dots {
 	int		dotsnum;
-	t_cart	*dots;
-	t_cart	*pos;
+	t_vrtx	*dots;
+	t_vrtx	*pos;
 	float	scale;
 }	t_dots;
 
@@ -217,8 +224,7 @@ typedef struct s_camera {
 	t_list		*camobjs;
 	t_bool		*objsinframe;
 	t_rot		*rot;
-	t_axis		zrot;
-	t_axis		xyrot;
+	t_cart		corners[4];
 }	t_camera;
 
 typedef struct s_win {
@@ -298,15 +304,17 @@ int 	ft_fill_light_info(char **piece, t_info *info);
 
 // Object-like elements information.
 
-void	backpsurfpatch(t_cart *dots, t_poly *poly, t_bool south, int lttd);
+void	backpsurfpatch(t_vrtx *dots, t_poly *poly, t_bool south, int lttd);
 int		circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols);
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
 void	definepols(t_cart *dots, float radius, t_axis *rotcircle);
-void	frontpsurfpatch(t_cart *dots, t_poly *poly, t_bool south, int lttd);
+void	frontpsurfpatch(t_vrtx *dots, t_poly *poly, t_bool south, int lttd);
+void	setvrtxpolynorms(t_cart *norm, t_vrtx *dots, int *indxs, int count);
 float	spherebuilder(t_dots *dots, t_polys *polys, float radius);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
 int		ft_fill_plane_info(char **piece, t_info *info);
+void	vrtxnormdefiner(t_vrtx *dot);
 
 // Main execution utilities.
 
@@ -319,7 +327,7 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, t_rot *rot);
 void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
-void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *axis);
+void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
 void	crdstmtranslation(t_cart *crdstm, t_cart *direction, float step);
 void	objrot(t_obj *camobj, t_crdstm *cam, t_crdstm *obj, t_cart *dst);
 void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot);
@@ -340,6 +348,11 @@ void	vectortoobj(t_cart *from, t_cart *to, t_axis *vector);
 void	negativevector(t_cart *dot);
 void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 
+// View constructor
+
+void	createcamobjs(t_list **camobjs, t_list *objs, t_bool **objsinframe);
+void	createview(t_list *objs, t_camera *camera, t_res *wincntr);
+
 // Hooks for orientation and movement in space
 
 int		mousemove(int x, int y, t_info *info);
@@ -356,8 +369,9 @@ int		btnup(int btn, int x, int y, t_info *info);
 
 //Utils
 
-void	customerr(char *prog, char *txt, t_bool infile);
+t_cart	*cartcast(t_list *lst);
 t_bool	comparef(float num, float ref, float interval);
+void	customerr(char *prog, char *txt, t_bool infile);
 int		error_handler(char *prog, char *place, int funcres);
 t_obj	*objcast(t_list *lst);
 

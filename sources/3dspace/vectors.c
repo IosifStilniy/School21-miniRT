@@ -11,14 +11,26 @@ void	vectorbuilder(float x, float y, float z, t_axis *vector)
 
 void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm)
 {
-	t_axis	v1;
-	t_axis	v2;
-	t_axis	ref;
+	t_cart	d1;
+	t_cart	d2;
+	float	length;
 
-	vectorbuilder(dot1->x - centraldot->x, dot1->y - centraldot->y, dot1->z - centraldot->z, &v1);
-	vectorbuilder(dot2->x - centraldot->x, dot2->y - centraldot->y, dot2->z - centraldot->z, &v2);
-	axisbuilder(&v1.vector, &v2.vector, &ref);
-	*norm = ref.vector;
+	if (centraldot)
+	{
+		cartbuilder(dot1->x - centraldot->x, dot1->y - centraldot->y, dot1->z - centraldot->z, &d1);
+		dot1 = &d1;
+		cartbuilder(dot2->x - centraldot->x, dot2->y - centraldot->y, dot2->z - centraldot->z, &d2);
+		dot2 = &d2;
+	}
+	norm->x = dot1->y * dot2->z - dot1->z * dot2->y;
+	norm->y = dot1->z * dot2->x - dot1->x * dot2->z;
+	norm->z = dot1->x * dot2->y - dot1->y * dot2->x;
+	length = sqrtf(powf(norm->x, 2) + powf(norm->y, 2) + powf(norm->z, 2));
+	if (!length)
+		return ;
+	norm->x /= length;
+	norm->y /= length;
+	norm->z /= length;
 }
 
 void	axisbuilder(t_cart *v1, t_cart *v2, t_axis *axis)

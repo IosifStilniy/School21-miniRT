@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/13 20:27:44 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/14 17:40:49 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *p
 {
 	t_cart	norm;
 
-	if (camera->determined)
+	if (camera->determined++)
 		customerr(prog, DUPDET, TRUE);
 	str = ft_get_position_values(str, &camera->pos, prog);
 	str = ft_get_position_values(str, &norm, prog);
@@ -80,7 +80,6 @@ static void	primitivebuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 		customerr(prog, INVDEF, TRUE);
 	ft_lstadd_front(objs, ft_lstnew(malloc(sizeof(t_obj))));
 	objcast(*objs)->rot = rot;
-	objcast(*objs)->polys.polynorms = NULL;
 	str = ft_get_position_values(prog, str, &objcast(*objs)->crdstm.pos);
 	if (!i)
 		objcast(*objs)->outframe = sphereparser(str, (*objs)->content, prog);
@@ -89,6 +88,35 @@ static void	primitivebuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 	else if (i == 2)
 		objcast(*objs)->outframe = cylinderparser(str, (*objs)->content, prog);
 	objcast(*objs)->dots.scale = 1;
+}
+
+void	cameradefinition(t_camera *camera, t_res *wincntr)
+{
+	t_axis	xaxis;
+	t_axis	yaxis;
+	int		i;
+
+	if (camera->focus < 1.001)
+		camera->focus = 1;
+	camera->xfov = atanf(wincntr->x / camera->focus);
+	camera->yfov = atanf(wincntr->y / camera->focus);
+	i = -1;
+	while (++i < 4)
+		cartbuilder(0, 0, 1, camera->corners + i);
+	xaxis.ang = camera->yfov;
+	yaxis.ang = camera->xfov;
+	vectorbuilder(0, -1, 0, &yaxis);
+	vectorbuilder(0, -1, 0, &xaxis);
+	quartrot(camera->corners, &yaxis);
+	quartrot(camera->corners, &xaxis);
+	quartrot(camera->corners + 1, &yaxis);
+	quartrot(camera->corners + 3, &xaxis);
+	vectorbuilder(0, 1, 0, &yaxis);
+	vectorbuilder(0, 1, 0, &xaxis);
+	quartrot(&camera->corners + 1, &xaxis);
+	quartrot(&camera->corners + 2, &yaxis);
+	quartrot(&camera->corners + 2, &xaxis);
+	quartrot(&camera->corners + 3, &yaxis);
 }
 
 void	ft_read_information(int fd, t_info *info)
@@ -114,7 +142,6 @@ void	ft_read_information(int fd, t_info *info)
 	}
 	if (!(info->win.camera.determined * info->lights.determined * info->a_light.determined))
 		customerr(info->prog, "undefined camera and/or lights", TRUE);
-	info->win.camera.focus = info->win.cntr.x / tanf(info->win.camera.xfov / 180 * M_PI);
-	info->win.camera.focus += (!info->win.camera.focus);
-	info->win.camera.yfov = atanf(info->win.cntr.y / info->win.camera.focus);
+	info->win.camera.focus = info->win.cntr.x / tanf(info->win.camera.xfov);
+	cameradefinition(&info->win.camera, &info->win.cntr);
 }

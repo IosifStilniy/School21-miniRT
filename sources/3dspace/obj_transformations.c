@@ -8,14 +8,14 @@ void	objrot(t_obj *camobj, t_crdstm *cam, t_crdstm *obj, t_cart *dst)
 	vectorbuilder(0, 0, 1, camobj->rot->start);
 	camobj->rot->end = dst;
 	if (!dst)
-		crdstmrotbyaxis(&camobj->crdstm, &camobj->rot->axis);
+		crdstmrotbyaxis(&camobj->crdstm, &camobj->rot->axis, NULL);
 	else
 		crdstmrot(&camobj->crdstm, camobj->rot, camobj->rot->start, dst);
 	refaxis = camobj->rot->axis;
 	engine(&camobj->dots, &camobj->polys, &camobj->crdstm, camobj->rot);
 	objtoobjaxis(cam, NULL, camobj->rot);
 	quartrot(&refaxis.vector, &camobj->rot->axis);
-	crdstmrotbyaxis(obj, &refaxis);
+	crdstmrotbyaxis(obj, &refaxis, NULL);
 }
 
 void	crdstmtranslation(t_cart *crdstm, t_cart *direction, float step)
@@ -45,12 +45,17 @@ void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end)
 			negativevector(&rot->axis.vector);
 		rot->axis.ang = ang;
 	}
-	crdstmrotbyaxis(crdstm, &rot->axis);
+	crdstmrotbyaxis(crdstm, &rot->axis, NULL);
 }
 
-void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *axis)
+void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis)
 {
-	quartrot(&crdstm->ox.vector, axis);
-	quartrot(&crdstm->oy.vector, axis);
-	quartrot(&crdstm->oz.vector, axis);
+	quartrot(&crdstm->ox.vector, zaxis);
+	quartrot(&crdstm->oy.vector, zaxis);
+	quartrot(&crdstm->oz.vector, zaxis);
+	if (!xyaxis)
+		return ;
+	quartrot(&crdstm->ox.vector, xyaxis);
+	quartrot(&crdstm->oy.vector, xyaxis);
+	quartrot(&crdstm->oz.vector, xyaxis);
 }

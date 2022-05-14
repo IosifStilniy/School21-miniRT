@@ -27,3 +27,8 @@ t_obj	*objcast(t_list *lst)
 {
 	return (lst->content);
 }
+
+t_cart	*cartcast(t_list *lst)
+{
+	return (lst->content);
+}

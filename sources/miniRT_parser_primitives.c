@@ -62,4 +62,5 @@ void	planeparser(char *str, t_obj *obj, char *prog)
 	crdstmdefiner(&obj->crdstm);
 	ft_get_color_values(str, &obj->colrs, prog);
 	obj->dots.dotsnum = 0;
+	obj->polys.polynum = 0;
 }

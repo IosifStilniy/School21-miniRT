@@ -1,6 +1,6 @@
 #include "minirt.h"
 
-static void	surfdefiner(t_cart *dots, t_poly *poly, int dotnum, int lttd)
+static void	surfdefiner(t_vrtx *dots, t_poly *poly, int dotnum, int lttd)
 {
 	poly->dotcount = 4;
 	poly->dots = malloc(sizeof(*poly->dots) * poly->dotcount);
@@ -8,11 +8,12 @@ static void	surfdefiner(t_cart *dots, t_poly *poly, int dotnum, int lttd)
 	poly->dots[1] = dotnum - 1;
 	poly->dots[2] = dotnum - 1 - (RNDSGMNTS - 2) * lttd;
 	poly->dots[3] = dotnum - (RNDSGMNTS - 2) * lttd;
-	normbuilder(&dots[poly->dots[0]], &dots[poly->dots[1]], &dots[poly->dots[3]], &poly->srcnorm);
+	normbuilder(&dots[poly->dots[0]].dot, &dots[poly->dots[1]].dot, &dots[poly->dots[3]].dot, &poly->srcnorm);
+	setvrtxpolynorms(&poly->srcnorm, dots, poly->dots, poly->dotcount);
 	poly->txtr = NULL;
 }
 
-static int	dotfiller(t_cart *dots, t_cart *pos, t_poly *polys, float radius)
+static int	dotfiller(t_vrtx *dots, t_cart *pos, t_poly *polys, float radius)
 {
 	int		lttd;
 	int		dotnum;
@@ -37,7 +38,7 @@ static int	dotfiller(t_cart *dots, t_cart *pos, t_poly *polys, float radius)
 	return (polyindx);
 }
 
-static int	jointing(t_cart *dots, t_poly *polys, int dotsnum, int indx)
+static int	jointing(t_vrtx *dots, t_poly *polys, int dotsnum, int indx)
 {
 	int		i;
 
@@ -52,7 +53,8 @@ static int	jointing(t_cart *dots, t_poly *polys, int dotsnum, int indx)
 		polys[indx].dots[1] = i - 1 + 2;
 		polys[indx].dots[2] = dotsnum - 2 - 1 - (i - 1) + 2;
 		polys[indx].dots[3] = dotsnum - 2 - 1 - i + 2;
-		normbuilder(&dots[i + 2], &dots[i - 1 + 2], &dots[dotsnum - 3 - i + 2], &polys[indx].srcnorm);
+		normbuilder(&dots[i + 2].dot, &dots[i - 1 + 2].dot, &dots[dotsnum - 3 - i + 2].dot, &polys[indx].srcnorm);
+		setvrtxpolynorms(&polys[indx].srcnorm, dots, polys[indx].dots, polys[indx].dotcount);
 		polys[indx].txtr = NULL;
 	}
 	frontpsurfpatch(dots, &polys[++indx], FALSE, 0);
@@ -81,5 +83,8 @@ float	spherebuilder(t_dots *dots, t_polys *polys, float radius)
 		backpsurfpatch(dots, &polys[++polyindx], FALSE, lttd);
 		backpsurfpatch(dots, &polys[++polyindx], TRUE, lttd);
 	}
+	lttd = -1;
+	while (++lttd < dots->dotsnum)
+		vrtxnormdefiner(dots->dots + lttd);
 	return (radius);
 }

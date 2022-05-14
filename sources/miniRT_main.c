@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/13 23:49:28 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/14 19:45:31 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,78 +176,6 @@ void	wininit(t_win *win, void *mlx, char *prog, char *file)
 	win->win = mlx_new_window(mlx, win->res.x, win->res.y, win->header);
 	win->cntr.x = win->res.x / 2;
 	win->cntr.y = win->res.y / 2;
-}
-
-t_bool	objinframe(t_obj *obj, t_camera *camera, t_res *cntr)
-{
-	t_axis	v1;
-	t_axis	v2;
-	t_axis	edge;
-
-	vectorbuilder(obj->crdstm.pos.x, obj->crdstm.pos.y, obj->crdstm.pos.z, &v1);
-	if (obj->crdstm.pos.z < 0.001)
-		return (v1.length < obj->outframe);
-	axisbuilder(&v1, &camera->crdstm.oz.vector, &v2);
-	vectorsizing(v1.length * cosf(v2.ang), &camera->crdstm.oz.vector, &v2);
-	vectortoobj(&v1.vector, &v2.vector, &edge);
-	if (obj->outframe > edge.length - 0.001)
-		return (TRUE);
-	vectorsizing(obj->outframe, &edge.vector, &edge);
-	vectodot(&edge.vector, &obj->crdstm.pos);
-	vectorbuilder(0, edge.vector.y, edge.vector.z, &v1);
-	axisbuilder(&v1, &edge, &v2);
-	if (v2.ang > camera->xfov - 0.001)
-		return (FALSE);
-	vectorbuilder(edge.vector.x, 0, edge.vector.z, &v1);
-	axisbuilder(&v1, &edge, &v2);
-	return (v2.ang > camera->yfov - 0.001);
-}
-
-void	createview(t_list *objs, t_camera *camera, t_res *wincntr)
-{
-	t_list	*crsr;
-	t_list	*camcrsr;
-	t_obj	*camobj;
-	int		i;
-
-	objtoobjaxis(NULL, &camera->crdstm, objcast(objs)->rot);
-	crsr = objs;
-	camcrsr = camera->camobjs;
-	i = -1;
-	while (crsr)
-	{
-		camobj = objcast(camcrsr);
-		crdstmcopy(&objcast(crsr)->crdstm, &camobj->crdstm);
-		objtoobjpos(&camera->crdstm.pos, &camobj->crdstm.pos);
-		crdstmrotbyaxis(&camobj->crdstm, &camobj->rot->axis);
-		camera->objsinframe[++i] = objinframe(camobj, camera, wincntr);
-		if (camera->objsinframe[i])
-			engine(&camobj->dots, &camobj->polys, &camobj->crdstm, &camobj->rot);
-		camcrsr = camcrsr->next;
-		crsr = crsr->next;
-	}
-}
-
-void	createcamobjs(t_list **camobjs, t_list *objs, t_bool **objsinframe)
-{
-	t_obj	*camobj;
-
-	*objsinframe = malloc(sizeof(**objsinframe) * ft_lstsize(objs));
-	ft_bzero(*objsinframe, ft_lstsize(objs));
-	while (objs)
-	{
-		ft_lstadd_front(camobjs, ft_lstnew(malloc(sizeof(*camobj))));
-		camobj = objcast(*camobjs);
-		camobj->rot = objcast(objs)->rot;
-		camobj->dots.dotsnum = objcast(objs)->dots.dotsnum;
-		camobj->dots.dots = objcast(objs)->dots.dots;
-		camobj->dots.pos = malloc(sizeof(*camobj->dots.pos) * camobj->dots.dotsnum);
-		camobj->dots.scale = objcast(objs)->dots.scale;
-		camobj->polys.poly = objcast(objs)->polys.poly;
-		camobj->polys.txtr = objcast(objs)->polys.txtr;
-		camobj->polys.polynum = objcast(objs)->polys.polynum;
-		objs = objs->next;
-	}
 }
 
 int	main(int argc, char **argv)
