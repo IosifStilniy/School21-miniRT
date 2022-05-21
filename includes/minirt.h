@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/14 21:17:43 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/21 17:46:35 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,7 +189,6 @@ typedef struct s_poly {
 typedef struct s_vrtx {
 	t_cart	dot;
 	t_cart	norm;
-	t_list	*polynorms;
 }	t_vrtx;
 
 typedef struct s_dots {
@@ -305,16 +304,15 @@ int 	ft_fill_light_info(char **piece, t_info *info);
 // Object-like elements information.
 
 void	backpsurfpatch(t_vrtx *dots, t_poly *poly, t_bool south, int lttd);
-int		circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols);
+int		circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skippols);
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
-void	definepols(t_cart *dots, float radius, t_axis *rotcircle);
+void	definepols(t_vrtx *dots, float radius, t_axis *rotcircle);
 void	frontpsurfpatch(t_vrtx *dots, t_poly *poly, t_bool south, int lttd);
-void	setvrtxpolynorms(t_cart *norm, t_vrtx *dots, int *indxs, int count);
 float	spherebuilder(t_dots *dots, t_polys *polys, float radius);
+void	surfing(t_poly *poly, int *dotindxs, int dotcount, t_vrtx *dots);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
 int		ft_fill_plane_info(char **piece, t_info *info);
-void	vrtxnormdefiner(t_vrtx *dot);
 
 // Main execution utilities.
 
@@ -325,10 +323,10 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
-void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, t_rot *rot);
 void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
 void	crdstmtranslation(t_cart *crdstm, t_cart *direction, float step);
+void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm);
 void	objrot(t_obj *camobj, t_crdstm *cam, t_crdstm *obj, t_cart *dst);
 void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot);
 void	objtoobjpos(t_cart *center, t_cart *dot);
@@ -341,9 +339,9 @@ void	cartbuilder(float x, float y, float z, t_cart *dot);
 void	cartcopy(t_cart *src, t_cart *dst, int count);
 void	crdstmcopy(t_crdstm *src, t_crdstm *dst);
 void	flatanglehandler(t_rot *rot, t_cart *ref);
-void	vectodot(t_cart *vector, t_cart *start);
+void	vectodot(t_cart *vector, t_cart *start, t_bool normilize);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
-void	vectorsizing(float newlength, t_cart *src, t_axis *res);
+void	vectorsizing(float newlength, t_cart *src, t_cart *vecres, float *lngthres);
 void	vectortoobj(t_cart *from, t_cart *to, t_axis *vector);
 void	negativevector(t_cart *dot);
 void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/14 17:40:49 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/21 18:06:29 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,13 +106,13 @@ void	cameradefinition(t_camera *camera, t_res *wincntr)
 	xaxis.ang = camera->yfov;
 	yaxis.ang = camera->xfov;
 	vectorbuilder(0, -1, 0, &yaxis);
-	vectorbuilder(0, -1, 0, &xaxis);
+	vectorbuilder(-1, 0, 0, &xaxis);
 	quartrot(camera->corners, &yaxis);
 	quartrot(camera->corners, &xaxis);
 	quartrot(camera->corners + 1, &yaxis);
 	quartrot(camera->corners + 3, &xaxis);
 	vectorbuilder(0, 1, 0, &yaxis);
-	vectorbuilder(0, 1, 0, &xaxis);
+	vectorbuilder(1, 0, 0, &xaxis);
 	quartrot(&camera->corners + 1, &xaxis);
 	quartrot(&camera->corners + 2, &yaxis);
 	quartrot(&camera->corners + 2, &xaxis);

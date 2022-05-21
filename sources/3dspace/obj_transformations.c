@@ -12,17 +12,17 @@ void	objrot(t_obj *camobj, t_crdstm *cam, t_crdstm *obj, t_cart *dst)
 	else
 		crdstmrot(&camobj->crdstm, camobj->rot, camobj->rot->start, dst);
 	refaxis = camobj->rot->axis;
-	engine(&camobj->dots, &camobj->polys, &camobj->crdstm, camobj->rot);
 	objtoobjaxis(cam, NULL, camobj->rot);
 	quartrot(&refaxis.vector, &camobj->rot->axis);
 	crdstmrotbyaxis(obj, &refaxis, NULL);
+	engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
 }
 
 void	crdstmtranslation(t_cart *crdstm, t_cart *direction, float step)
 {
 	t_axis	res;
 
-	vectorsizing(step, direction, &res);
+	vectorsizing(step, direction, &res.vector, &res.length);
 	crdstm->x += res.vector.x;
 	crdstm->y += res.vector.y;
 	crdstm->z += res.vector.z;
@@ -58,4 +58,11 @@ void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis)
 	quartrot(&crdstm->ox.vector, xyaxis);
 	quartrot(&crdstm->oy.vector, xyaxis);
 	quartrot(&crdstm->oz.vector, xyaxis);
+}
+
+void	objtoobjpos(t_cart *center, t_cart *dot)
+{
+	dot->x -= center->x;
+	dot->y -= center->y;
+	dot->z -= center->z;
 }

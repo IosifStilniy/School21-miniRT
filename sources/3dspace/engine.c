@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/05/14 19:23:37 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/21 17:57:46 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,27 +34,30 @@ void	quartrot(t_cart *pos, t_axis *axis)
 	pos->z = mlts[2][0] + mlts[2][1] + mlts[2][2];
 }
 
-void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, t_rot *rot)
+void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_cart *k)
+{
+	dst->x = src->x * scale * k->x;
+	dst->y = src->y * scale * k->y;
+	dst->z = src->z * scale * k->z;
+}
+
+void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm)
 {
 	int		i;
+	t_cart	k;
 
-	objtoobjaxis(NULL, crdstm, rot);
+	k.x = crdstm->ox.vector.x + crdstm->oy.vector.x + crdstm->oz.vector.x;
+	k.y = crdstm->ox.vector.y + crdstm->oy.vector.y + crdstm->oz.vector.y;
+	k.z = crdstm->ox.vector.z + crdstm->oy.vector.z + crdstm->oz.vector.z;
 	i = -1;
 	while (++i < dots->dotsnum)
 	{
-		dots->pos[i].x = dots->dots[i].x * dots->scale;
-		dots->pos[i].y = dots->dots[i].y * dots->scale;
-		dots->pos[i].z = dots->dots[i].z * dots->scale;
-		quartrot(&dots->pos[i], &rot->axis);
-		quartrot(&dots->pos[i], &rot->xyaxis);
+		dotcrdstmtrnsltn(&dots->dots[i].dot, &dots->pos[i].dot, dots->scale, &k);
+		dotcrdstmtrnsltn(&dots->dots[i].norm, &dots->pos[i].norm, 1, &k);
 	}
 	i = -1;
 	while (++i < polys->polynum)
-	{
-		polys->poly[i].norm = polys->poly[i].srcnorm;
-		quartrot(&polys->poly[i].norm, &rot->axis);
-		quartrot(&dots->pos[i], &rot->xyaxis);
-	}
+		dotcrdstmtrnsltn(&polys->poly[i].srcnorm, &polys->poly[i].norm, 1, &k);
 }
 
 void	flatanglehandler(t_rot *rot, t_cart *ref)
@@ -93,11 +96,4 @@ void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot)
 	crdstmrot(src, rot, &src->ox.vector, &dst->ox.vector);
 	rot->xyaxis = rot->axis;
 	rot->axis = zaxis;
-}
-
-void	objtoobjpos(t_cart *center, t_cart *dot)
-{
-	dot->x -= center->x;
-	dot->y -= center->y;
-	dot->z -= center->z;
 }

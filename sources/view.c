@@ -6,8 +6,8 @@ t_bool	collisiondefiner(t_cart *collisiondot, t_cart *vec, t_cart *pos)
 
 	if (vec->z * pos->z >= 0)
 		return (FALSE);
-	vectorsizing(fabsf(pos->z) / fabsf(vec->z), vec, &dot);
-	vectodot(&dot.vector, pos);
+	vectorsizing(fabsf(pos->z) / fabsf(vec->z), vec, &dot.vector, &dot.length);
+	vectodot(&dot.vector, pos, FALSE);
 	cartcopy(&dot.vector, collisiondot, 1);
 	return (TRUE);
 }
@@ -51,12 +51,12 @@ t_bool	objinframe(t_obj *obj, t_camera *camera, t_res *cntr)
 	if (obj->crdstm.pos.z < 0.001)
 		return (v1.length < obj->outframe);
 	axisbuilder(&v1, &camera->crdstm.oz.vector, &v2);
-	vectorsizing(v1.length * cosf(v2.ang), &camera->crdstm.oz.vector, &v2);
+	vectorsizing(v1.length * cosf(v2.ang), &camera->crdstm.oz.vector, &v2.vector, &v2.length);
 	vectortoobj(&v1.vector, &v2.vector, &edge);
 	if (obj->outframe > edge.length - 0.001)
 		return (TRUE);
-	vectorsizing(obj->outframe, &edge.vector, &edge);
-	vectodot(&edge.vector, &obj->crdstm.pos);
+	vectorsizing(obj->outframe, &edge.vector, &edge.vector, &edge.length);
+	vectodot(&edge.vector, &obj->crdstm.pos, FALSE);
 	vectorbuilder(0, edge.vector.y, edge.vector.z, &v1);
 	axisbuilder(&v1, &edge, &v2);
 	if (v2.ang > camera->xfov - 0.001)
@@ -88,7 +88,7 @@ void	createview(t_list *objs, t_camera *camera, t_res *wincntr)
 		crdstmrotbyaxis(&camobj->crdstm, &rot.axis, &rot.xyaxis);
 		camera->objsinframe[++i] = objinframe(camobj, camera, wincntr);
 		if (camera->objsinframe[i] && camobj->dots.dotsnum)
-			engine(&camobj->dots, &camobj->polys, &camobj->crdstm, &camobj->rot);
+			engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
 		camcrsr = camcrsr->next;
 		crsr = crsr->next;
 	}

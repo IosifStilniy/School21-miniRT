@@ -3,9 +3,9 @@
 void	definepols(t_vrtx *dots, float radius, t_axis *rotcircle)
 {
 	cartbuilder(radius, 0, 0, &dots->dot);
-	dots->polynorms = NULL;
+	cartbuilder(0, 0, 0, &dots->norm);
 	cartbuilder(-radius, 0, 0, &dots[1].dot);
-	dots[1].polynorms = NULL;
+	cartbuilder(0, 0, 0, &dots[1].norm);
 	if (!rotcircle)
 		return ;
 	quartrot(&dots->dot, rotcircle);
@@ -23,7 +23,7 @@ int	circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skipp
 	dotnum = -1;
 	while (++dotnum < RNDSGMNTS - 2 * skippols)
 	{
-		dots[dotnum].polynorms = NULL;
+		cartbuilder(0, 0, 0, &dots[dotnum].norm);
 		cartbuilder(radius, 0, 0, &dots[dotnum].dot);
 		rotdot.ang = step * (dotnum + (1 + (dotnum > (RNDSGMNTS - 2) / 2)) * skippols);
 		quartrot(&dots[dotnum].dot, &rotdot);

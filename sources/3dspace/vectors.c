@@ -63,13 +63,14 @@ void	vectortoobj(t_cart *from, t_cart *to, t_axis *vector)
 	vector->length = sqrtf(powf(vector->vector.x, 2) + powf(vector->vector.y, 2) + powf(vector->vector.z, 2));
 }
 
-void	vectorsizing(float newlength, t_cart *src, t_axis *res)
+void	vectorsizing(float newlength, t_cart *src, t_cart *vecres, float *lngthres)
 {
 	float	realsize;
 
 	realsize = sqrtf(powf(src->x, 2) + powf(src->y, 2) + powf(src->z, 2));
-	res->vector.x = newlength * src->x / realsize;
-	res->vector.y = newlength * src->y / realsize;
-	res->vector.z = newlength * src->z / realsize;
-	res->length = newlength;
+	vecres->x = newlength * src->x / realsize;
+	vecres->y = newlength * src->y / realsize;
+	vecres->z = newlength * src->z / realsize;
+	if (lngthres)
+		*lngthres = newlength;
 }

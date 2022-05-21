@@ -1,33 +1,24 @@
 #include "minirt.h"
 
-void	vrtxnormdefiner(t_vrtx *dot)
+void	surfing(t_poly *poly, int *dotindxs, int dotcount, t_vrtx *dots)
 {
-	t_list	*crsr;
-	float	length;
+	int	i;
 
-	cartbuilder(0, 0, 0, &dot->norm);
-	crsr = dot->polynorms;
-	while (crsr)
-	{
-		vectodot(&dot->norm, cartcast(crsr));
-		crsr = crsr->next;
-	}
-	length = sqrtf(powf(dot->norm.x, 2) + powf(dot->norm.y, 2) + powf(dot->norm.z, 2));
-	if (!length)
-		return ;
-	dot->norm.x /= length;
-	dot->norm.y /= length;
-	dot->norm.z /= length;
-}
-
-void	setvrtxpolynorms(t_cart *norm, t_vrtx *dots, int *indxs, int count)
-{
-	while (count--)
-		ft_lstadd_front(&dots[indxs[count]].polynorms, ft_lstnew(norm));
+	poly->dotcount = dotcount;
+	poly->dots = malloc(sizeof(*poly->dots) * dotcount);
+	i = -1;
+	while (++i < poly->dotcount)
+		poly->dots[i] = dotindxs[i];
+	normbuilder(&dots[poly->dots[0]].dot, &dots[poly->dots[1]].dot, &dots[poly->dots[poly->dotcount - 1]].dot, &poly->srcnorm);
+	i = -1;
+	while (++i < poly->dotcount)
+		vectodot(&dots[poly->dots[i]].norm, &poly->norm, TRUE);
 }
 
 void	backpsurfpatch(t_vrtx *dots, t_poly *poly, t_bool south, int lttd)
 {
+	int	i;
+
 	poly->dotcount = 3;
 	poly->dots = malloc(sizeof(*poly->dots) * poly->dotcount);
 	poly->dots[0] = south;
@@ -40,12 +31,16 @@ void	backpsurfpatch(t_vrtx *dots, t_poly *poly, t_bool south, int lttd)
 	if (south)
 		poly->dots[2] += (RNDSGMNTS - 2) / 2 - 1;
 	normbuilder(&dots[poly->dots[0]].dot, &dots[poly->dots[1]].dot, &dots[poly->dots[2]].dot, &poly->srcnorm);
-	setvrtxpolynorms(&poly->srcnorm, dots, poly->dots, poly->dotcount);
+	i = -1;
+	while (++i < poly->dotcount)
+		vectodot(&dots[poly->dots[i]].norm, &poly->srcnorm, TRUE);
 	poly->txtr = NULL;
 }
 
 void	frontpsurfpatch(t_vrtx *dots, t_poly *poly, t_bool south, int lttd)
 {
+	int	i;
+
 	poly->dotcount = 3;
 	poly->dots = malloc(sizeof(*poly->dots) * poly->dotcount);
 	poly->dots[0] = south;
@@ -58,6 +53,8 @@ void	frontpsurfpatch(t_vrtx *dots, t_poly *poly, t_bool south, int lttd)
 	if (south)
 		poly->dots[2] -= (RNDSGMNTS - 2) / 2 - 1;
 	normbuilder(&dots[poly->dots[0]].dot, &dots[poly->dots[1]].dot, &dots[poly->dots[2]].dot, &poly->srcnorm);
-	setvrtxpolynorms(&poly->srcnorm, dots, poly->dots, poly->dotcount);
+	i = -1;
+	while (++i < poly->dotcount)
+		vectodot(&dots[poly->dots[i]].norm, &poly->srcnorm, TRUE);
 	poly->txtr = NULL;
 }

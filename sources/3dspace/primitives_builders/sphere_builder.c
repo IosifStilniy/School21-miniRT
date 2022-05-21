@@ -2,14 +2,14 @@
 
 static void	surfdefiner(t_vrtx *dots, t_poly *poly, int dotnum, int lttd)
 {
-	poly->dotcount = 4;
-	poly->dots = malloc(sizeof(*poly->dots) * poly->dotcount);
-	poly->dots[0] = dotnum;
-	poly->dots[1] = dotnum - 1;
-	poly->dots[2] = dotnum - 1 - (RNDSGMNTS - 2) * lttd;
-	poly->dots[3] = dotnum - (RNDSGMNTS - 2) * lttd;
-	normbuilder(&dots[poly->dots[0]].dot, &dots[poly->dots[1]].dot, &dots[poly->dots[3]].dot, &poly->srcnorm);
-	setvrtxpolynorms(&poly->srcnorm, dots, poly->dots, poly->dotcount);
+	int	i;
+	int	dotindxs[4];
+
+	dotindxs[0] = dotnum;
+	dotindxs[1] = dotnum - 1;
+	dotindxs[2] = dotnum - 1 - (RNDSGMNTS - 2) * lttd;
+	dotindxs[3] = dotnum - (RNDSGMNTS - 2) * lttd;
+	surfing(poly, dotindxs, 4, dots);
 	poly->txtr = NULL;
 }
 
@@ -41,20 +41,19 @@ static int	dotfiller(t_vrtx *dots, t_cart *pos, t_poly *polys, float radius)
 static int	jointing(t_vrtx *dots, t_poly *polys, int dotsnum, int indx)
 {
 	int		i;
+	int		j;
+	int		dotindxs[4];
 
 	i = 0;
 	while (++i < RNDSGMNTS - 2)
 	{
 		if (i == (RNDSGMNTS - 2) / 2 - 1)
 			continue ;
-		polys[++indx].dotcount = 4;
-		polys[indx].dots = malloc(sizeof(*polys->dots) * polys->dotcount);
-		polys[indx].dots[0] = i + 2;
-		polys[indx].dots[1] = i - 1 + 2;
-		polys[indx].dots[2] = dotsnum - 2 - 1 - (i - 1) + 2;
-		polys[indx].dots[3] = dotsnum - 2 - 1 - i + 2;
-		normbuilder(&dots[i + 2].dot, &dots[i - 1 + 2].dot, &dots[dotsnum - 3 - i + 2].dot, &polys[indx].srcnorm);
-		setvrtxpolynorms(&polys[indx].srcnorm, dots, polys[indx].dots, polys[indx].dotcount);
+		dotindxs[0] = i + 2;
+		dotindxs[1] = i - 1 + 2;
+		dotindxs[2] = dotsnum - 2 - 1 - (i - 1) + 2;
+		dotindxs[3] = dotsnum - 2 - 1 - i + 2;
+		surfing(polys + ++indx, dotindxs, 4, dots);
 		polys[indx].txtr = NULL;
 	}
 	frontpsurfpatch(dots, &polys[++indx], FALSE, 0);
@@ -83,8 +82,5 @@ float	spherebuilder(t_dots *dots, t_polys *polys, float radius)
 		backpsurfpatch(dots, &polys[++polyindx], FALSE, lttd);
 		backpsurfpatch(dots, &polys[++polyindx], TRUE, lttd);
 	}
-	lttd = -1;
-	while (++lttd < dots->dotsnum)
-		vrtxnormdefiner(dots->dots + lttd);
 	return (radius);
 }
