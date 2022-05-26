@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/21 18:06:29 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/26 19:54:48 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static void	light_definition(char *line, t_light *a_light, t_light *lights, char
 		customerr(prog, INVDEF, TRUE);
 }
 
-static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *prog)
+static void	ft_fill_camera_info(char *str, t_camera *camera, t_move *move, char *prog)
 {
 	t_cart	norm;
 
@@ -54,8 +54,8 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *p
 		str++;
 	if (!ft_strchr("0123456789", *str))
 		customerr(prog, INVDEF, TRUE);
-	camera->xfov = ft_atoi(str) * M_PI / 360;
-	if (!(-0.001 <= camera->xfov  && camera->xfov <= 180.001))
+	camera->view.xfov = ft_atoi(str) * M_PI / 360;
+	if (!(-0.001 <= camera->view.xfov && camera->view.xfov <= 180.001))
 		customerr(prog, INVDEF, TRUE);
 	while (ft_strchr("0123456789", *str))
 		str++;
@@ -63,10 +63,10 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *p
 		str++;
 	if (*str != '\n' || *str)
 		customerr(prog, INVDEF, TRUE);
-	camera->rot = rot;
+	camera->move = move;
 }
 
-static void	primitivebuilder(char *str, t_list **objs, char *prog, t_rot *rot)
+static void	primitivebuilder(char *str, t_list **objs, char *prog, t_move *move)
 {
 	int		i;
 
@@ -79,7 +79,7 @@ static void	primitivebuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 	if (i == NUMPRMTVS)
 		customerr(prog, INVDEF, TRUE);
 	ft_lstadd_front(objs, ft_lstnew(malloc(sizeof(t_obj))));
-	objcast(*objs)->rot = rot;
+	objcast(*objs)->move = move;
 	str = ft_get_position_values(prog, str, &objcast(*objs)->crdstm.pos);
 	if (!i)
 		objcast(*objs)->outframe = sphereparser(str, (*objs)->content, prog);
@@ -90,33 +90,33 @@ static void	primitivebuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 	objcast(*objs)->dots.scale = 1;
 }
 
-void	cameradefinition(t_camera *camera, t_res *wincntr)
+void	cameradefinition(t_view *view, t_cart corners[4], t_res *wincntr)
 {
 	t_axis	xaxis;
 	t_axis	yaxis;
 	int		i;
 
-	if (camera->focus < 1.001)
-		camera->focus = 1;
-	camera->xfov = atanf(wincntr->x / camera->focus);
-	camera->yfov = atanf(wincntr->y / camera->focus);
+	if (view->focus < 1.001)
+		view->focus = 1;
+	view->xfov = atanf(wincntr->x / view->focus);
+	view->yfov = atanf(wincntr->y / view->focus);
 	i = -1;
 	while (++i < 4)
-		cartbuilder(0, 0, 1, camera->corners + i);
-	xaxis.ang = camera->yfov;
-	yaxis.ang = camera->xfov;
+		cartbuilder(0, 0, 1, corners + i);
+	xaxis.ang = view->yfov;
+	yaxis.ang = view->xfov;
 	vectorbuilder(0, -1, 0, &yaxis);
 	vectorbuilder(-1, 0, 0, &xaxis);
-	quartrot(camera->corners, &yaxis);
-	quartrot(camera->corners, &xaxis);
-	quartrot(camera->corners + 1, &yaxis);
-	quartrot(camera->corners + 3, &xaxis);
+	quartrot(corners, &yaxis);
+	quartrot(corners, &xaxis);
+	quartrot(corners + 1, &yaxis);
+	quartrot(corners + 3, &xaxis);
 	vectorbuilder(0, 1, 0, &yaxis);
 	vectorbuilder(1, 0, 0, &xaxis);
-	quartrot(&camera->corners + 1, &xaxis);
-	quartrot(&camera->corners + 2, &yaxis);
-	quartrot(&camera->corners + 2, &xaxis);
-	quartrot(&camera->corners + 3, &yaxis);
+	quartrot(&corners + 1, &xaxis);
+	quartrot(&corners + 2, &yaxis);
+	quartrot(&corners + 2, &xaxis);
+	quartrot(&corners + 3, &yaxis);
 }
 
 void	ft_read_information(int fd, t_info *info)
@@ -134,14 +134,14 @@ void	ft_read_information(int fd, t_info *info)
 		if (ft_strchr("AL", *crsr))
 			light_definition(crsr, &info->a_light, &info->lights, info->prog);
 		else if (*crsr == 'C')
-			ft_fill_camera_info(++crsr, &info->win.camera, &info->rot, info->prog);
+			ft_fill_camera_info(++crsr, &info->win.camera, &info->move, info->prog);
 		else if (*crsr && *crsr != '\n')
-			primitivesbuilder(crsr, &info->objects, info->prog, &info->rot);
+			primitivesbuilder(crsr, &info->objects, info->prog, &info->move);
 		free(line);
 		line = get_next_line(fd);
 	}
 	if (!(info->win.camera.determined * info->lights.determined * info->a_light.determined))
 		customerr(info->prog, "undefined camera and/or lights", TRUE);
-	info->win.camera.focus = info->win.cntr.x / tanf(info->win.camera.xfov);
-	cameradefinition(&info->win.camera, &info->win.cntr);
+	info->win.camera.view.focus = info->win.cntr.x / tanf(info->win.camera.view.xfov);
+	cameradefinition(&info->win.camera.view, info->win.camera.corners, &info->win.cntr);
 }

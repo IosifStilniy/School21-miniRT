@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/05/21 17:57:46 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/26 19:35:57 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ void	quartrot(t_cart *pos, t_axis *axis)
 
 void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_cart *k)
 {
-	dst->x = src->x * scale * k->x;
-	dst->y = src->y * scale * k->y;
-	dst->z = src->z * scale * k->z;
+	dst->x = scale * src->x * k->x;
+	dst->y = scale * src->y * k->y;
+	dst->z = scale * src->z * k->z;
 }
 
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm)
@@ -53,6 +53,9 @@ void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm)
 	while (++i < dots->dotsnum)
 	{
 		dotcrdstmtrnsltn(&dots->dots[i].dot, &dots->pos[i].dot, dots->scale, &k);
+		dots->pos[i].dot.x += crdstm->pos.x;
+		dots->pos[i].dot.y += crdstm->pos.y;
+		dots->pos[i].dot.z += crdstm->pos.z;
 		dotcrdstmtrnsltn(&dots->dots[i].norm, &dots->pos[i].norm, 1, &k);
 	}
 	i = -1;

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/21 18:08:23 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/26 19:41:35 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,7 @@ int	main(int argc, char **argv)
 	info.mlx_ptr = mlx_init();
 	wininit(&info.win, info.mlx_ptr, info.prog, *argv);
 	ft_read_information(fd, &info);
-	createcamobjs(&info.win.camera.camobjs, info.objects, &info.win.camera.objsinframe);
+	createcamobjs(&info.win.camera.camobjs.objs, &info.win.camera.camobjs.outframe, info.objects);
 	createview(&info.objects, &info.win.camera, &info.win.cntr);
 	backwards_ray_tracing(&info);
 	return (0);

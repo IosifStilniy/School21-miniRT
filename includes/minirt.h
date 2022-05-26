@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/21 17:46:35 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/26 19:53:07 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,10 @@
 #  define NUMSPACES "0123456789. \t\v\f\r"
 # endif
 
+# ifndef WORLD
+#  define WORLD NULL
+# endif
+
 typedef int	t_bool;
 
 typedef struct	s_data {
@@ -157,6 +161,16 @@ typedef struct s_rot {
 	t_axis	axis;
 	t_axis	xyaxis;
 }	t_rot;
+
+typedef struct s_shift {
+	t_cart	*direction;
+	float	step;
+}	t_shift;
+
+typedef struct s_move {
+	t_rot		rot;
+	t_shift		shift;
+}	t_move;
 
 typedef struct s_crdstm {
 	t_cart	pos;
@@ -210,20 +224,29 @@ typedef struct s_obj {
 	t_colrs		colrs;
 	t_crdstm	crdstm;
 	float		outframe;
-	t_rot		*rot;
+	t_move		*move;
 }	t_obj;
+
+typedef struct s_camobjs {
+	t_list	*objs;
+	t_list	*inframe;
+	t_list	*outframe;
+}	t_camobjs;
+
+typedef struct s_view {
+	float	focus;
+	float	xfov;
+	float	yfov;
+}	t_view;
 
 typedef struct s_camera {
 	t_cart		pos;
 	t_crdstm	crdstm;
-	float		focus;
-	float		xfov;
-	float		yfov;
-	t_bool		determined;
-	t_list		*camobjs;
-	t_bool		*objsinframe;
-	t_rot		*rot;
+	t_view		view;
+	t_camobjs	camobjs;
+	t_move		*move;
 	t_cart		corners[4];
+	t_bool		determined;
 }	t_camera;
 
 typedef struct s_win {
@@ -261,7 +284,7 @@ typedef struct s_info
 	t_light		a_light;
 	t_list		*objects;
 	t_light		lights;
-	t_rot		rot;
+	t_move		move;
 	t_data		img;
 	char		*prog;
 	int			total;
@@ -325,11 +348,12 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
-void	crdstmtranslation(t_cart *crdstm, t_cart *direction, float step);
+void	dotstranslation(t_cart *dots, int dotnum, t_cart *direction, float step);
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm);
 void	objrot(t_obj *camobj, t_crdstm *cam, t_crdstm *obj, t_cart *dst);
 void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot);
 void	objtoobjpos(t_cart *center, t_cart *dot);
+void	vrtxtranslation(t_vrtx *vrtxs, int dotnum, t_cart *direction, float step);
 void	quartrot(t_cart *pos, t_axis *axis);
 
 // Vector utils
@@ -348,8 +372,8 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 
 // View constructor
 
-void	createcamobjs(t_list **camobjs, t_list *objs, t_bool **objsinframe);
-void	createview(t_list *objs, t_camera *camera, t_res *wincntr);
+void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs);
+void	createview(t_list *objs, t_camera *camera, t_res *wincntr, t_bool rotated);
 
 // Hooks for orientation and movement in space
 
@@ -371,6 +395,7 @@ t_cart	*cartcast(t_list *lst);
 t_bool	comparef(float num, float ref, float interval);
 void	customerr(char *prog, char *txt, t_bool infile);
 int		error_handler(char *prog, char *place, int funcres);
+void	objexchanger(t_list *obj, t_list **dst, t_list **src);
 t_obj	*objcast(t_list *lst);
 
 #endif

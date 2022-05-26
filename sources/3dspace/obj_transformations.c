@@ -5,27 +5,32 @@ void	objrot(t_obj *camobj, t_crdstm *cam, t_crdstm *obj, t_cart *dst)
 	t_axis	refaxis;
 	int		i;
 
-	vectorbuilder(0, 0, 1, camobj->rot->start);
-	camobj->rot->end = dst;
+	vectorbuilder(0, 0, 1, camobj->move->rot.start);
+	camobj->move->rot.end = dst;
 	if (!dst)
-		crdstmrotbyaxis(&camobj->crdstm, &camobj->rot->axis, NULL);
+		crdstmrotbyaxis(&camobj->crdstm, &camobj->move->rot.axis, NULL);
 	else
-		crdstmrot(&camobj->crdstm, camobj->rot, camobj->rot->start, dst);
-	refaxis = camobj->rot->axis;
-	objtoobjaxis(cam, NULL, camobj->rot);
-	quartrot(&refaxis.vector, &camobj->rot->axis);
+		crdstmrot(&camobj->crdstm, &camobj->move->rot, camobj->move->rot.start, dst);
+	refaxis = camobj->move->rot.axis;
+	objtoobjaxis(cam, NULL, &camobj->move->rot);
+	quartrot(&refaxis.vector, &camobj->move->rot.axis);
 	crdstmrotbyaxis(obj, &refaxis, NULL);
 	engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
 }
 
-void	crdstmtranslation(t_cart *crdstm, t_cart *direction, float step)
+void	vrtxtranslation(t_vrtx *vrtxs, int dotnum, t_cart *direction, float step)
 {
 	t_axis	res;
+	int		i;
 
 	vectorsizing(step, direction, &res.vector, &res.length);
-	crdstm->x += res.vector.x;
-	crdstm->y += res.vector.y;
-	crdstm->z += res.vector.z;
+	i = -1;
+	while (++i < dotnum)
+	{
+		vrtxs[i].dot.x += res.vector.x;
+		vrtxs[i].dot.y += res.vector.y;
+		vrtxs[i].dot.z += res.vector.z;
+	}
 }
 
 void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end)
