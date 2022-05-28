@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/26 19:53:07 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/05/28 16:00:09 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -350,6 +350,7 @@ void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
 void	dotstranslation(t_cart *dots, int dotnum, t_cart *direction, float step);
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm);
+void	movecamobj(t_obj *camobj, t_move *move, t_bool rotated);
 void	objrot(t_obj *camobj, t_crdstm *cam, t_crdstm *obj, t_cart *dst);
 void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot);
 void	objtoobjpos(t_cart *center, t_cart *dot);
@@ -373,7 +374,7 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 // View constructor
 
 void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs);
-void	createview(t_list *objs, t_camera *camera, t_res *wincntr, t_bool rotated);
+void	createview(t_camera *camera, t_res *wincntr, t_bool rotated);
 
 // Hooks for orientation and movement in space
 
@@ -395,7 +396,7 @@ t_cart	*cartcast(t_list *lst);
 t_bool	comparef(float num, float ref, float interval);
 void	customerr(char *prog, char *txt, t_bool infile);
 int		error_handler(char *prog, char *place, int funcres);
-void	objexchanger(t_list *obj, t_list **dst, t_list **src);
+void	objexchanger(t_list *obj, t_list **dst, t_list **src, t_camobjs *collection);
 t_obj	*objcast(t_list *lst);
 
 #endif

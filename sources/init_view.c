@@ -25,3 +25,31 @@ void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs)
 		objs = objs->next;
 	}
 }
+
+void	initview(t_list *objs, t_camera *camera, t_res *wincntr, t_bool rotated)
+{
+	t_list	*crsr;
+	t_list	*camcrsr;
+	t_obj	*camobj;
+	t_rot	rot;
+
+	objtoobjaxis(WORLD, &camera->crdstm, &rot);
+	crsr = objs;
+	camcrsr = camera->camobjs.objs;
+	while (crsr)
+	{
+		camobj = objcast(camcrsr);
+		crdstmcopy(&objcast(crsr)->crdstm, &camobj->crdstm);
+		objtoobjpos(&camera->crdstm.pos, &camobj->crdstm.pos);
+		quartrot(&camobj->crdstm.pos, &rot.axis);
+		quartrot(&camobj->crdstm.pos, &rot.xyaxis);
+		crdstmrotbyaxis(&camobj->crdstm, &rot.axis, &rot.xyaxis);
+		if (objinframe(camobj, camera, wincntr))
+			objexchanger(camobj, &camera->camobjs.inframe, &camera->camobjs.outframe, &camera->camobjs);
+		else
+			objexchanger(camobj, &camera->camobjs.outframe, &camera->camobjs.inframe, &camera->camobjs);
+		engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
+		camcrsr = camcrsr->next;
+		crsr = crsr->next;
+	}
+}

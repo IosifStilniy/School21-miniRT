@@ -64,28 +64,36 @@ t_bool	objinframe(t_obj *obj, t_camera *camera, t_res *cntr)
 	return (v2.ang > camera->view.yfov - 0.001);
 }
 
-void	rotatedview(t_obj *camobj, t_rot *rot, t_camera *camera, t_res *wincntr)
+void	movecamobj(t_obj *camobj, t_move *move, t_bool rotated)
 {
-	objtoobjpos(&camera->crdstm.pos, &camobj->crdstm.pos);
-	quartrot(&camobj->crdstm.pos, &rot->axis);
-	quartrot(&camobj->crdstm.pos, &rot->xyaxis);
-	crdstmrotbyaxis(&camobj->crdstm, &rot->axis, &rot->xyaxis);
-	if (objinframe(camobj, camera, wincntr))
-		objexchanger(camobj, &camera->camobjs.inframe, &camera->camobjs.outframe);
-	else
-		objexchanger(camobj, &camera->camobjs.outframe, &camera->camobjs.inframe);
-	engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
+	if (rotated)
+	{
+		quartrot(&camobj->crdstm.pos, &move->rot.axis);
+		crdstmrotbyaxis(&camobj->crdstm, &move->rot.axis, NULL);
+		engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
+		return ;
+	}
+	if (!move->shift.step)
+		return ;
+	dotstranslation(&camobj->crdstm.pos, 1, move->shift.direction, move->shift.step);
+	vrtxtranslation(camobj->dots.pos, camobj->dots.dotsnum, move->shift.direction, move->shift.step);
 }
 
-void	shiftedview(t_obj *camobj, t_camera *camera, t_res *wincntr)
+void	createview(t_camera *camera, t_res *wincntr, t_bool rotated)
 {
-	t_shift	*shift;
+	t_list	*camcrsr;
+	t_obj	*camobj;
+	t_rot	rot;
 
-	shift = &camobj->move->shift;
-	dotstranslation(&camobj->crdstm.pos, 1, shift->direction, shift->step);
-	vrtxtranslation(camobj->dots.pos, camobj->dots.dotsnum, shift->direction, shift->step);
-	if (objinframe(camobj, camera, wincntr))
-		objexchanger(camobj, &camera->camobjs.inframe, &camera->camobjs.outframe);
-	else
-		objexchanger(camobj, &camera->camobjs.outframe, &camera->camobjs.inframe);
+	camcrsr = camera->camobjs.objs;
+	while (camcrsr)
+	{
+		camobj = objcast(camcrsr);
+		movecamobj(camobj, camobj->move, rotated);
+		if (objinframe(camobj, camera, wincntr))
+			objexchanger(camobj, &camera->camobjs.inframe, &camera->camobjs.outframe, &camera->camobjs);
+		else
+			objexchanger(camobj, &camera->camobjs.outframe, &camera->camobjs.inframe, &camera->camobjs);
+		camcrsr = camcrsr->next;
+	}
 }
