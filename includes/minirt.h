@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/28 16:00:09 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/01 21:38:44 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@
 # endif
 
 # ifndef DUPDET
-#  define DUPDET "ambient light, light or camera have more than one definition"
+#  define DUPDET "ambient light, lightspot or camera have more than one definition"
 # endif
 
 # ifndef INVDEF
@@ -303,20 +303,16 @@ float	sphereparser(char *str, t_obj *obj, char *prog);
 
 // Parsing utilities.
 
+float	ft_atof(const char *num);
 int		ft_clear_char_array(char **array);
-double	ft_atoidb(const char *num); 
+char	*ft_get_color_values(char *str, t_colrs *color, char *prog);
+char	*ft_get_position_values(char *prog, char *str, t_cart *pos);
+char	*skipnumnspaces(char *str);
 
 /*
 We can modify atoi so it checks whether the string ends with the number. 
 So no 10.1 in simple integers.
 */
-
-// Parse utils.
-
-char	*ft_get_color_values(char *str, t_colrs *color, char *prog);
-char	*ft_get_position_values(char *prog, char *str, t_cart *pos);
-float	ft_atof(const char *num);
-char	*skipnumnspaces(char *str);
 
 // Main elements information.
 

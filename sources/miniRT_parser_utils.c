@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:20:57 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/09 16:10:34 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/01 21:38:00 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ float	ft_atof(const char *num)
 	if ((*num == '-' || *num == '+') && *num++ == '-')
 			sign = -1;
 	while ('0' <= *num && *num <= '9')
-		result = result * 10 + *num - '0';
+		result = result * 10 + *num++ - '0';
 	if (*num != '.')
 		return (sign * result);
 	divider = 10;
