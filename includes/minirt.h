@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/01 21:38:44 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/06 23:00:44 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,8 +193,7 @@ typedef struct s_light {
 }	t_light;
 
 typedef struct s_poly {
-	int		dotcount;
-	int		*dots;
+	int		dots[3];
 	t_cart	*txtr;
 	t_cart	srcnorm;
 	t_cart	norm;
@@ -322,13 +321,13 @@ int 	ft_fill_light_info(char **piece, t_info *info);
 
 // Object-like elements information.
 
-void	backpsurfpatch(t_vrtx *dots, t_poly *poly, t_bool south, int lttd);
 int		circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skippols);
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
 void	definepols(t_vrtx *dots, float radius, t_axis *rotcircle);
-void	frontpsurfpatch(t_vrtx *dots, t_poly *poly, t_bool south, int lttd);
+void	polarjointing(t_vrtx *dots, t_poly *poly, void *txtr, int dotnum);
+void	polarsurfing(t_vrtx *dots, t_poly **poly, int lttd, void *txtr);
 float	spherebuilder(t_dots *dots, t_polys *polys, float radius);
-void	surfing(t_poly *poly, int *dotindxs, int dotcount, t_vrtx *dots);
+void	surfing(t_poly *poly, int *dotindxs, t_vrtx *dots, void *txtr);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
 int		ft_fill_plane_info(char **piece, t_info *info);
