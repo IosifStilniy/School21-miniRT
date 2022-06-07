@@ -32,7 +32,7 @@ int	circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skipp
 		rotdot.ang = step * numstep;
 		quartrot(&dots[dotnum].dot, &rotdot);
 		if (rotcircle)
-			quartrot(&dots[dotnum], rotcircle);
+			quartrot(&dots[dotnum].dot, rotcircle);
 	}
 	return (dotnum + 2 * (!skippols));
 }

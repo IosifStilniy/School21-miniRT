@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/06 23:00:44 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/07 22:33:28 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,9 @@
 # include <sys/stat.h>
 # include <sys/errno.h>
 # include <fcntl.h>
-# include <stdio.h>
+# include <string.h>
 # include <math.h>
+# include <stdio.h>
 
 # define KEY_Q 12
 # define KEY_E 14
@@ -38,6 +39,7 @@
 # define KEY_ESC 53
 # define KEY_CMND 259
 # define KEY_SHIFT 257
+# define KEY_SPACE 49
 # define KEY_CNTRL 256
 # define LMB 1
 # define MMB 3
@@ -88,7 +90,7 @@
 # endif
 
 # ifndef RNDSGMNTS
-#  define RNDSGMNTS 36
+#  define RNDSGMNTS 6
 # endif
 
 # ifndef INVINP
@@ -120,7 +122,7 @@
 # endif
 
 # ifndef NUMSPACES
-#  define NUMSPACES "0123456789. \t\v\f\r"
+#  define NUMSPACES "-+0123456789. \t\v\f\r"
 # endif
 
 # ifndef WORLD
@@ -128,6 +130,11 @@
 # endif
 
 typedef int	t_bool;
+
+typedef struct s_res {
+	int	x;
+	int	y;
+}	t_res;
 
 typedef struct	s_data {
 	void	*img;
@@ -137,11 +144,6 @@ typedef struct	s_data {
 	int		line_length;
 	int		endian;
 }	t_data;
-
-typedef struct s_res {
-	int	x;
-	int	y;
-}	t_res;
 
 typedef struct s_cart {
 	float	x;
@@ -161,16 +163,6 @@ typedef struct s_rot {
 	t_axis	axis;
 	t_axis	xyaxis;
 }	t_rot;
-
-typedef struct s_shift {
-	t_cart	*direction;
-	float	step;
-}	t_shift;
-
-typedef struct s_move {
-	t_rot		rot;
-	t_shift		shift;
-}	t_move;
 
 typedef struct s_crdstm {
 	t_cart	pos;
@@ -223,7 +215,7 @@ typedef struct s_obj {
 	t_colrs		colrs;
 	t_crdstm	crdstm;
 	float		outframe;
-	t_move		*move;
+	t_rot		*rot;
 }	t_obj;
 
 typedef struct s_camobjs {
@@ -243,7 +235,7 @@ typedef struct s_camera {
 	t_crdstm	crdstm;
 	t_view		view;
 	t_camobjs	camobjs;
-	t_move		*move;
+	t_rot		*rot;
 	t_cart		corners[4];
 	t_bool		determined;
 }	t_camera;
@@ -256,16 +248,10 @@ typedef struct s_win {
 	char		*header;
 }	t_win;
 
-typedef struct s_trnaxs {
-	t_axis	v1;
-	t_axis	v2;
-}	t_trnaxs;
-
 typedef struct s_mouse {
 	t_bool		shift;
 	t_bool		rot;
 	t_res		pos;
-	t_trnaxs	vpos;
 }	t_mouse;
 
 typedef struct s_keybrd {
@@ -283,7 +269,7 @@ typedef struct s_info
 	t_light		a_light;
 	t_list		*objects;
 	t_light		lights;
-	t_move		move;
+	t_rot		rot;
 	t_data		img;
 	char		*prog;
 	int			total;
@@ -313,12 +299,6 @@ We can modify atoi so it checks whether the string ends with the number.
 So no 10.1 in simple integers.
 */
 
-// Main elements information.
-
-int		ft_fill_amb_light_info(char **piece, t_info *info);
-int		ft_fill_camera_info(char **piece, t_info *info);
-int 	ft_fill_light_info(char **piece, t_info *info);
-
 // Object-like elements information.
 
 int		circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skippols);
@@ -341,12 +321,12 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
+void	camrotating(t_camera *camera, void *win, int x, int y);
+void	camshifting(t_camera *camera, t_cart *camdir, t_cart *objsdir, float step);
 void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
 void	dotstranslation(t_cart *dots, int dotnum, t_cart *direction, float step);
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm);
-void	movecamobj(t_obj *camobj, t_move *move, t_bool rotated);
-void	objrot(t_obj *camobj, t_crdstm *cam, t_crdstm *obj, t_cart *dst);
 void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot);
 void	objtoobjpos(t_cart *center, t_cart *dot);
 void	vrtxtranslation(t_vrtx *vrtxs, int dotnum, t_cart *direction, float step);
@@ -369,14 +349,15 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 // View constructor
 
 void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs);
-void	createview(t_camera *camera, t_res *wincntr, t_bool rotated);
+void	createview(t_camera *camera);
+void	initview(t_list *objs, t_camera *camera);
+t_bool	objinframe(t_obj *obj, t_camera *camera);
 
 // Hooks for orientation and movement in space
 
-int		mousemove(int x, int y, t_info *info);
 void	keyshifting(int keycode, t_info *info);
-void	keyrotating(int keycode, t_info *info);
 void	scrolling(int btn, t_info *info);
+int		mousemove(int x, int y, t_info *info);
 void	mouserotating(t_info *info, int x, int y);
 void	mouseshifting(t_info *info, int x, int y);
 void	mousezooming(t_info *info, int y);

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/05/26 19:54:48 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/07 22:14:13 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,38 +16,42 @@ static void	light_definition(char *line, t_light *a_light, t_light *lights, char
 {
 	t_light	*light;
 
-	if ((*line == 'A' && a_light->determined) || (*line == 'L' && lights->determined))
-		customerr(prog, DUPDET, TRUE);
 	light = a_light;
 	if (*line++ == 'L')
 		light = lights;
+	if (light->determined)
+		customerr(prog, DUPDET, TRUE);
 	light->determined = TRUE;
 	while (ft_strchr(SPACES, *line))
 		line++;
-	if (!ft_strchr("01.", *line))
+	if (light == lights)
+		line = ft_get_position_values(prog, ++line, &lights->pos);
+	while (ft_strchr(SPACES, *line))
+		line++;
+	if (!ft_strchr("+01.", *line))
 		customerr(prog, INVDEF, TRUE);
 	light->light_ratio = ft_atof(line);
 	if (!(0 <= light->light_ratio && light->light_ratio <= 1))
 		customerr(prog, INVDEF, TRUE);
-	if (light == &lights)
-		line = ft_get_position_values(prog, ++line, &lights->pos);
-	line = ft_get_color_values(line, &light->color, prog);
-	while (ft_strchr(NUMSPACES, *line))
+	while (*line && ft_strchr("0123456789.", *line))
 		line++;
-	if (*line != '\n' || *line)
+	line = ft_get_color_values(line, &light->color, prog);
+	while (ft_strchr(SPACES, *line))
+		line++;
+	if (*line != '\n' && *line)
 		customerr(prog, INVDEF, TRUE);
 }
 
-static void	ft_fill_camera_info(char *str, t_camera *camera, t_move *move, char *prog)
+static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *prog)
 {
 	t_cart	norm;
 
 	if (camera->determined++)
 		customerr(prog, DUPDET, TRUE);
-	str = ft_get_position_values(str, &camera->pos, prog);
-	str = ft_get_position_values(str, &norm, prog);
+	str = ft_get_position_values(prog, str, &camera->pos);
+	str = ft_get_position_values(prog, str, &norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &camera->crdstm.oz);
-	if (camera->crdstm.oz.length != 1)
+	if (!comparef(camera->crdstm.oz.length, 1, 0.001))
 		customerr(prog, INVDEF, TRUE);
 	crdstmdefiner(&camera->crdstm);
 	while (ft_strchr(SPACES, *str))
@@ -55,31 +59,32 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, t_move *move, char 
 	if (!ft_strchr("0123456789", *str))
 		customerr(prog, INVDEF, TRUE);
 	camera->view.xfov = ft_atoi(str) * M_PI / 360;
-	if (!(-0.001 <= camera->view.xfov && camera->view.xfov <= 180.001))
+	if (!(-0.001 <= camera->view.xfov && camera->view.xfov <= 90.001))
 		customerr(prog, INVDEF, TRUE);
 	while (ft_strchr("0123456789", *str))
 		str++;
 	while (ft_strchr(SPACES, *str))
 		str++;
-	if (*str != '\n' || *str)
+	if (*str != '\n' && *str)
 		customerr(prog, INVDEF, TRUE);
-	camera->move = move;
+	camera->rot = rot;
 }
 
-static void	primitivebuilder(char *str, t_list **objs, char *prog, t_move *move)
+static void	primitivesbuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 {
 	int		i;
 
 	while (ft_strchr(SPACES, *str))
 		str++;
-	i = 0;
-	while (i < NUMPRMTVS)
-		if (!ft_strncmp(PRMTVS + i * 2, str, 2) || (++i && FALSE))
+	i = -1;
+	while (++i < NUMPRMTVS)
+		if (!ft_strncmp(&PRMTVS[2 * i], str, 2))
 			break ;
 	if (i == NUMPRMTVS)
 		customerr(prog, INVDEF, TRUE);
+	str += 2;
 	ft_lstadd_front(objs, ft_lstnew(malloc(sizeof(t_obj))));
-	objcast(*objs)->move = move;
+	objcast(*objs)->rot = rot;
 	str = ft_get_position_values(prog, str, &objcast(*objs)->crdstm.pos);
 	if (!i)
 		objcast(*objs)->outframe = sphereparser(str, (*objs)->content, prog);
@@ -113,10 +118,10 @@ void	cameradefinition(t_view *view, t_cart corners[4], t_res *wincntr)
 	quartrot(corners + 3, &xaxis);
 	vectorbuilder(0, 1, 0, &yaxis);
 	vectorbuilder(1, 0, 0, &xaxis);
-	quartrot(&corners + 1, &xaxis);
-	quartrot(&corners + 2, &yaxis);
-	quartrot(&corners + 2, &xaxis);
-	quartrot(&corners + 3, &yaxis);
+	quartrot(corners + 1, &xaxis);
+	quartrot(corners + 2, &yaxis);
+	quartrot(corners + 2, &xaxis);
+	quartrot(corners + 3, &yaxis);
 }
 
 void	ft_read_information(int fd, t_info *info)
@@ -128,15 +133,16 @@ void	ft_read_information(int fd, t_info *info)
 	line = get_next_line(fd);
 	while (line)
 	{
+		printf("line: %s\n", line);
 		crsr = line;
 		while (*crsr && *crsr != '\n' && ft_strchr(SPACES, *crsr))
 			crsr++;
 		if (ft_strchr("AL", *crsr))
 			light_definition(crsr, &info->a_light, &info->lights, info->prog);
 		else if (*crsr == 'C')
-			ft_fill_camera_info(++crsr, &info->win.camera, &info->move, info->prog);
+			ft_fill_camera_info(++crsr, &info->win.camera, &info->rot, info->prog);
 		else if (*crsr && *crsr != '\n')
-			primitivesbuilder(crsr, &info->objects, info->prog, &info->move);
+			primitivesbuilder(crsr, &info->objects, info->prog, &info->rot);
 		free(line);
 		line = get_next_line(fd);
 	}

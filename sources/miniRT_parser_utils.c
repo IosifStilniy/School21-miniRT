@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:20:57 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/01 21:38:00 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/07 22:11:29 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,12 @@ float	ft_atof(const char *num)
 			sign = -1;
 	while ('0' <= *num && *num <= '9')
 		result = result * 10 + *num++ - '0';
-	if (*num != '.')
+	if (*num++ != '.')
 		return (sign * result);
 	divider = 10;
-	num += 2;
 	while ('0' <= *num && *num <= '9')
 	{
-		result += ((float)(*num - '0')) / divider;
+		result += ((float)(*num++ - '0')) / divider;
 		divider *= 10;
 	}
 	return (sign * result);
@@ -68,7 +67,7 @@ char	*ft_get_position_values(char *prog, char *str, t_cart *pos)
 {
 	while (ft_strchr(SPACES, *str))
 		str++;
-	if (!ft_strchr("0123456789.", *str))
+	if (!ft_strchr("-+0123456789.", *str))
 		customerr(prog, INVDEF, TRUE);
 	pos->x = ft_atof(str);
 	while (ft_strchr(NUMSPACES, *str))
@@ -81,7 +80,7 @@ char	*ft_get_position_values(char *prog, char *str, t_cart *pos)
 	if (*str++ != ',')
 		customerr(prog, INVCRD, TRUE);
 	pos->z = ft_atof(str);
-	while (ft_strchr("0123456789.", *str))
+	while (ft_strchr("-+0123456789.", *str))
 		str++;
 	return (str);
 }
@@ -90,7 +89,7 @@ char	*skipnumnspaces(char *str)
 {
 	while (ft_strchr(SPACES, *str))
 		str++;
-	while (ft_strchr("0123456789.", *str))
+	while (ft_strchr("+-0123456789.", *str))
 		str++;
 	while (ft_strchr(SPACES, *str))
 		str++;

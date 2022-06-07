@@ -1,13 +1,15 @@
 SRCS		=	$(wildcard sources/*.c)			\
 				$(wildcard sources/*/*.c)			\
+				$(wildcard sources/*/*/*.c)			\
 				$(wildcard get_next_line/*.c)	\
 
 OBJS		=	$(SRCS:.c=.o)
 
 B_OBJS		=	$(B_SRCS:.c=.o)
 
-HEADS		=	includes		\
-				get_next_line	\
+HEAD		=	includes
+
+GNL_HEAD	=	get_next_line
 
 NAME		=	miniRT
 
@@ -21,9 +23,11 @@ LIB			=	$(addprefix $(addsuffix /, $(LIBPATH)), $(LIBNAME))
 
 MLX			=	mlx
 
+DINLIB		=	libmlx.dylib
+
 GCC			=	gcc
 
-FLAGS		=	-Wall -Werror -Wextra -Imlx -I$(HEADS) #-g -fsanitize=address
+FLAGS		=	-Wall -Werror -Wextra -Imlx -I$(HEAD) -I$(LIBPATH) -I$(GNL_HEAD) #-g -fsanitize=address
 
 RM			=	rm -f
 
@@ -31,17 +35,17 @@ RM			=	rm -f
 		$(GCC) $(FLAGS) -c $< -o $@ 
 
 $(NAME):	$(HEADS) $(LIB) $(OBJS)
-			$(GCC) $(FLAGS) $(OBJS) $(LIB) -L$(MLX) -l$(MLX) $(FRAMEWORKS) -o $(NAME)
+			$(GCC) $(FLAGS) $(OBJS) $(LIB) $(DINLIB) $(FRAMEWORKS) -o $(NAME)
 
 $(B_NAME):	$(B_HEADS) $(LIB) $(B_OBJS)
-			$(GCC) $(FLAGS) $(B_OBJS) $(LIB) -L$(MLX) -l$(MLX) $(FRAMEWORKS) -o $(B_NAME)
+			$(GCC) $(FLAGS) $(B_OBJS) $(LIB)  $(FRAMEWORKS) -o $(B_NAME)
 
 $(LIB):		lib
 
 lib:		
-			@$(MAKE) -C $(LIBPATH)
+			@$(MAKE) -C $(LIBPATH) bonus
 			@$(MAKE) -C $(MLX)
-			cp $(MLX)/libmlx.dylib ./
+			mv $(MLX)/$(DINLIB) ./
 
 all:	$(NAME)
 

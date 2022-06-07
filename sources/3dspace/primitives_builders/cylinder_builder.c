@@ -36,13 +36,13 @@ static void	buttsurf(int central, int strnum, t_poly *polys, t_vrtx *dots)
 		dotindxs[0] = central;
 		dotindxs[1] = strnum + i;
 		dotindxs[2] = strnum + i + 1;
-		surfing(polys + i, dotindxs, 3, dots);
+		surfing(polys + i, dotindxs, dots, polys->txtr);
 		polys[i].txtr = NULL;
 	}
 	dotindxs[0] = central;
 	dotindxs[1] = strnum + i;
 	dotindxs[2] = strnum;
-	surfing(polys + i, dotindxs, 3, dots);
+	surfing(polys + i, dotindxs, dots, polys->txtr);
 	polys[i].txtr = NULL;
 }
 

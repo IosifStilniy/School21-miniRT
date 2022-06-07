@@ -46,7 +46,7 @@ void	objexchanger(t_list *obj, t_list **dst, t_list **src, t_camobjs *collection
 		prev->next = crsr->next;
 	else
 		*src = crsr->next;
-	if (collection->inframe == dst)
+	if (collection->inframe == *dst)
 		insertinframeobj(&collection->inframe, obj, &objcast(obj)->crdstm.pos);
 	else
 		ft_lstadd_front(dst, obj);

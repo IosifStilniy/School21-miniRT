@@ -11,7 +11,7 @@ void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs)
 		ft_lstadd_front(camobjs, ft_lstnew(malloc(sizeof(*camobj))));
 		ft_lstadd_front(outframe, ft_lstnew((*camobjs)->content));
 		camobj = objcast(*camobjs);
-		camobj->move = obj->move;
+		camobj->rot = obj->rot;
 		camobj->dots.dotsnum = obj->dots.dotsnum;
 		camobj->dots.dots = obj->dots.dots;
 		if (camobj->dots.dotsnum)
@@ -26,7 +26,7 @@ void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs)
 	}
 }
 
-void	initview(t_list *objs, t_camera *camera, t_res *wincntr, t_bool rotated)
+void	initview(t_list *objs, t_camera *camera)
 {
 	t_list	*crsr;
 	t_list	*camcrsr;
@@ -44,10 +44,10 @@ void	initview(t_list *objs, t_camera *camera, t_res *wincntr, t_bool rotated)
 		quartrot(&camobj->crdstm.pos, &rot.axis);
 		quartrot(&camobj->crdstm.pos, &rot.xyaxis);
 		crdstmrotbyaxis(&camobj->crdstm, &rot.axis, &rot.xyaxis);
-		if (objinframe(camobj, camera, wincntr))
-			objexchanger(camobj, &camera->camobjs.inframe, &camera->camobjs.outframe, &camera->camobjs);
+		if (objinframe(camobj, camera))
+			objexchanger(camcrsr, &camera->camobjs.inframe, &camera->camobjs.outframe, &camera->camobjs);
 		else
-			objexchanger(camobj, &camera->camobjs.outframe, &camera->camobjs.inframe, &camera->camobjs);
+			objexchanger(camcrsr, &camera->camobjs.outframe, &camera->camobjs.inframe, &camera->camobjs);
 		engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
 		camcrsr = camcrsr->next;
 		crsr = crsr->next;

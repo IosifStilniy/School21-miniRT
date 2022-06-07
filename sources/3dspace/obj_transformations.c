@@ -1,23 +1,5 @@
 #include "minirt.h"
 
-void	objrot(t_obj *camobj, t_crdstm *cam, t_crdstm *obj, t_cart *dst)
-{
-	t_axis	refaxis;
-	int		i;
-
-	vectorbuilder(0, 0, 1, camobj->move->rot.start);
-	camobj->move->rot.end = dst;
-	if (!dst)
-		crdstmrotbyaxis(&camobj->crdstm, &camobj->move->rot.axis, NULL);
-	else
-		crdstmrot(&camobj->crdstm, &camobj->move->rot, camobj->move->rot.start, dst);
-	refaxis = camobj->move->rot.axis;
-	objtoobjaxis(cam, NULL, &camobj->move->rot);
-	quartrot(&refaxis.vector, &camobj->move->rot.axis);
-	crdstmrotbyaxis(obj, &refaxis, NULL);
-	engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
-}
-
 void	vrtxtranslation(t_vrtx *vrtxs, int dotnum, t_cart *direction, float step)
 {
 	t_axis	res;

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/01 22:23:15 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/07 21:25:11 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	main(int argc, char **argv)
 	t_info	info;
 	int		fd;
 
-	info.prog = ft_strrchr(*argv++, '/');
+	info.prog = ft_strrchr(*argv++, '/') + 1;
 	if (argc != 2)
 		customerr(info.prog, INVINP, FALSE);
 	fd = file_check(*argv, info.prog);
@@ -42,7 +42,11 @@ int	main(int argc, char **argv)
 	wininit(&info.win, info.mlx_ptr, info.prog, *argv);
 	ft_read_information(fd, &info);
 	createcamobjs(&info.win.camera.camobjs.objs, &info.win.camera.camobjs.outframe, info.objects);
-	initview(&info.objects, &info.win.camera, &info.win.cntr);
-	backwards_ray_tracing(&info);
+	initview(info.objects, &info.win.camera);
+	// backwards_ray_tracing(&info);
+	mlx_hook(info.win.win, 2, 1L, &keydownhndlr, &info);
+	mlx_hook(info.win.win, 3, 1L << 1, &keyuphndlr, &info);
+	mlx_hook(info.win.win, 6, 1L << 6, &mousemove, &info);
+	mlx_loop(info.mlx_ptr);
 	return (0);
 }
