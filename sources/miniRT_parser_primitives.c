@@ -55,7 +55,7 @@ void	planeparser(char *str, t_obj *obj, char *prog)
 {
 	t_cart	norm;
 
-	ft_get_position_values(prog, str, &norm);
+	str = ft_get_position_values(prog, str, &norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &obj->crdstm.oz);
 	if (!comparef(obj->crdstm.oz.length, 1, 0.001))
 		customerr(prog, INVCRD, TRUE);
