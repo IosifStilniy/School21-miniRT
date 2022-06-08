@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/05/26 19:35:57 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/08 21:06:07 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,19 @@ void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_cart *k)
 	dst->z = scale * src->z * k->z;
 }
 
+void	gettranskoef(t_crdstm *src, t_cart *res)
+{
+	res->x = src->ox.vector.x + src->oy.vector.x + src->oz.vector.x;
+	res->y = src->ox.vector.y + src->oy.vector.y + src->oz.vector.y;
+	res->z = src->ox.vector.z + src->oy.vector.z + src->oz.vector.z;
+}
+
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm)
 {
 	int		i;
 	t_cart	k;
 
-	k.x = crdstm->ox.vector.x + crdstm->oy.vector.x + crdstm->oz.vector.x;
-	k.y = crdstm->ox.vector.y + crdstm->oy.vector.y + crdstm->oz.vector.y;
-	k.z = crdstm->ox.vector.z + crdstm->oy.vector.z + crdstm->oz.vector.z;
+	gettranskoef(crdstm, &k);
 	i = -1;
 	while (++i < dots->dotsnum)
 	{

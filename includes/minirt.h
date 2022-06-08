@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/07 22:33:28 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/08 21:04:49 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@
 # endif
 
 # ifndef SHIFT_SPEED
-#  define SHIFT_SPEED 30
+#  define SHIFT_SPEED 1
 # endif
 
 # ifndef DEFANG
@@ -325,8 +325,10 @@ void	camrotating(t_camera *camera, void *win, int x, int y);
 void	camshifting(t_camera *camera, t_cart *camdir, t_cart *objsdir, float step);
 void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
+void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_cart *k);
 void	dotstranslation(t_cart *dots, int dotnum, t_cart *direction, float step);
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm);
+void	gettranskoef(t_crdstm *src, t_cart *res);
 void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot);
 void	objtoobjpos(t_cart *center, t_cart *dot);
 void	vrtxtranslation(t_vrtx *vrtxs, int dotnum, t_cart *direction, float step);

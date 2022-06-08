@@ -12,6 +12,7 @@ void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs)
 		ft_lstadd_front(outframe, ft_lstnew((*camobjs)->content));
 		camobj = objcast(*camobjs);
 		camobj->rot = obj->rot;
+		camobj->outframe = obj->outframe;
 		camobj->dots.dotsnum = obj->dots.dotsnum;
 		camobj->dots.dots = obj->dots.dots;
 		if (camobj->dots.dotsnum)

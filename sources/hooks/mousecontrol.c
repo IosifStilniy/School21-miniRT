@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:06 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/07 20:22:22 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/08 21:39:38 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,22 @@
 
 void	camrotating(t_camera *camera, void *win, int x, int y)
 {
-	t_cart	curpos;
+	t_axis	curpos;
 	t_cart	oz;
 	t_axis	axis;
 	t_list	*crsr;
 	t_obj	*obj;
 
-	cartbuilder(x, y, 1, &curpos);
-	vectorsizing(1, &curpos, &curpos, NULL);
+	cartbuilder(x, y, 100, &curpos.vector);
+	vectorsizing(1, &curpos.vector, &curpos.vector, NULL);
 	cartbuilder(0, 0, 1, &oz);
-	axisbuilder(&oz, &curpos, &axis);
-	if (comparef(axis.ang, M_PI / 180, 0.5 * M_PI / 180))
+	axisbuilder(&oz, &curpos.vector, &axis);
+	if (comparef(axis.ang, 0, 0.5 * M_PI / 180))
 		return ;
 	mlx_mouse_move(win, 0, 940);
-	crdstmrotbyaxis(&camera->crdstm, &axis, NULL);
+	gettranskoef(&camera->crdstm, &oz);
+	dotcrdstmtrnsltn(&axis.vector, &curpos.vector, 1, &oz);
+	crdstmrotbyaxis(&camera->crdstm, &curpos, NULL);
 	negativevector(&axis.vector);
 	crsr = camera->camobjs.objs;
 	while (crsr)

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/07 22:14:13 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/08 21:51:20 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,6 @@ void	ft_read_information(int fd, t_info *info)
 	line = get_next_line(fd);
 	while (line)
 	{
-		printf("line: %s\n", line);
 		crsr = line;
 		while (*crsr && *crsr != '\n' && ft_strchr(SPACES, *crsr))
 			crsr++;

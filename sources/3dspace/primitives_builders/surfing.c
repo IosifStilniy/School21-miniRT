@@ -1,6 +1,6 @@
 #include "minirt.h"
 
-void	surfing(t_poly *poly, int *dotindxs, t_vrtx *dots, void *txtr)
+void	surfing(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr)
 {
 	poly->dots[0] = dotindxs[0];
 	poly->dots[1] = dotindxs[1];
