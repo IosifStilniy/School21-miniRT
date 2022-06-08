@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:43:02 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/08 22:43:24 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/09 00:08:48 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,13 @@ void	keyshifting(int keycode, t_info *info)
 	else if (objsdir.z)
 		cartcopy(&info->win.camera.crdstm.oz.vector, &camdir, 1);
 	camshifting(&info->win.camera, &camdir, &objsdir, SHIFT_SPEED);
-	a = objcast(info->win.camera.camobjs.objs)->dots.pos->dot;
-	b = objcast(info->win.camera.camobjs.objs)->crdstm.pos;
+	a = objcast(info->win.camera.camobjs.objs->next)->dots.pos->dot;
+	b = objcast(info->win.camera.camobjs.objs->next)->crdstm.pos;
 	vectorbuilder(a.x - b.x, a.y - b.y, a.z - b.z, &c);
-	// printf("lng: %.3f dot1: %.3f %.3f %.3f\n", c.length, a.x, a.y, a.z);
+	printf("dotcount: %d\n", objcast(info->win.camera.camobjs.objs->next)->dots.dotsnum);
+	printf("lng: %.3f dot1: %.3f %.3f %.3f\n", c.length, a.x, a.y, a.z);
+	printf("dot1: %.3f %.3f %.3f\n", a.x, a.y, a.z);
+	printf("crdstm: %.3f %.3f %.3f\n", b.x, b.y, b.z);
 	createview(&info->win.camera);
 	// imgdefiner(info->img, info->win, info->mlx);
 	// paintpic(info->dots, info->img, info->win, info->mlx);

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/08 21:04:49 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/08 23:33:53 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,7 +231,6 @@ typedef struct s_view {
 }	t_view;
 
 typedef struct s_camera {
-	t_cart		pos;
 	t_crdstm	crdstm;
 	t_view		view;
 	t_camobjs	camobjs;

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/08 21:51:20 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/09 00:22:41 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *p
 
 	if (camera->determined++)
 		customerr(prog, DUPDET, TRUE);
-	str = ft_get_position_values(prog, str, &camera->pos);
+	str = ft_get_position_values(prog, str, &camera->crdstm.pos);
 	str = ft_get_position_values(prog, str, &norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &camera->crdstm.oz);
 	if (!comparef(camera->crdstm.oz.length, 1, 0.001))

@@ -8,9 +8,9 @@ void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs)
 	while (objs)
 	{
 		obj = objcast(objs);
-		ft_lstadd_front(camobjs, ft_lstnew(malloc(sizeof(*camobj))));
-		ft_lstadd_front(outframe, ft_lstnew((*camobjs)->content));
-		camobj = objcast(*camobjs);
+		ft_lstadd_back(camobjs, ft_lstnew(malloc(sizeof(*camobj))));
+		ft_lstadd_back(outframe, ft_lstnew((*camobjs)->content));
+		camobj = objcast(ft_lstlast(*camobjs));
 		camobj->rot = obj->rot;
 		camobj->outframe = obj->outframe;
 		camobj->dots.dotsnum = obj->dots.dotsnum;

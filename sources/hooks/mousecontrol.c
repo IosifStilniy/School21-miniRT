@@ -6,11 +6,16 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:06 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/08 21:39:38 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/09 00:22:02 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
+
+float	lngtg(t_cart *v)
+{
+	return (sqrtf(powf(v->x, 2) + powf(v->y, 2) + powf(v->z, 2)));
+}
 
 void	camrotating(t_camera *camera, void *win, int x, int y)
 {
@@ -35,7 +40,23 @@ void	camrotating(t_camera *camera, void *win, int x, int y)
 	while (crsr)
 	{
 		obj = objcast(crsr);
+		printf("do povorota:\n");
+		printf("ox: %.3f %.3f %.3f %.3f\n", obj->crdstm.ox.vector.x, obj->crdstm.ox.vector.y, obj->crdstm.ox.vector.z, lngtg(&obj->crdstm.ox.vector));
+		printf("oy: %.3f %.3f %.3f %.3f\n", obj->crdstm.oy.vector.x, obj->crdstm.oy.vector.y, obj->crdstm.oy.vector.z, lngtg(&obj->crdstm.ox.vector));
+		printf("oz: %.3f %.3f %.3f %.3f\n", obj->crdstm.oz.vector.x, obj->crdstm.oz.vector.y, obj->crdstm.oz.vector.z, lngtg(&obj->crdstm.ox.vector));
 		crdstmrotbyaxis(&obj->crdstm, &axis, NULL);
+		printf("posle povorota:\n");
+		printf("ox: %.3f %.3f %.3f %.3f\n", obj->crdstm.ox.vector.x, obj->crdstm.ox.vector.y, obj->crdstm.ox.vector.z, lngtg(&obj->crdstm.ox.vector));
+		printf("oy: %.3f %.3f %.3f %.3f\n", obj->crdstm.oy.vector.x, obj->crdstm.oy.vector.y, obj->crdstm.oy.vector.z, lngtg(&obj->crdstm.ox.vector));
+		printf("oz: %.3f %.3f %.3f %.3f\n", obj->crdstm.oz.vector.x, obj->crdstm.oz.vector.y, obj->crdstm.oz.vector.z, lngtg(&obj->crdstm.ox.vector));
+		t_axis v;
+		printf("angles:\n");
+		axisbuilder(&obj->crdstm.ox.vector, &obj->crdstm.oy.vector, &v);
+		printf("ox oy: %.3f\n", v.ang * 180 / M_PI);
+		axisbuilder(&obj->crdstm.ox.vector, &obj->crdstm.oz.vector, &v);
+		printf("ox oz: %.3f\n", v.ang * 180 / M_PI);
+		axisbuilder(&obj->crdstm.oy.vector, &obj->crdstm.oz.vector, &v);
+		printf("oy oz: %.3f\n", v.ang * 180 / M_PI);
 		quartrot(&obj->crdstm.pos, &axis);
 		engine(&obj->dots, &obj->polys, &obj->crdstm);
 		crsr = crsr->next;
