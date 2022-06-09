@@ -3,27 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_main.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/08 23:37:07 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/09 22:58:13 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-void	wininit(t_win *win, void *mlx, char *prog, char *file)
+void	wininit(t_info *info, char *prog, char *file)
 {
 	char	*buf;
 
 	buf = ft_strjoin(prog, ": ");
-	win->header = ft_strjoin(buf, file);
+	info->win.header = ft_strjoin(buf, file);
 	free(buf);
-	win->res.x = RESX;
-	win->res.y = RESY;
-	win->win = mlx_new_window(mlx, win->res.x, win->res.y, win->header);
-	win->cntr.x = win->res.x / 2;
-	win->cntr.y = win->res.y / 2;
+	info->win.res.x = RESX;
+	info->win.res.y = RESY;
+	info->win.win = mlx_new_window(info->mlx_ptr, info->win.res.x, info->win.res.y, info->win.header);
+	info->win.cntr.x = info->win.res.x / 2;
+	info->win.cntr.y = info->win.res.y / 2;
+	info->data.img = mlx_new_image(info->mlx_ptr, RESX, RESY);
+	info->data.addr = mlx_get_data_addr(info->data.img,
+			&info->data.bits_per_pixel, &info->data.line_length,
+			&info->data.endian);
 }
 
 int	main(int argc, char **argv)
@@ -39,14 +43,19 @@ int	main(int argc, char **argv)
 	info.lights.determined = FALSE;
 	info.win.camera.determined = FALSE;
 	info.mlx_ptr = mlx_init();
-	wininit(&info.win, info.mlx_ptr, info.prog, *argv);
+	wininit(&info, info.prog, *argv);
 	ft_read_information(fd, &info);
 	info.win.camera.camobjs.objs = NULL;
 	info.win.camera.camobjs.inframe = NULL;
 	info.win.camera.camobjs.outframe = NULL;
 	createcamobjs(&info.win.camera.camobjs.objs, &info.win.camera.camobjs.outframe, info.objects);
 	initview(info.objects, &info.win.camera);
-	// backwards_ray_tracing(&info);
+	t_obj *obj;
+	obj = info.win.camera.camobjs.objs->content;
+	printf("crdstm: %.3f %.3f %.3f\n", obj->crdstm.pos.x, obj->crdstm.pos.y, obj->crdstm.pos.z);
+	printf("dot1: %.3f %.3f %.3f\n", obj->dots.pos->dot.x, obj->dots.pos->dot.y, obj->dots.pos->dot.z);
+	printf("rad: %.3f\n", obj->outframe);
+	ft_draw_screen(&info);
 	mlx_hook(info.win.win, 2, 1L, &keydownhndlr, &info);
 	mlx_hook(info.win.win, 3, 1L << 1, &keyuphndlr, &info);
 	mlx_hook(info.win.win, 6, 1L << 6, &mousemove, &info);

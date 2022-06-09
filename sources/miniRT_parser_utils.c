@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_parser_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:20:57 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/08 23:40:09 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/09 22:02:43 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,27 +37,29 @@ float	ft_atof(const char *num)
 	return (sign * result);
 }
 
-char	*ft_get_color_values(char *str, t_colrs *color, char *prog)
+char	*ft_get_color_values(char *str, t_cart *color, char *prog)
 {
 	while (ft_strchr(SPACES, *str))
 		str++;
 	if (!ft_strchr("0123456789", *str))
 		customerr(prog, INVDEF, TRUE);
-	color->r = ft_atoi(str);
-	if (!(0 <= color->r && color->r <= 255))
+	color->x = ft_atoi(str) / 255.0f;
+	if (!(0 <= color->x && color->x <= 1))
 		customerr(prog, INVDEF, TRUE);
 	while (ft_strchr(NUMSPACES, *str))
 		str++;
 	if (*str++ != ',')
 		customerr(prog, INVCRD, TRUE);
-	color->g = ft_atoi(str);
-	if (!(0 <= color->r && color->r <= 255))
+	color->y = ft_atoi(str) / 255.0f;
+	if (!(0 <= color->y && color->y <= 1))
 		customerr(prog, INVDEF, TRUE);
 	while (ft_strchr(NUMSPACES, *str))
 		str++;
 	if (*str++ != ',')
 		customerr(prog, INVCRD, TRUE);
-	color->b = ft_atoi(str);
+	color->z = ft_atoi(str) / 255.0f;
+	if (!(0 <= color->z && color->z <= 1))
+		customerr(prog, INVDEF, TRUE);
 	while (ft_strchr("0123456789", *str))
 		str++;
 	return (str);

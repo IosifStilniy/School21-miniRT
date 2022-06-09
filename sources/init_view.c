@@ -23,6 +23,7 @@ void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs)
 		camobj->polys.poly = obj->polys.poly;
 		camobj->polys.txtr = obj->polys.txtr;
 		camobj->polys.polynum = obj->polys.polynum;
+		camobj->colrs = obj->colrs;
 		objs = objs->next;
 	}
 }

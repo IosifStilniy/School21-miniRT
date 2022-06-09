@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_parser.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/09 00:22:41 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/09 22:02:19 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	light_definition(char *line, t_light *a_light, t_light *lights, char
 	while (ft_strchr(SPACES, *line))
 		line++;
 	if (light == lights)
-		line = ft_get_position_values(prog, ++line, &lights->pos);
+		line = ft_get_position_values(prog, line, &lights->pos);
 	while (ft_strchr(SPACES, *line))
 		line++;
 	if (!ft_strchr("+01.", *line))

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hooks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/07 21:09:48 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/09 23:30:04 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,15 @@ int	keydownhndlr(int keycode, t_info *info)
 
 int	keyuphndlr(int keycode, t_info *info)
 {
-	if (keycode == KEY_SHIFT)
-		info->keybrd.focus = (!info->keybrd.focus);
-	else if (keycode == KEY_L)
-		info->keybrd.legend = (!info->keybrd.legend);
-	else if (keycode == KEY_C)
-		info->keybrd.movecam = (!info->keybrd.movecam);
-	else if (keycode == KEY_ESC)
+	// if (keycode == KEY_SHIFT)
+	// 	info->keybrd.focus = (!info->keybrd.focus);
+	// else if (keycode == KEY_L)
+	// 	info->keybrd.legend = (!info->keybrd.legend);
+	// else if (keycode == KEY_C)
+	// 	info->keybrd.movecam = (!info->keybrd.movecam);
+	/*else*/ if (keycode == KEY_ESC)
 		exit(0);
+	(void)info;
 	return (0);
 }
 
@@ -69,6 +70,7 @@ int	keyuphndlr(int keycode, t_info *info)
 int	mousemove(int x, int y, t_info *info)
 {
 	camrotating(&info->win.camera, info->win.win, x, y);
-	createview(&info->win.camera);
+	ft_draw_screen(info);;
+	// createview(&info->win.camera);
 	return (0);
 }

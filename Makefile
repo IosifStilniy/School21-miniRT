@@ -57,6 +57,8 @@ clean:
 
 fclean: clean
 		@$(MAKE) -C $(MLX) clean
+		rm -f $(DINLIB)
+		rm -f $(NAME)
 
 re:		fclean all
 

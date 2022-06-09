@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mousecontrol.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:06 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/09 20:43:13 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/09 23:32:11 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ void	camrotating(t_camera *camera, void *win, int x, int y)
 	t_list	*crsr;
 	t_obj	*obj;
 
-	cartbuilder(x, y, 100, &curpos.vector);
+	cartbuilder(x, -y, 4000, &curpos.vector);
 	vectorsizing(1, &curpos.vector, &curpos.vector, NULL);
 	cartbuilder(0, 0, 1, &oz);
 	axisbuilder(&oz, &curpos.vector, &axis);
 	if (comparef(axis.ang, 0, 0.5 * M_PI / 180))
 		return ;
-	mlx_mouse_move(win, 0, 940);
+	mlx_mouse_move(win, 0, 270);
 	dotcrdstmtrnsltn(&axis.vector, &curpos.vector, 1, &camera->crdstm);
 	crdstmrotbyaxis(&camera->crdstm, &curpos, NULL);
 	negativevector(&axis.vector);

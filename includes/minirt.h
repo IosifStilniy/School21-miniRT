@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/09 20:43:19 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/09 23:05:00 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,11 @@
 # endif
 
 # ifndef RESX
-#  define RESX 1920
+#  define RESX 800
 # endif
 
 # ifndef RESY
-#  define RESY 1080
+#  define RESY 600
 # endif
 
 # ifndef OFST
@@ -74,7 +74,7 @@
 # endif
 
 # ifndef SHIFT_SPEED
-#  define SHIFT_SPEED 1
+#  define SHIFT_SPEED 50
 # endif
 
 # ifndef DEFANG
@@ -171,15 +171,9 @@ typedef struct s_crdstm {
 	t_axis	oz;
 }	t_crdstm;
 
-typedef struct s_colrs {
-	int	r;
-	int	g;
-	int	b;
-}	t_colrs;
-
 typedef struct s_light {
 	double		light_ratio;
-	t_colrs		color;
+	t_cart		color;
 	t_cart		pos;
 	t_bool		determined;
 }	t_light;
@@ -212,7 +206,7 @@ typedef struct s_polys {
 typedef struct s_obj {
 	t_dots		dots;
 	t_polys		polys;
-	t_colrs		colrs;
+	t_cart		colrs;
 	t_crdstm	crdstm;
 	float		outframe;
 	t_rot		*rot;
@@ -269,7 +263,7 @@ typedef struct s_info
 	t_list		*objects;
 	t_light		lights;
 	t_rot		rot;
-	t_data		img;
+	t_data		data;
 	char		*prog;
 	int			total;
 	t_mouse		mouse;
@@ -289,7 +283,7 @@ float	sphereparser(char *str, t_obj *obj, char *prog);
 
 float	ft_atof(const char *num);
 int		ft_clear_char_array(char **array);
-char	*ft_get_color_values(char *str, t_colrs *color, char *prog);
+char	*ft_get_color_values(char *str, t_cart *color, char *prog);
 char	*ft_get_position_values(char *prog, char *str, t_cart *pos);
 char	*skipnumnspaces(char *str);
 
@@ -374,5 +368,30 @@ void	customerr(char *prog, char *txt, t_bool infile);
 int		error_handler(char *prog, char *place, int funcres);
 void	objexchanger(t_list *obj, t_list **dst, t_list **src, t_camobjs *collection);
 t_obj	*objcast(t_list *lst);
+
+// MyFUncs
+
+void	ft_draw_screen(t_info *info);
+
+float	ft_max(float a, float b);
+t_cart	ft_inverse_vector(t_cart vect);
+float	ft_get_vector_length(t_cart vect);
+t_cart	ft_summ_vectors(t_cart vect_a, t_cart vect_b);
+t_cart	ft_get_vector_norm(t_cart vector, float length);
+float	ft_get_dot_product(t_cart vect_a, t_cart vect_b);
+t_cart	ft_multiply_vector(t_cart vect, float multiplier);
+t_cart	ft_multiply_vectors(t_cart vect_a, t_cart vect_b);
+t_cart	ft_substract_vectors(t_cart vect_a, t_cart vect_b);
+t_cart	ft_get_cross_product(t_cart vect_a, t_cart vect_b);
+
+int		ft_find_light(t_cart phit, t_obj *object, t_info *info);
+
+float	ft_get_intersection_with_plane(t_cart ray_dir,
+			t_cart ray_orig, t_obj *plane);
+float	ft_get_intersection_with_sphere(t_cart ray_dir,
+			t_cart ray_orig, t_obj *sphere);
+int		ft_get_intersection_with_triangle(t_cart p[3],
+			t_cart phit, t_cart norm_vector);
+
 
 #endif

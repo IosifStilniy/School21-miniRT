@@ -23,7 +23,7 @@ float	sphereparser(char *str, t_obj *obj, char *prog)
 {
 	float	rad;
 
-	rad = ft_atof(str);
+	rad = ft_atof(str) / 2.0f;
 	str = skipnumnspaces(str);
 	ft_get_color_values(str, &obj->colrs, prog);
 	vectorbuilder(1, 0, 0, &obj->crdstm.ox);
