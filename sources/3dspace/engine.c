@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/08 22:43:01 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/09 20:32:05 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,38 +34,34 @@ void	quartrot(t_cart *pos, t_axis *axis)
 	pos->z = mlts[2][0] + mlts[2][1] + mlts[2][2];
 }
 
-void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_cart *k)
+void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_crdstm *crdstm)
 {
-	dst->x = scale * src->x * k->x;
-	dst->y = scale * src->y * k->y;
-	dst->z = scale * src->z * k->z;
-}
-
-void	gettranskoef(t_crdstm *src, t_cart *res)
-{
-	res->x = src->ox.vector.x + src->oy.vector.x + src->oz.vector.x;
-	res->y = src->ox.vector.y + src->oy.vector.y + src->oz.vector.y;
-	res->z = src->ox.vector.z + src->oy.vector.z + src->oz.vector.z;
+	dst->x = src->x * crdstm->ox.vector.x + src->y * crdstm->oy.vector.x + src->z * crdstm->oz.vector.x;
+	dst->y = src->x * crdstm->ox.vector.y + src->y * crdstm->oy.vector.y + src->z * crdstm->oz.vector.y;
+	dst->z = src->x * crdstm->ox.vector.z + src->y * crdstm->oy.vector.z + src->z * crdstm->oz.vector.z;
+	if (comparef(scale, 1, 0.001))
+		return ;
+	dst->x *= scale;
+	dst->y *= scale;
+	dst->z *= scale;
 }
 
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm)
 {
 	int		i;
-	t_cart	k;
 
-	gettranskoef(crdstm, &k);
 	i = -1;
 	while (++i < dots->dotsnum)
 	{
-		dotcrdstmtrnsltn(&dots->dots[i].dot, &dots->pos[i].dot, dots->scale, &k);
+		dotcrdstmtrnsltn(&dots->dots[i].dot, &dots->pos[i].dot, dots->scale, crdstm);
 		dots->pos[i].dot.x += crdstm->pos.x;
 		dots->pos[i].dot.y += crdstm->pos.y;
 		dots->pos[i].dot.z += crdstm->pos.z;
-		dotcrdstmtrnsltn(&dots->dots[i].norm, &dots->pos[i].norm, 1, &k);
+		dotcrdstmtrnsltn(&dots->dots[i].norm, &dots->pos[i].norm, 1, crdstm);
 	}
 	i = -1;
 	while (++i < polys->polynum)
-		dotcrdstmtrnsltn(&polys->poly[i].srcnorm, &polys->poly[i].norm, 1, &k);
+		dotcrdstmtrnsltn(&polys->poly[i].srcnorm, &polys->poly[i].norm, 1, crdstm);
 }
 
 void	flatanglehandler(t_rot *rot, t_cart *ref)
