@@ -1,16 +1,15 @@
 #include "minirt.h"
 
-void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs)
+void	createcamobjs(t_list **camobjs, t_list *objs)
 {
 	t_obj	*camobj;
 	t_obj	*obj;
 
 	while (objs)
 	{
-		obj = objcast(objs);
+		obj = objs->content;
 		ft_lstadd_back(camobjs, ft_lstnew(malloc(sizeof(*camobj))));
-		ft_lstadd_back(outframe, ft_lstnew((*camobjs)->content));
-		camobj = objcast(ft_lstlast(*camobjs));
+		camobj = ft_lstlast(*camobjs)->content;
 		camobj->rot = obj->rot;
 		camobj->outframe = obj->outframe;
 		camobj->dots.dotsnum = obj->dots.dotsnum;
@@ -36,20 +35,19 @@ void	initview(t_list *objs, t_camera *camera)
 	t_rot	rot;
 
 	objtoobjaxis(WORLD, &camera->crdstm, &rot);
+	objtoobjpos(&camera->crdstm.pos, &camera->lightpos);
+	quartrot(&camera->lightpos, &rot.axis);
+	quartrot(&camera->lightpos, &rot.xyaxis);
 	crsr = objs;
-	camcrsr = camera->camobjs.objs;
+	camcrsr = camera->objs;
 	while (crsr)
 	{
-		camobj = objcast(camcrsr);
+		camobj = camcrsr->content;
 		crdstmcopy(&objcast(crsr)->crdstm, &camobj->crdstm);
 		objtoobjpos(&camera->crdstm.pos, &camobj->crdstm.pos);
 		quartrot(&camobj->crdstm.pos, &rot.axis);
 		quartrot(&camobj->crdstm.pos, &rot.xyaxis);
 		crdstmrotbyaxis(&camobj->crdstm, &rot.axis, &rot.xyaxis);
-		if (objinframe(camobj, camera))
-			objexchanger(camcrsr, &camera->camobjs.inframe, &camera->camobjs.outframe, &camera->camobjs);
-		else
-			objexchanger(camcrsr, &camera->camobjs.outframe, &camera->camobjs.inframe, &camera->camobjs);
 		engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
 		camcrsr = camcrsr->next;
 		crsr = crsr->next;

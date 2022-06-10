@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mousecontrol.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:06 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/09 23:32:11 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/10 18:33:09 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,11 @@ void	camrotating(t_camera *camera, void *win, int x, int y)
 	dotcrdstmtrnsltn(&axis.vector, &curpos.vector, 1, &camera->crdstm);
 	crdstmrotbyaxis(&camera->crdstm, &curpos, NULL);
 	negativevector(&axis.vector);
-	crsr = camera->camobjs.objs;
+	quartrot(&camera->lightpos, &axis);
+	crsr = camera->objs;
 	while (crsr)
 	{
-		obj = objcast(crsr);
+		obj = crsr->content;
 		crdstmrotbyaxis(&obj->crdstm, &axis, NULL);
 		quartrot(&obj->crdstm.pos, &axis);
 		engine(&obj->dots, &obj->polys, &obj->crdstm);

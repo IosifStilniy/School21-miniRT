@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/09 23:05:00 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/11 00:07:05 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,16 +69,16 @@
 #  define RESY 600
 # endif
 
-# ifndef OFST
-#  define OFST 0.05
-# endif
-
 # ifndef SHIFT_SPEED
 #  define SHIFT_SPEED 50
 # endif
 
 # ifndef DEFANG
 #  define DEFANG 15
+# endif
+
+# ifndef FRAMECLR
+#  define FRAMECLR 0x00FFFFFF
 # endif
 
 # ifndef PRMTVS
@@ -90,7 +90,7 @@
 # endif
 
 # ifndef RNDSGMNTS
-#  define RNDSGMNTS 6
+#  define RNDSGMNTS 8
 # endif
 
 # ifndef INVINP
@@ -129,7 +129,7 @@
 #  define WORLD NULL
 # endif
 
-typedef int	t_bool;
+typedef int		t_bool;
 
 typedef struct s_res {
 	int	x;
@@ -195,6 +195,8 @@ typedef struct s_dots {
 	t_vrtx	*dots;
 	t_vrtx	*pos;
 	float	scale;
+	int		(*rout)[2];
+	int		routsize;
 }	t_dots;
 
 typedef struct s_polys {
@@ -212,24 +214,14 @@ typedef struct s_obj {
 	t_rot		*rot;
 }	t_obj;
 
-typedef struct s_camobjs {
-	t_list	*objs;
-	t_list	*inframe;
-	t_list	*outframe;
-}	t_camobjs;
-
-typedef struct s_view {
-	float	focus;
-	float	xfov;
-	float	yfov;
-}	t_view;
-
 typedef struct s_camera {
 	t_crdstm	crdstm;
-	t_view		view;
-	t_camobjs	camobjs;
+	t_bool		framemod;
+	float		focus;
+	float		fov;
+	t_list		*objs;
 	t_rot		*rot;
-	t_cart		corners[4];
+	t_cart		lightpos;
 	t_bool		determined;
 }	t_camera;
 
@@ -265,7 +257,6 @@ typedef struct s_info
 	t_rot		rot;
 	t_data		data;
 	char		*prog;
-	int			total;
 	t_mouse		mouse;
 	t_keybrd	keybrd;
 }	t_info;
@@ -342,10 +333,8 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 
 // View constructor
 
-void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs);
-void	createview(t_camera *camera);
+void	createcamobjs(t_list **camobjs, t_list *objs);
 void	initview(t_list *objs, t_camera *camera);
-t_bool	objinframe(t_obj *obj, t_camera *camera);
 
 // Hooks for orientation and movement in space
 
@@ -362,11 +351,9 @@ int		btnup(int btn, int x, int y, t_info *info);
 
 //Utils
 
-t_cart	*cartcast(t_list *lst);
 t_bool	comparef(float num, float ref, float interval);
 void	customerr(char *prog, char *txt, t_bool infile);
 int		error_handler(char *prog, char *place, int funcres);
-void	objexchanger(t_list *obj, t_list **dst, t_list **src, t_camobjs *collection);
 t_obj	*objcast(t_list *lst);
 
 // MyFUncs

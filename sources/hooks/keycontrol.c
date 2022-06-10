@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   keycontrol.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:43:02 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/09 22:48:03 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/10 19:18:42 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,6 @@ void	keyshifting(int keycode, t_info *info)
 		cartcopy(&info->win.camera.crdstm.oz.vector, &camdir, 1);
 	dotstranslation(&info->lights.pos, 1, &objsdir, SHIFT_SPEED);
 	camshifting(&info->win.camera, &camdir, &objsdir, SHIFT_SPEED);
-	t_obj	*obj;
-
-	obj = info->win.camera.camobjs.objs->content;
-	printf("crdstm: %.3f %.3f %.3f\n", obj->crdstm.pos.x, obj->crdstm.pos.y, obj->crdstm.pos.z);
-	printf("dot1: %.3f %.3f %.3f\n", obj->dots.pos->dot.x, obj->dots.pos->dot.y, obj->dots.pos->dot.z);
-	printf("rad: %.3f\n", obj->outframe);
 	ft_draw_screen(info);
 	// t_list *crsr;
 	// t_obj *obj;

@@ -10,9 +10,8 @@ void	camshifting(t_camera *camera, t_cart *camdir, t_cart *objsdir, float step)
 	camera->crdstm.pos.x += res.x;
 	camera->crdstm.pos.y += res.y;
 	camera->crdstm.pos.z += res.z;
-	// (void)camdir;
 	vectorsizing(step, objsdir, &res, NULL);
-	crsr = camera->camobjs.objs;
+	crsr = camera->objs;
 	while (crsr)
 	{
 		obj = objcast(crsr);

@@ -28,11 +28,6 @@ t_obj	*objcast(t_list *lst)
 	return (lst->content);
 }
 
-t_cart	*cartcast(t_list *lst)
-{
-	return (lst->content);
-}
-
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 {
 	char	*dst;

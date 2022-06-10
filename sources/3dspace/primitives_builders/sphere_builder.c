@@ -5,18 +5,20 @@ static void	surfdefiner(t_vrtx *dots, t_poly **poly, int dotnum, void *txtr)
 	int	dotindxs[3];
 
 	dotindxs[0] = dotnum;
-	dotindxs[1] = dotnum - 1;
-	dotindxs[2] = dotnum - 1 - (RNDSGMNTS - 2);
-	surfing(*poly, dotindxs, dots, txtr);
 	dotindxs[1] = dotnum - 1 - (RNDSGMNTS - 2);
-	dotindxs[2] = dotnum - (RNDSGMNTS - 2);
+	dotindxs[2] = dotnum - 1;
 	surfing(++(*poly), dotindxs, dots, txtr);
-	(*poly)++;
+	dotindxs[1] = dotnum - (RNDSGMNTS - 2);
+	dotindxs[2] = dotnum - 1 - (RNDSGMNTS - 2);
+	surfing(++(*poly), dotindxs, dots, txtr);
 }
 
 static int	beltsurfing(t_vrtx *dots, t_poly **polys, int dotnum, void *txtr)
 {
 	int	dotsinround;
+	t_poly *p;
+
+	p = *polys;
 	dotsinround = 0;
 	while (++dotsinround < (RNDSGMNTS - 2) / 2)
 		surfdefiner(dots, polys, ++dotnum, txtr);
@@ -29,7 +31,9 @@ static void	dotfiller(t_vrtx *dots, t_poly *polys, float radius, void *txtr)
 	int		dotnum;
 	float	step;
 	t_axis	rotltd;
+	t_poly *p;
 
+	p = polys;
 	definepols(dots, radius, NULL);
 	dotnum = 2 + circledotsfiller(&dots[2], radius, NULL, TRUE);
 	vectorbuilder(1, 0, 0, &rotltd);
@@ -42,6 +46,7 @@ static void	dotfiller(t_vrtx *dots, t_poly *polys, float radius, void *txtr)
 		dotnum = beltsurfing(dots, &polys, dotnum, txtr);
 		dotnum = beltsurfing(dots, &polys, dotnum, txtr);
 	}
+	printf("dif: %lu\n", polys - p);
 }
 
 static void	jointing(t_vrtx *dots, t_poly *polys, int dotsnum, void *txtr)
@@ -75,7 +80,8 @@ float	spherebuilder(t_dots *dots, t_polys *polys, float radius)
 	dots->dots = malloc(sizeof(*dots->dots) * dots->dotsnum);
 	polys->poly = malloc(sizeof(*polys->poly) * polys->polynum);
 	dotfiller(dots->dots, polys->poly - 1, radius, polys->txtr);
-	polyshift = (RNDSGMNTS * (RNDSGMNTS - 5) - 2) * 2 - 1;
+	polyshift = ((RNDSGMNTS - 2) * (RNDSGMNTS / 2 - 2)) * 2 - 1;
+	printf("polyshift: %d\n", polyshift);
 	if (polyshift > 0)
 		jointing(dots->dots, polys->poly + polyshift, dots->dotsnum, polys->txtr);
 	polyshift = polys->polynum - RNDSGMNTS * 2 - 1;
@@ -83,6 +89,9 @@ float	spherebuilder(t_dots *dots, t_polys *polys, float radius)
 	lttd = 0;
 	while (++lttd < RNDSGMNTS / 2)
 		polarsurfing(dots->dots, &buf, lttd, polys->txtr);
-	polarjointing(dots->dots, polys->poly + polys->polynum - 6, polys->txtr, dots->dotsnum);
+	polarjointing(dots->dots, polys->poly + polys->polynum - 5, polys->txtr, dots->dotsnum);
+	int	i = -1;
+	while (++i < polys->polynum)
+		printf("ind: %d dots: %d %d %d\n", i + 1, polys->poly[i].dots[0], polys->poly[i].dots[1], polys->poly[i].dots[2]);
 	return (radius);
 }

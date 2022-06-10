@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_main.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/09 22:51:07 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/10 19:19:03 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static void	ft_raytracing_algorithm(t_info *info)
 	t_cart	ray;
 	int		color;
 
-	screen_pixel.z = info->win.camera.view.focus;
+	screen_pixel.z = info->win.camera.focus;
 	screen_pixel.y = -1;
 	while (++screen_pixel.y < RESY)
 	{
@@ -64,7 +64,7 @@ static void	ft_raytracing_algorithm(t_info *info)
 		while (++screen_pixel.x < RESX)
 		{
 			ray = ft_cast_ray(screen_pixel.x - info->win.cntr.x, info->win.cntr.y - screen_pixel.y, screen_pixel.z);
-			color = ft_find_shapes(info, ray, info->win.camera.camobjs.objs);
+			color = ft_find_shapes(info, ray, info->win.camera.objs);
 			my_mlx_pixel_put(&info->data, screen_pixel.x,
 				screen_pixel.y, color);
 		}

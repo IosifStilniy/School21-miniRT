@@ -31,7 +31,7 @@ FLAGS		=	-Wall -Werror -Wextra -Imlx -I$(HEAD) -I$(LIBPATH) -I$(GNL_HEAD) #-g -f
 
 RM			=	rm -f
 
-%.o:	%.c
+%.o:	%.c $(HEAD)/minirt.h
 		$(GCC) $(FLAGS) -c $< -o $@ 
 
 $(NAME):	$(HEADS) $(LIB) $(OBJS)
