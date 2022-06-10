@@ -5,13 +5,12 @@ static void	surfdefiner(t_vrtx *dots, t_poly **poly, int dotnum, void *txtr)
 	int	dotindxs[3];
 
 	dotindxs[0] = dotnum;
-	dotindxs[1] = dotnum - 1;
-	dotindxs[2] = dotnum - 1 - (RNDSGMNTS - 2);
-	surfing(*poly, dotindxs, dots, txtr);
 	dotindxs[1] = dotnum - 1 - (RNDSGMNTS - 2);
-	dotindxs[2] = dotnum - (RNDSGMNTS - 2);
+	dotindxs[2] = dotnum - 1;
 	surfing(++(*poly), dotindxs, dots, txtr);
-	(*poly)++;
+	dotindxs[1] = dotnum - (RNDSGMNTS - 2);
+	dotindxs[2] = dotnum - 1 - (RNDSGMNTS - 2);
+	surfing(++(*poly), dotindxs, dots, txtr);
 }
 
 static int	beltsurfing(t_vrtx *dots, t_poly **polys, int dotnum, void *txtr)
@@ -37,7 +36,7 @@ static void	dotfiller(t_vrtx *dots, t_poly *polys, float radius, void *txtr)
 	lttd = 0;
 	while (++lttd < RNDSGMNTS / 2)
 	{
-		rotltd.ang = step * lttd;
+		rotltd.ang += step;
 		circledotsfiller(&dots[dotnum], radius, &rotltd, TRUE);
 		dotnum = beltsurfing(dots, &polys, dotnum, txtr);
 		dotnum = beltsurfing(dots, &polys, dotnum, txtr);
@@ -75,7 +74,7 @@ float	spherebuilder(t_dots *dots, t_polys *polys, float radius)
 	dots->dots = malloc(sizeof(*dots->dots) * dots->dotsnum);
 	polys->poly = malloc(sizeof(*polys->poly) * polys->polynum);
 	dotfiller(dots->dots, polys->poly - 1, radius, polys->txtr);
-	polyshift = (RNDSGMNTS * (RNDSGMNTS - 5) - 2) * 2 - 1;
+	polyshift = ((RNDSGMNTS - 2) * (RNDSGMNTS / 2 - 2)) * 2 - 1;
 	if (polyshift > 0)
 		jointing(dots->dots, polys->poly + polyshift, dots->dotsnum, polys->txtr);
 	polyshift = polys->polynum - RNDSGMNTS * 2 - 1;
@@ -83,6 +82,6 @@ float	spherebuilder(t_dots *dots, t_polys *polys, float radius)
 	lttd = 0;
 	while (++lttd < RNDSGMNTS / 2)
 		polarsurfing(dots->dots, &buf, lttd, polys->txtr);
-	polarjointing(dots->dots, polys->poly + polys->polynum - 6, polys->txtr, dots->dotsnum);
+	polarjointing(dots->dots, polys->poly + polys->polynum - 5, polys->txtr, dots->dotsnum);
 	return (radius);
 }

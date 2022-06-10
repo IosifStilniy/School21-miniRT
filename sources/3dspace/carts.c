@@ -19,9 +19,9 @@ void	cartcopy(t_cart *src, t_cart *dst, int count)
 
 void	negativevector(t_cart *dot)
 {
-	dot->x *= -1;
-	dot->y *= -1;
-	dot->z *= -1;
+	dot->x = -dot->x;
+	dot->y = -dot->y;
+	dot->z = -dot->z;
 }
 
 void	vectodot(t_cart *vector, t_cart *start, t_bool normilize)

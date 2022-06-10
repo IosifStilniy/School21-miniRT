@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/09 23:05:00 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/11 00:04:05 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@
 # endif
 
 # ifndef RNDSGMNTS
-#  define RNDSGMNTS 6
+#  define RNDSGMNTS 24
 # endif
 
 # ifndef INVINP
@@ -344,7 +344,7 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 
 void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs);
 void	createview(t_camera *camera);
-void	initview(t_list *objs, t_camera *camera);
+void	initview(t_list *objs, t_camera *camera, t_cart *ligthpos);
 t_bool	objinframe(t_obj *obj, t_camera *camera);
 
 // Hooks for orientation and movement in space
@@ -384,8 +384,10 @@ t_cart	ft_multiply_vectors(t_cart vect_a, t_cart vect_b);
 t_cart	ft_substract_vectors(t_cart vect_a, t_cart vect_b);
 t_cart	ft_get_cross_product(t_cart vect_a, t_cart vect_b);
 
-int		ft_find_light(t_cart phit, t_obj *object, t_info *info);
+int	ft_find_light(t_cart phit, t_cart norm, t_cart color, t_info *info);
 
+float	ft_get_intersection_with_poly(t_cart ray_dir,
+			t_cart ray_orig, t_cart norm_vector, t_cart pos);
 float	ft_get_intersection_with_plane(t_cart ray_dir,
 			t_cart ray_orig, t_obj *plane);
 float	ft_get_intersection_with_sphere(t_cart ray_dir,

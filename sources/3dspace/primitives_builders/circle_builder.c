@@ -14,25 +14,24 @@ void	definepols(t_vrtx *dots, float radius, t_axis *rotcircle)
 
 int	circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skippols)
 {
-	int		step;
-	int		numstep;
+	float	step;
 	int		dotnum;
 	t_axis	rotdot;
 
 	step = 2 * M_PI / RNDSGMNTS;
 	vectorbuilder(0, 0, 1, &rotdot);
+	rotdot.ang = step * skippols;
 	dotnum = -1;
 	while (++dotnum < RNDSGMNTS - 2 * skippols)
 	{
 		cartbuilder(0, 0, 0, &dots[dotnum].norm);
 		cartbuilder(radius, 0, 0, &dots[dotnum].dot);
-		numstep = dotnum;
-		if (skippols)
-			numstep += 1 + (dotnum > (RNDSGMNTS - 2) / 2);
-		rotdot.ang = step * numstep;
 		quartrot(&dots[dotnum].dot, &rotdot);
 		if (rotcircle)
 			quartrot(&dots[dotnum].dot, rotcircle);
+		rotdot.ang += step;
+		if (skippols && dotnum + 1 == (RNDSGMNTS - 2) / 2)
+			rotdot.ang += step;
 	}
 	return (dotnum);
 }

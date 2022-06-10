@@ -28,7 +28,7 @@ void	createcamobjs(t_list **camobjs, t_list **outframe, t_list *objs)
 	}
 }
 
-void	initview(t_list *objs, t_camera *camera)
+void	initview(t_list *objs, t_camera *camera, t_cart *ligthpos)
 {
 	t_list	*crsr;
 	t_list	*camcrsr;
@@ -38,6 +38,9 @@ void	initview(t_list *objs, t_camera *camera)
 	objtoobjaxis(WORLD, &camera->crdstm, &rot);
 	crsr = objs;
 	camcrsr = camera->camobjs.objs;
+	objtoobjpos(&camera->crdstm.pos, ligthpos);
+	quartrot(ligthpos, &rot.axis);
+	quartrot(ligthpos, &rot.xyaxis);
 	while (crsr)
 	{
 		camobj = objcast(camcrsr);
