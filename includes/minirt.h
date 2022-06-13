@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/11 00:07:05 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/13 16:08:33 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,7 +310,7 @@ void	camshifting(t_camera *camera, t_cart *camdir, t_cart *objsdir, float step);
 void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
 void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_crdstm *crdstm);
-void	dotstranslation(t_cart *dots, int dotnum, t_cart *direction, float step);
+void	dottranslation(t_cart *dot, t_cart *direction, float step);
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm);
 void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot);
 void	objtoobjpos(t_cart *center, t_cart *dot);
@@ -326,8 +326,8 @@ void	crdstmcopy(t_crdstm *src, t_crdstm *dst);
 void	flatanglehandler(t_rot *rot, t_cart *ref);
 void	vectodot(t_cart *vector, t_cart *start, t_bool normilize);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
+float	vectorlength(t_cart *dot);
 void	vectorsizing(float newlength, t_cart *src, t_cart *vecres, float *lngthres);
-void	vectortoobj(t_cart *from, t_cart *to, t_axis *vector);
 void	negativevector(t_cart *dot);
 void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 

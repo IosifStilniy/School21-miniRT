@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/10 23:16:38 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/13 16:47:16 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,15 @@ int	main(int argc, char **argv)
 	info.mlx_ptr = mlx_init();
 	wininit(&info, info.prog, *argv);
 	ft_read_information(fd, &info);
-	// createframerouts(info.objects);
-	// info.win.camera.objs = NULL;
-	// createcamobjs(&info.win.camera.objs, info.objects);
-	// info.win.camera.lightpos = info.lights.pos;
-	// initview(info.objects, &info.win.camera);
+	createframerouts(info.objects);
+	info.win.camera.objs = NULL;
+	createcamobjs(&info.win.camera.objs, info.objects);
+	info.win.camera.lightpos = info.lights.pos;
+	initview(info.objects, &info.win.camera);
 	// ft_draw_screen(&info);
-	// mlx_hook(info.win.win, 2, 1L, &keydownhndlr, &info);
-	// mlx_hook(info.win.win, 3, 1L << 1, &keyuphndlr, &info);
-	// mlx_hook(info.win.win, 6, 1L << 6, &mousemove, &info);
-	// mlx_loop(info.mlx_ptr);
+	mlx_hook(info.win.win, 2, 1L, &keydownhndlr, &info);
+	mlx_hook(info.win.win, 3, 1L << 1, &keyuphndlr, &info);
+	mlx_hook(info.win.win, 6, 1L << 6, &mousemove, &info);
+	mlx_loop(info.mlx_ptr);
 	return (0);
 }

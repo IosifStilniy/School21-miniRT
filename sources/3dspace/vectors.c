@@ -9,6 +9,11 @@ void	vectorbuilder(float x, float y, float z, t_axis *vector)
 		vector->ang = DEFANG * M_PI / 180;
 }
 
+float	vectorlength(t_cart *dot)
+{
+	return (sqrtf(powf(dot->x, 2) + powf(dot->y, 2) + powf(dot->z, 2)));
+}
+
 void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm)
 {
 	t_cart	d1;
@@ -53,14 +58,6 @@ void	axisbuilder(t_cart *v1, t_cart *v2, t_axis *axis)
 	axis->vector.x /= axis->length;
 	axis->vector.y /= axis->length;
 	axis->vector.z /= axis->length;
-}
-
-void	vectortoobj(t_cart *from, t_cart *to, t_axis *vector)
-{
-	vector->vector.x = to->x - from->x;
-	vector->vector.y = to->y - from->y;
-	vector->vector.z = to->z - from->z;
-	vector->length = sqrtf(powf(vector->vector.x, 2) + powf(vector->vector.y, 2) + powf(vector->vector.z, 2));
 }
 
 void	vectorsizing(float newlength, t_cart *src, t_cart *vecres, float *lngthres)

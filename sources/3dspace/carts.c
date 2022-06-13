@@ -49,17 +49,12 @@ void	crdstmcopy(t_crdstm *src, t_crdstm *dst)
 	cartcopy(&src->oz.vector, &dst->oz.vector, 1);
 }
 
-void	dotstranslation(t_cart *dots, int dotnum, t_cart *direction, float step)
+void	dottranslation(t_cart *dot, t_cart *direction, float step)
 {
 	t_axis	res;
-	int		i;
 
 	vectorsizing(step, direction, &res.vector, &res.length);
-	i = -1;
-	while (++i < dotnum)
-	{
-		dots[i].x += res.vector.x;
-		dots[i].y += res.vector.y;
-		dots[i].z += res.vector.z;
-	}
+	dot->x += res.vector.x;
+	dot->y += res.vector.y;
+	dot->z += res.vector.z;
 }

@@ -12,12 +12,12 @@ void	createcamobjs(t_list **camobjs, t_list *objs)
 		camobj = ft_lstlast(*camobjs)->content;
 		camobj->rot = obj->rot;
 		camobj->outframe = obj->outframe;
+		camobj->dots.routsize = obj->dots.routsize;
+		camobj->dots.rout = obj->dots.rout;
 		camobj->dots.dotsnum = obj->dots.dotsnum;
 		camobj->dots.dots = obj->dots.dots;
 		if (camobj->dots.dotsnum)
 			camobj->dots.pos = malloc(sizeof(*camobj->dots.pos) * camobj->dots.dotsnum);
-		else
-			camobj->dots.pos = malloc(sizeof(*camobj->dots.pos) * 4);
 		camobj->dots.scale = obj->dots.scale;
 		camobj->polys.poly = obj->polys.poly;
 		camobj->polys.txtr = obj->polys.txtr;
