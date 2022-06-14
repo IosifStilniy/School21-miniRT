@@ -73,6 +73,12 @@ void	createframerouts(t_list *objs)
 	while (objs)
 	{
 		obj = objs->content;
+		obj->dots.rout = NULL;
+		if (!obj->dots.dotsnum)
+		{
+			objs = objs->next;
+			continue ;
+		}
 		createroutlist(obj->polys.poly, obj->polys.polynum, &routs);
 		obj->dots.routsize = lsttointarr(routs, &obj->dots.rout);
 		ft_lstclear(&routs, &free);

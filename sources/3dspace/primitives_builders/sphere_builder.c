@@ -16,9 +16,7 @@ static void	surfdefiner(t_vrtx *dots, t_poly **poly, int dotnum, void *txtr)
 static int	beltsurfing(t_vrtx *dots, t_poly **polys, int dotnum, void *txtr)
 {
 	int	dotsinround;
-	t_poly *p;
 
-	p = *polys;
 	dotsinround = 0;
 	while (++dotsinround < (RNDSGMNTS - 2) / 2)
 		surfdefiner(dots, polys, ++dotnum, txtr);
@@ -31,17 +29,16 @@ static void	dotfiller(t_vrtx *dots, t_poly *polys, float radius, void *txtr)
 	int		dotnum;
 	float	step;
 	t_axis	rotltd;
-	t_poly *p;
 
-	p = polys;
 	definepols(dots, radius, NULL);
 	dotnum = 2 + circledotsfiller(&dots[2], radius, NULL, TRUE);
 	vectorbuilder(1, 0, 0, &rotltd);
 	step = 2 * M_PI / RNDSGMNTS;
 	lttd = 0;
+	rotltd.ang = 0;
 	while (++lttd < RNDSGMNTS / 2)
 	{
-		rotltd.ang = step * lttd;
+		rotltd.ang += step;
 		circledotsfiller(&dots[dotnum], radius, &rotltd, TRUE);
 		dotnum = beltsurfing(dots, &polys, dotnum, txtr);
 		dotnum = beltsurfing(dots, &polys, dotnum, txtr);

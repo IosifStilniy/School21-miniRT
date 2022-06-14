@@ -10,6 +10,10 @@ void	paintdot(t_cart *dot, t_cart *dir, t_data *img, t_bool *painted)
 	*painted += ((dot->y < 0 && dir->y < 0) || (dot->y > RESY - 1 && dir->y > 0));
 	if ((*painted))
 		return ;
+	if (dot->x < 0 || dot->x > RESX - 1)
+		return ;
+	if (dot->y < 0 || dot->y > RESY - 1)
+		return ;
 	x = lrintf(dot->x);
 	y = lrintf(dot->y);
 	pxl = img->addr + y * img->line_length + x * (img->bits_per_pixel / 8);
@@ -23,10 +27,10 @@ long int	dirdefiner(t_cart *start, t_cart *dir)
 
 	objtoobjpos(start, dir);
 	length = vectorlength(dir);
+	vectorsizing(1, dir, dir, NULL);
 	cartbuilder(dir->x, dir->y, 0, &xydir);
-	vectorsizing(1, &xydir, &xydir, NULL);
-	cartbuilder(xydir.x, xydir.y, dir->z, dir);
-	return (lrintf(length / vectorlength(dir)) + 1);
+	vectorsizing(1 / vectorlength(&xydir), dir, dir, NULL);
+	return (ceilf(length / vectorlength(dir)) + 1);
 }
 
 void	paintline(t_cart start, t_cart end, float focus, t_data *img)
@@ -63,6 +67,8 @@ t_bool	objinframe(t_obj *obj, t_res *winctr, float focus)
 	t_cart	edgedir;
 	float	dstnc;
 
+	if (!obj->dots.dotsnum)
+		return (planeinframe());
 	dstnc = obj->crdstm.pos.z;
 	dstnc += comparef(dstnc, 0, 0.001);
 	if (dstnc < 0 && fabsf(dstnc) > obj->outframe)
@@ -72,8 +78,8 @@ t_bool	objinframe(t_obj *obj, t_res *winctr, float focus)
 	if (vectorlength(&edgedir) < obj->outframe)
 		return (TRUE);
 	dottranslation(&objpos, &edgedir, obj->outframe);
-	objpos.x *= objpos.x * focus / dstnc + winctr->x;
-	objpos.y *= objpos.y * focus / dstnc + winctr->y;
+	objpos.x = objpos.x * focus / dstnc + winctr->x;
+	objpos.y = objpos.y * focus / dstnc + winctr->y;
 	if (!(0 <= objpos.x && objpos.x <= RESX))
 		return (FALSE);
 	return ((0 <= objpos.y && objpos.y <= RESY));
@@ -86,22 +92,22 @@ void	framepic(t_win *win, t_list *camobjs, t_data *img, void *mlx)
 	t_vrtx	*pos;
 	int		i;
 
-	// img->img = mlx_new_image(mlx, RESX, RESY);
-	// img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
+	img->img = mlx_new_image(mlx, RESX, RESY);
+	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
 	ft_bzero(img->addr, img->line_length * RESY);
 	while (camobjs)
 	{
 		obj = camobjs->content;
-		inframe = obj->dots.dotsnum;
-		if (inframe)
-			inframe = objinframe(obj, &win->cntr, win->camera.focus);
+		inframe = objinframe(obj, &win->cntr, win->camera.focus);
+		if (!obj->dots.dotsnum)
+			planeframing();
 		pos = obj->dots.pos;
 		i = -1;
-		while (inframe && ++i < obj->dots.routsize)
+		while (obj->dots.dotsnum && inframe && ++i < obj->dots.routsize)
 			paintline(pos[obj->dots.rout[i][0]].dot,
 				pos[obj->dots.rout[i][1]].dot, win->camera.focus, img);
 		camobjs = camobjs->next;
 	}
-	mlx_put_image_to_window(mlx, win->win, img->img, win->cntr.x - img->cntr.x, win->cntr.x - img->cntr.y);
-	// mlx_destroy_image(mlx, img->img);
+	mlx_put_image_to_window(mlx, win->win, img->img, win->cntr.x - img->cntr.x, win->cntr.y - img->cntr.y);
+	mlx_destroy_image(mlx, img->img);
 }

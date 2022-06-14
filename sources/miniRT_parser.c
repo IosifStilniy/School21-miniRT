@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/10 18:46:52 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/14 22:02:14 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,22 @@ static void	primitivesbuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 	objcast(*objs)->dots.scale = 1;
 }
 
+void	definecamera(t_camera *camera, t_res *wincntr)
+{
+	int	i;
+
+	camera->focus = wincntr->x / tanf(camera->fov);
+	if (camera->focus < 1)
+		camera->focus = 1;
+	cartbuilder(-wincntr->x, -wincntr->y, camera->focus, &camera->corners[0]);
+	cartbuilder(wincntr->x, -wincntr->y, camera->focus, &camera->corners[1]);
+	cartbuilder(wincntr->x, wincntr->y, camera->focus, &camera->corners[2]);
+	cartbuilder(-wincntr->x, wincntr->y, camera->focus, &camera->corners[3]);
+	i = -1;
+	while (++i < 4)
+		vectorsizing(1, &camera->corners[i], &camera->corners[i], NULL);
+}
+
 void	ft_read_information(int fd, t_info *info)
 {
 	char	*line;
@@ -118,7 +134,5 @@ void	ft_read_information(int fd, t_info *info)
 	}
 	if (!(info->win.camera.determined * info->lights.determined * info->a_light.determined))
 		customerr(info->prog, "undefined camera and/or lights", TRUE);
-	info->win.camera.focus = info->win.cntr.x / tanf(info->win.camera.fov);
-	if (info->win.camera.focus < 1)
-		info->win.camera.focus = 1;
+	definecamera(&info->win.camera, &info->win.cntr);
 }

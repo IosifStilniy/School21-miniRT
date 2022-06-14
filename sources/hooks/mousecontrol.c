@@ -6,13 +6,13 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:06 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/14 18:51:39 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/14 21:04:30 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-void	camrotating(t_camera *camera, void *win, int x, int y)
+void	camrotating(t_win *win, int x, int y)
 {
 	t_axis	curpos;
 	t_cart	oz;
@@ -20,18 +20,17 @@ void	camrotating(t_camera *camera, void *win, int x, int y)
 	t_list	*crsr;
 	t_obj	*obj;
 
-	cartbuilder(x, -y, 4000, &curpos.vector);
+	cartbuilder(x, y, 1000, &curpos.vector);
 	vectorsizing(1, &curpos.vector, &curpos.vector, NULL);
 	cartbuilder(0, 0, 1, &oz);
 	axisbuilder(&oz, &curpos.vector, &axis);
-	if (comparef(axis.ang, 0, 0.5 * M_PI / 180))
+	if (comparef(axis.ang, 0, 0.1 * M_PI / 180))
 		return ;
-	mlx_mouse_move(win, 0, 270);
-	dotcrdstmtrnsltn(&axis.vector, &curpos.vector, 1, &camera->crdstm);
-	crdstmrotbyaxis(&camera->crdstm, &curpos, NULL);
+	dotcrdstmtrnsltn(&axis.vector, &curpos.vector, 1, &win->camera.crdstm);
+	crdstmrotbyaxis(&win->camera.crdstm, &curpos, NULL);
 	negativevector(&axis.vector);
-	quartrot(&camera->lightpos, &axis);
-	crsr = camera->objs;
+	quartrot(&win->camera.lightpos, &axis);
+	crsr = win->camera.objs;
 	while (crsr)
 	{
 		obj = crsr->content;

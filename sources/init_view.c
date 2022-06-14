@@ -12,12 +12,11 @@ void	createcamobjs(t_list **camobjs, t_list *objs)
 		camobj = ft_lstlast(*camobjs)->content;
 		camobj->rot = obj->rot;
 		camobj->outframe = obj->outframe;
-		camobj->dots.routsize = obj->dots.routsize;
 		camobj->dots.rout = obj->dots.rout;
+		camobj->dots.routsize = obj->dots.routsize;
 		camobj->dots.dotsnum = obj->dots.dotsnum;
 		camobj->dots.dots = obj->dots.dots;
-		if (camobj->dots.dotsnum)
-			camobj->dots.pos = malloc(sizeof(*camobj->dots.pos) * camobj->dots.dotsnum);
+		camobj->dots.pos = malloc(sizeof(*camobj->dots.pos) * (camobj->dots.dotsnum + (!camobj->dots.dotsnum)));
 		camobj->dots.scale = obj->dots.scale;
 		camobj->polys.poly = obj->polys.poly;
 		camobj->polys.txtr = obj->polys.txtr;
@@ -27,7 +26,7 @@ void	createcamobjs(t_list **camobjs, t_list *objs)
 	}
 }
 
-void	initview(t_list *objs, t_camera *camera)
+void	initview(t_list *objs, t_camera *camera, t_cart *ligthpos)
 {
 	t_list	*crsr;
 	t_list	*camcrsr;
@@ -40,6 +39,9 @@ void	initview(t_list *objs, t_camera *camera)
 	quartrot(&camera->lightpos, &rot.xyaxis);
 	crsr = objs;
 	camcrsr = camera->objs;
+	objtoobjpos(&camera->crdstm.pos, ligthpos);
+	quartrot(ligthpos, &rot.axis);
+	quartrot(ligthpos, &rot.xyaxis);
 	while (crsr)
 	{
 		camobj = camcrsr->content;

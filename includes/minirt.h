@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/14 18:43:01 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/14 21:56:46 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@
 # endif
 
 # ifndef SHIFT_SPEED
-#  define SHIFT_SPEED 50
+#  define SHIFT_SPEED 5
 # endif
 
 # ifndef DEFANG
@@ -90,7 +90,7 @@
 # endif
 
 # ifndef RNDSGMNTS
-#  define RNDSGMNTS 8
+#  define RNDSGMNTS 24
 # endif
 
 # ifndef INVINP
@@ -225,6 +225,7 @@ typedef struct s_camera {
 	t_rot		*rot;
 	t_cart		lightpos;
 	t_bool		determined;
+	t_cart		corners[4];
 }	t_camera;
 
 typedef struct s_win {
@@ -236,9 +237,7 @@ typedef struct s_win {
 }	t_win;
 
 typedef struct s_mouse {
-	t_bool		shift;
-	t_bool		rot;
-	t_res		pos;
+	int	yshift;
 }	t_mouse;
 
 typedef struct s_keybrd {
@@ -261,6 +260,7 @@ typedef struct s_info
 	char		*prog;
 	t_mouse		mouse;
 	t_keybrd	keybrd;
+	int			kal;
 }	t_info;
 
 // Parsing the file.
@@ -307,7 +307,7 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
-void	camrotating(t_camera *camera, void *win, int x, int y);
+void	camrotating(t_win *win, int x, int y);
 void	camshifting(t_camera *camera, t_cart *camdir, t_cart *objsdir, float step);
 void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
@@ -337,7 +337,7 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 
 void	createcamobjs(t_list **camobjs, t_list *objs);
 void	createframerouts(t_list *objs);
-void	initview(t_list *objs, t_camera *camera);
+void	initview(t_list *objs, t_camera *camera, t_cart *ligthpos);
 void	framepic(t_win *win, t_list *camobjs, t_data *img, void *mlx);
 
 // Hooks for orientation and movement in space
@@ -375,8 +375,10 @@ t_cart	ft_multiply_vectors(t_cart vect_a, t_cart vect_b);
 t_cart	ft_substract_vectors(t_cart vect_a, t_cart vect_b);
 t_cart	ft_get_cross_product(t_cart vect_a, t_cart vect_b);
 
-int		ft_find_light(t_cart phit, t_obj *object, t_info *info);
+int		ft_find_light(t_cart phit, t_cart norm, t_cart color, t_info *info);
 
+float	ft_get_intersection_with_poly(t_cart ray_dir,
+	t_cart ray_orig, t_cart norm_vector, t_cart pos);
 float	ft_get_intersection_with_plane(t_cart ray_dir,
 			t_cart ray_orig, t_obj *plane);
 float	ft_get_intersection_with_sphere(t_cart ray_dir,
