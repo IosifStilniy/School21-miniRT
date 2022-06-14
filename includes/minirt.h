@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/13 16:08:33 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/14 18:43:01 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,8 @@
 #  define WORLD NULL
 # endif
 
-typedef int		t_bool;
+typedef int				t_bool;
+typedef unsigned int	t_ui;
 
 typedef struct s_res {
 	int	x;
@@ -139,6 +140,7 @@ typedef struct s_res {
 typedef struct	s_data {
 	void	*img;
 	t_res	res;
+	t_res	cntr;
 	char	*addr;
 	int		bits_per_pixel;
 	int		line_length;
@@ -334,7 +336,9 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 // View constructor
 
 void	createcamobjs(t_list **camobjs, t_list *objs);
+void	createframerouts(t_list *objs);
 void	initview(t_list *objs, t_camera *camera);
+void	framepic(t_win *win, t_list *camobjs, t_data *img, void *mlx);
 
 // Hooks for orientation and movement in space
 

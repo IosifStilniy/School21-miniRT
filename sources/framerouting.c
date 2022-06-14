@@ -12,6 +12,7 @@ t_bool	checkrout(int dot1, int dot2, t_list *routs)
 		exist *= (rout[1] == dot1 || rout[1] == dot2);
 		if (exist)
 			return (TRUE);
+		routs = routs->next;
 	}
 	return (FALSE);
 }
@@ -44,7 +45,7 @@ void	createroutlist(t_poly *polys, int polynum, t_list **routs)
 	}
 }
 
-int	lsttointarr(t_list *routs, int ***routarr)
+int	lsttointarr(t_list *routs, int (**routarr)[2])
 {
 	int	size;
 	int	i;
@@ -58,7 +59,7 @@ int	lsttointarr(t_list *routs, int ***routarr)
 		rout = routs->content;
 		(*routarr)[i][0] = rout[0];
 		(*routarr)[i][1] = rout[1];
-		routs = routs->content;
+		routs = routs->next;
 	}
 	return (size);
 }
@@ -68,10 +69,10 @@ void	createframerouts(t_list *objs)
 	t_list	*routs;
 	t_obj	*obj;
 
+	routs = NULL;
 	while (objs)
 	{
 		obj = objs->content;
-		routs = NULL;
 		createroutlist(obj->polys.poly, obj->polys.polynum, &routs);
 		obj->dots.routsize = lsttointarr(routs, &obj->dots.rout);
 		ft_lstclear(&routs, &free);

@@ -1,42 +1,56 @@
 #include "minirt.h"
 
-t_bool	paintdot(t_cart *dot, t_cart *dir)
+void	paintdot(t_cart *dot, t_cart *dir, t_data *img, t_bool *painted)
 {
 	long int	x;
 	long int	y;
+	char		*pxl;
 
-	if (dot->x < 0 && dir->x < 0)
-		return (FALSE);
-	if (dot->y < 0 && dir->y < 0)
-		return (FALSE);
-	if (dot->z < 0 && dir->z < 0)
-		return (FALSE);
+	*painted = ((dot->x < 0 && dir->x < 0) || (dot->x > RESX - 1 && dir->x > 0));
+	*painted += ((dot->y < 0 && dir->y < 0) || (dot->y > RESY - 1 && dir->y > 0));
+	if ((*painted))
+		return ;
+	x = lrintf(dot->x);
+	y = lrintf(dot->y);
+	pxl = img->addr + y * img->line_length + x * (img->bits_per_pixel / 8);
+	*(t_ui *)pxl = FRAMECLR;
 }
 
-void	paintline(t_cart start, t_cart end, t_win *win, t_data *img)
+long int	dirdefiner(t_cart *start, t_cart *dir)
 {
-	t_cart		dir;
 	t_cart		xydir;
 	float		length;
-	float		step;
+
+	objtoobjpos(start, dir);
+	length = vectorlength(dir);
+	cartbuilder(dir->x, dir->y, 0, &xydir);
+	vectorsizing(1, &xydir, &xydir, NULL);
+	cartbuilder(xydir.x, xydir.y, dir->z, dir);
+	return (lrintf(length / vectorlength(dir)) + 1);
+}
+
+void	paintline(t_cart start, t_cart end, float focus, t_data *img)
+{
+	t_cart		dir;
+	t_bool		painted;
 	long int	stepcount;
 
 	if (start.z < 1 || end.z < 1)
 		return ;
-	start.x = start.x * win->camera.focus / start.z + win->cntr.x;
-	start.y = start.y * win->camera.focus / start.z + win->cntr.y;
-	end.x = end.x * win->camera.focus / end.z + win->cntr.x;
-	end.y = end.y * win->camera.focus / end.z + win->cntr.y;
+	start.x = start.x * focus / start.z + img->cntr.x;
+	start.y = start.y * focus / start.z + img->cntr.y;
+	end.x = end.x * focus / end.z + img->cntr.x;
+	end.y = end.y * focus / end.z + img->cntr.y;
+	if ((start.x < 0 && end.x < 0) || (start.x > RESX - 1 && end.x > RESX - 1))
+		return ;
+	if ((start.y < 0 && end.y < 0) || (start.y > RESY - 1 && end.y > RESY - 1))
+		return ;
 	dir = end;
-	objtoobjpos(&start, &dir);
-	length = vectorlength(&dir);
-	cartbuilder(dir.x, dir.y, 0, &xydir);
-	vectorsizing(1, &xydir, &xydir, NULL);
-	cartbuilder(xydir.x, xydir.y, dir.z, &dir);
-	step = vectorlength(&dir);
-	stepcount = lrintf(length / step) + 1;
-	while (stepcount-- && paintdot(&start, &dir))
+	stepcount = dirdefiner(&start, &dir);
+	painted = FALSE;
+	while (stepcount-- && !painted)
 	{
+		paintdot(&start, &dir, img, &painted);
 		start.x += dir.x;
 		start.y += dir.y;
 		start.z += dir.z;
@@ -72,8 +86,8 @@ void	framepic(t_win *win, t_list *camobjs, t_data *img, void *mlx)
 	t_vrtx	*pos;
 	int		i;
 
-	img->img = mlx_new_image(mlx, RESX, RESY);
-	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
+	// img->img = mlx_new_image(mlx, RESX, RESY);
+	// img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
 	ft_bzero(img->addr, img->line_length * RESY);
 	while (camobjs)
 	{
@@ -85,9 +99,9 @@ void	framepic(t_win *win, t_list *camobjs, t_data *img, void *mlx)
 		i = -1;
 		while (inframe && ++i < obj->dots.routsize)
 			paintline(pos[obj->dots.rout[i][0]].dot,
-				pos[obj->dots.rout[i][1]].dot, win, img);
+				pos[obj->dots.rout[i][1]].dot, win->camera.focus, img);
 		camobjs = camobjs->next;
 	}
-	mlx_put_image_to_window(mlx, win->win, img->img, 0, 0);
-	mlx_destroy_image(mlx, img->img);
+	mlx_put_image_to_window(mlx, win->win, img->img, win->cntr.x - img->cntr.x, win->cntr.x - img->cntr.y);
+	// mlx_destroy_image(mlx, img->img);
 }

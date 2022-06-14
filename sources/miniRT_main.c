@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/13 16:47:16 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/14 18:58:35 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,11 @@ void	wininit(t_info *info, char *prog, char *file)
 	info->win.win = mlx_new_window(info->mlx_ptr, info->win.res.x, info->win.res.y, info->win.header);
 	info->win.cntr.x = info->win.res.x / 2;
 	info->win.cntr.y = info->win.res.y / 2;
-	info->data.img = mlx_new_image(info->mlx_ptr, RESX, RESY);
+	info->data.res.x = RESX;
+	info->data.res.y = RESY;
+	info->data.cntr.x = info->data.res.x / 2;
+	info->data.cntr.y = info->data.res.y / 2;
+	info->data.img = mlx_new_image(info->mlx_ptr, info->data.res.x, info->data.res.y);
 	info->data.addr = mlx_get_data_addr(info->data.img,
 			&info->data.bits_per_pixel, &info->data.line_length,
 			&info->data.endian);
@@ -50,6 +54,7 @@ int	main(int argc, char **argv)
 	createcamobjs(&info.win.camera.objs, info.objects);
 	info.win.camera.lightpos = info.lights.pos;
 	initview(info.objects, &info.win.camera);
+	framepic(&info.win, info.win.camera.objs, &info.data, info.mlx_ptr);
 	// ft_draw_screen(&info);
 	mlx_hook(info.win.win, 2, 1L, &keydownhndlr, &info);
 	mlx_hook(info.win.win, 3, 1L << 1, &keyuphndlr, &info);

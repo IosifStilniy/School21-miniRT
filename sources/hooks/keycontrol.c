@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:43:02 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/10 19:18:42 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/14 18:57:35 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,17 @@ void	keyshifting(int keycode, t_info *info)
 		&objsdir);
 	if (!(objsdir.x + objsdir.y + objsdir.z))
 		return ;
-	printf("dir: %.3f %.3f %.3f\n", objsdir.x, objsdir.y, objsdir.z);
 	if (objsdir.x)
 		cartcopy(&info->win.camera.crdstm.ox.vector, &camdir, 1);
 	else if (objsdir.y)
 		cartcopy(&info->win.camera.crdstm.oy.vector, &camdir, 1);
 	else if (objsdir.z)
 		cartcopy(&info->win.camera.crdstm.oz.vector, &camdir, 1);
-	dotstranslation(&info->lights.pos, 1, &objsdir, SHIFT_SPEED);
+	dottranslation(&info->lights.pos, &objsdir, SHIFT_SPEED);
 	camshifting(&info->win.camera, &camdir, &objsdir, SHIFT_SPEED);
-	ft_draw_screen(info);
+	framepic(&info->win, info->win.camera.objs, &info->data, info->mlx_ptr);
+	// ft_draw_screen(info);
+	
 	// t_list *crsr;
 	// t_obj *obj;
 
