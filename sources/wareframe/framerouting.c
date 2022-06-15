@@ -69,10 +69,10 @@ void	createframerouts(t_list *objs)
 	t_list	*routs;
 	t_obj	*obj;
 
-	routs = NULL;
 	while (objs)
 	{
 		obj = objs->content;
+		routs = NULL;
 		obj->dots.rout = NULL;
 		if (!obj->dots.dotsnum)
 		{

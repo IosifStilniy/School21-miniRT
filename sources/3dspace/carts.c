@@ -51,10 +51,10 @@ void	crdstmcopy(t_crdstm *src, t_crdstm *dst)
 
 void	dottranslation(t_cart *dot, t_cart *direction, float step)
 {
-	t_axis	res;
+	t_cart	res;
 
-	vectorsizing(step, direction, &res.vector, &res.length);
-	dot->x += res.vector.x;
-	dot->y += res.vector.y;
-	dot->z += res.vector.z;
+	vectorsizing(step, direction, &res, NULL);
+	dot->x += res.x;
+	dot->y += res.y;
+	dot->z += res.z;
 }

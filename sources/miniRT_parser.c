@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/14 22:02:14 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/15 22:08:38 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,7 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *p
 	str = ft_get_position_values(prog, str, &camera->crdstm.pos);
 	str = ft_get_position_values(prog, str, &norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &camera->crdstm.oz);
-	if (!comparef(camera->crdstm.oz.length, 1, 0.001))
-		customerr(prog, INVDEF, TRUE);
+	vectorsizing(1, &camera->crdstm.oz.vector, &camera->crdstm.oz.vector, &camera->crdstm.oz.length);
 	crdstmdefiner(&camera->crdstm);
 	while (ft_strchr(SPACES, *str))
 		str++;
@@ -102,12 +101,13 @@ void	definecamera(t_camera *camera, t_res *wincntr)
 	camera->focus = wincntr->x / tanf(camera->fov);
 	if (camera->focus < 1)
 		camera->focus = 1;
-	cartbuilder(-wincntr->x, -wincntr->y, camera->focus, &camera->corners[0]);
-	cartbuilder(wincntr->x, -wincntr->y, camera->focus, &camera->corners[1]);
-	cartbuilder(wincntr->x, wincntr->y, camera->focus, &camera->corners[2]);
-	cartbuilder(-wincntr->x, wincntr->y, camera->focus, &camera->corners[3]);
-	i = -1;
-	while (++i < 4)
+	cartbuilder(0, 0, 1, &camera->corners[0]);
+	cartbuilder(-wincntr->x, -wincntr->y, camera->focus, &camera->corners[1]);
+	cartbuilder(wincntr->x, -wincntr->y, camera->focus, &camera->corners[2]);
+	cartbuilder(wincntr->x, wincntr->y, camera->focus, &camera->corners[3]);
+	cartbuilder(-wincntr->x, wincntr->y, camera->focus, &camera->corners[4]);
+	i = 0;
+	while (++i < CRNRS)
 		vectorsizing(1, &camera->corners[i], &camera->corners[i], NULL);
 }
 

@@ -67,8 +67,6 @@ t_bool	objinframe(t_obj *obj, t_res *winctr, float focus)
 	t_cart	edgedir;
 	float	dstnc;
 
-	if (!obj->dots.dotsnum)
-		return (planeinframe());
 	dstnc = obj->crdstm.pos.z;
 	dstnc += comparef(dstnc, 0, 0.001);
 	if (dstnc < 0 && fabsf(dstnc) > obj->outframe)
@@ -98,9 +96,9 @@ void	framepic(t_win *win, t_list *camobjs, t_data *img, void *mlx)
 	while (camobjs)
 	{
 		obj = camobjs->content;
-		inframe = objinframe(obj, &win->cntr, win->camera.focus);
 		if (!obj->dots.dotsnum)
-			planeframing();
+			planeframing(obj, &win->camera, img);
+		inframe = objinframe(obj, &win->cntr, win->camera.focus);
 		pos = obj->dots.pos;
 		i = -1;
 		while (obj->dots.dotsnum && inframe && ++i < obj->dots.routsize)

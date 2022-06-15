@@ -18,7 +18,8 @@ void	camshifting(t_camera *camera, t_cart *camdir, t_cart *objsdir, float step)
 		obj->crdstm.pos.x += res.x;
 		obj->crdstm.pos.y += res.y;
 		obj->crdstm.pos.z += res.z;
-		vrtxtranslation(obj->dots.pos, obj->dots.dotsnum, objsdir, step);
+		if (obj->dots.dotsnum)
+			vrtxtranslation(obj->dots.pos, obj->dots.dotsnum, objsdir, step);
 		crsr = crsr->next;
 	}
 }

@@ -38,10 +38,9 @@ float	cylinderparser(char *str, t_obj *obj, char *prog)
 	float	rad;
 	float	height;
 
-	ft_get_position_values(prog, str, &norm);
+	str = ft_get_position_values(prog, str, &norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &obj->crdstm.oz);
-	if (!comparef(obj->crdstm.oz.length, 1, 0.001))
-		customerr(prog, INVCRD, TRUE);
+	vectorsizing(1, &obj->crdstm.oz.vector, &obj->crdstm.oz.vector, &obj->crdstm.oz.length);
 	crdstmdefiner(&obj->crdstm);
 	rad = ft_atof(str) / 2;
 	str = skipnumnspaces(str);
@@ -57,8 +56,7 @@ void	planeparser(char *str, t_obj *obj, char *prog)
 
 	str = ft_get_position_values(prog, str, &norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &obj->crdstm.oz);
-	if (!comparef(obj->crdstm.oz.length, 1, 0.001))
-		customerr(prog, INVCRD, TRUE);
+	vectorsizing(1, &obj->crdstm.oz.vector, &obj->crdstm.oz.vector, &obj->crdstm.oz.length);
 	crdstmdefiner(&obj->crdstm);
 	ft_get_color_values(str, &obj->colrs, prog);
 	obj->dots.dotsnum = 0;

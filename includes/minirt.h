@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/14 21:56:46 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/15 22:07:14 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,18 @@
 
 # ifndef FRAMECLR
 #  define FRAMECLR 0x00FFFFFF
+# endif
+
+# ifndef CRNRS
+#  define CRNRS 5
+# endif
+
+# ifndef GRIDSIZE
+#  define GRIDSIZE 20
+# endif
+
+# ifndef GRIDLINES
+#  define GRIDLINES 6
 # endif
 
 # ifndef PRMTVS
@@ -225,7 +237,7 @@ typedef struct s_camera {
 	t_rot		*rot;
 	t_cart		lightpos;
 	t_bool		determined;
-	t_cart		corners[4];
+	t_cart		corners[CRNRS];
 }	t_camera;
 
 typedef struct s_win {
@@ -337,8 +349,10 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 
 void	createcamobjs(t_list **camobjs, t_list *objs);
 void	createframerouts(t_list *objs);
-void	initview(t_list *objs, t_camera *camera, t_cart *ligthpos);
+void	initview(t_list *objs, t_camera *camera);
 void	framepic(t_win *win, t_list *camobjs, t_data *img, void *mlx);
+void	paintline(t_cart start, t_cart end, float focus, t_data *img);
+void	planeframing(t_obj *plane, t_camera *camera, t_data *img);
 
 // Hooks for orientation and movement in space
 
