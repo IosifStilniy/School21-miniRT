@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/16 21:32:00 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/16 22:10:01 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,9 +95,9 @@ static void	ft_raytracing_algorithm(t_info *info)
 
 void	ft_draw_screen(t_info *info)
 {
-	info->data.img = mlx_new_image(info->mlx_ptr, RESX, RESY);
+	info->data.img = mlx_new_image(info->mlx_ptr, info->data.res.x, info->data.res.y);
 	info->data.addr = mlx_get_data_addr(info->data.img, &info->data.bits_per_pixel, &info->data.line_length, &info->data.endian);
 	ft_raytracing_algorithm(info);
-	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img, 0, 0);
+	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img, info->win.cntr.x - info->data.cntr.x, info->win.cntr.y - info->data.cntr.y);
 	mlx_destroy_image(info->mlx_ptr, info->data.img);
 }

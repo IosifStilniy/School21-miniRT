@@ -90,7 +90,7 @@ void	framepic(t_win *win, t_list *camobjs, t_data *img, void *mlx)
 	t_vrtx	*pos;
 	int		i;
 
-	img->img = mlx_new_image(mlx, RESX, RESY);
+	img->img = mlx_new_image(mlx, img->res.x, img->res.y);
 	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
 	ft_bzero(img->addr, img->line_length * RESY);
 	while (camobjs)

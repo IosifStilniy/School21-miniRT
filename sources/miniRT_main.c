@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/16 21:28:50 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/16 21:58:29 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,14 +36,11 @@ void	wininit(t_info *info, char *prog, char *file)
 
 int	repairmouse(int x, int y, t_info *info)
 {
-	int	yy;
-
+	(void)x;
 	mlx_mouse_move(info->win.win, 0, 0);
-	mlx_mouse_get_pos(info->win.win, &x, &yy);
 	if (!(y - 1 <= info->mouse.yshift && info->mouse.yshift <= y + 1))
 	{
 		info->mouse.yshift = y;
-		printf("y: %d\n", y);
 		return (0);
 	}
 	mlx_hook(info->win.win, 6, 1L << 6, &mousemove, info);
