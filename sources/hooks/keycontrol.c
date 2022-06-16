@@ -6,48 +6,56 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:43:02 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/14 19:35:32 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/16 21:32:25 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
+void	rolling(t_axis *axis, t_list *camobjs, t_crdstm *camera)
+{
+	t_obj	*obj;
+	t_axis	worldaxis;
+
+	axis->ang = DEFANG * M_PI / 180;
+	while (camobjs)
+	{
+		obj = camobjs->content;
+		crdstmrotbyaxis(&obj->crdstm, axis, NULL);
+		quartrot(&obj->crdstm.pos, axis);
+		engine(&obj->dots, &obj->polys, &obj->crdstm);
+		camobjs = camobjs->next;
+	}
+	worldaxis.ang = DEFANG * M_PI / 180;
+	cartcopy(&camera->oz.vector, &worldaxis.vector, 1);
+	if (axis->vector.z > 0)
+		negativevector(&worldaxis.vector);
+	crdstmrotbyaxis(camera, &worldaxis, NULL);
+}
+
 void	keyshifting(int keycode, t_info *info)
 {
-	t_cart	camdir;
 	t_cart	objsdir;
+	t_axis	axis;
 
 	cartbuilder((keycode == KEY_A) - (keycode == KEY_D),
 		(keycode == KEY_SPACE) - (keycode == KEY_SHIFT),
 		(keycode == KEY_S) - (keycode == KEY_W),
 		&objsdir);
-	if (!(objsdir.x + objsdir.y + objsdir.z))
-		return ;
-	if (objsdir.x)
-		cartcopy(&info->win.camera.crdstm.ox.vector, &camdir, 1);
-	else if (objsdir.y)
-		cartcopy(&info->win.camera.crdstm.oy.vector, &camdir, 1);
-	else if (objsdir.z)
-		cartcopy(&info->win.camera.crdstm.oz.vector, &camdir, 1);
-	dottranslation(&info->lights.pos, &objsdir, SHIFT_SPEED);
-	camshifting(&info->win.camera, &camdir, &objsdir, SHIFT_SPEED);
-	framepic(&info->win, info->win.camera.objs, &info->data, info->mlx_ptr);
-	// ft_draw_screen(info);
-	
-	// t_list *crsr;
-	// t_obj *obj;
-
-	// crsr = info->win.camera.camobjs.objs;
-	// while (crsr)
-	// {
-	// 	obj = crsr->content;
-	// 	printf("obj: %.3f %.3f %.3f\n", obj->crdstm.pos.x, obj->crdstm.pos.y, obj->crdstm.pos.z);
-	// 	crsr = crsr->next;
-	// }
-	
-	// createview(&info->win.camera);
-	// imgdefiner(info->img, info->win, info->mlx);
-	// paintpic(info->dots, info->img, info->win, info->mlx);
+	vectorbuilder(0, 0, (keycode == KEY_Q) - (keycode == KEY_E), &axis);
+	if (axis.vector.z)
+		rolling(&axis, info->win.camera.objs, &info->win.camera.crdstm);
+	if (objsdir.x + objsdir.y + objsdir.z)
+	{
+		dottranslation(&info->win.camera.lightpos, &objsdir, SHIFT_SPEED);
+		camshifting(&info->win.camera.crdstm, info->win.camera.objs, &objsdir, SHIFT_SPEED);
+	}
+	if (keycode == KEY_R)
+		info->keybrd.render = (!info->keybrd.render);
+	if (info->keybrd.render)
+		ft_draw_screen(info);
+	else
+		framepic(&info->win, info->win.camera.objs, &info->data, info->mlx_ptr);
 }
 
 // void	scrolling(int btn, t_info *info)

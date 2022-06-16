@@ -3,8 +3,11 @@
 void	vectorbuilder(float x, float y, float z, t_axis *vector)
 {
 	vector->length = sqrtf(x * x + y * y + z * z);
-	cartbuilder(x / vector->length, y / vector->length, z / vector->length,
+	if (vector->length)
+		cartbuilder(x / vector->length, y / vector->length, z / vector->length,
 		&vector->vector);
+	else
+		cartbuilder(0, 0, 0, &vector->vector);
 	if (!vector->ang)
 		vector->ang = DEFANG * M_PI / 180;
 }

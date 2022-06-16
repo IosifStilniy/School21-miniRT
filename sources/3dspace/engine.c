@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/09 20:32:05 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/16 20:01:25 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,5 +99,7 @@ void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot)
 	zaxis = rot->axis;
 	crdstmrot(src, rot, &src->ox.vector, &dst->ox.vector);
 	rot->xyaxis = rot->axis;
+	negativevector(&rot->xyaxis.vector);
 	rot->axis = zaxis;
+	negativevector(&rot->axis.vector);
 }

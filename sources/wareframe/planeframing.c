@@ -55,9 +55,7 @@ void	planeframing(t_obj *plane, t_camera *camera, t_data *img)
 	cartbuilder(0, 0, 1, &cam.oz.vector);
 	crdstmdefiner(&cam);
 	cartbuilder(-plane->crdstm.pos.x, -plane->crdstm.pos.y, -plane->crdstm.pos.z, &cam.pos);
-	objtoobjaxis(&cam, &plane->crdstm, plane->rot);
-	// negativevector(&plane->rot->axis.vector);
-	// negativevector(&plane->rot->xyaxis.vector);
+	objtoobjaxis(WORLD, &plane->crdstm, plane->rot);
 	crdstmrotbyaxis(&cam, &plane->rot->axis, &plane->rot->xyaxis);
 	quartrot(&cam.pos, &plane->rot->axis);
 	quartrot(&cam.pos, &plane->rot->xyaxis);

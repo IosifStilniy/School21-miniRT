@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/15 22:07:14 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/16 21:26:34 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # define KEY_W 13
 # define KEY_L 37
 # define KEY_C 8
+# define KEY_R 15
 # define KEY_UP 126
 # define KEY_LEFT 123
 # define KEY_DOWN 125
@@ -74,7 +75,7 @@
 # endif
 
 # ifndef DEFANG
-#  define DEFANG 15
+#  define DEFANG 2.f
 # endif
 
 # ifndef FRAMECLR
@@ -253,8 +254,7 @@ typedef struct s_mouse {
 }	t_mouse;
 
 typedef struct s_keybrd {
-	t_bool	zrot;
-	t_bool	zoom;
+	t_bool	render;
 	t_bool	focus;
 	t_bool	movecam;
 	t_bool	legend;
@@ -320,7 +320,7 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 // Orientation and movement in space
 
 void	camrotating(t_win *win, int x, int y);
-void	camshifting(t_camera *camera, t_cart *camdir, t_cart *objsdir, float step);
+void	camshifting(t_crdstm *camera, t_list *camobjs, t_cart *objsdir, float step);
 void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
 void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_crdstm *crdstm);

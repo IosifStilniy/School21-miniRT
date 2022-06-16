@@ -1,25 +1,25 @@
 #include "minirt.h"
 
-void	camshifting(t_camera *camera, t_cart *camdir, t_cart *objsdir, float step)
+void	camshifting(t_crdstm *camera, t_list *camobjs, t_cart *objsdir, float step)
 {
 	t_obj	*obj;
-	t_list	*crsr;
 	t_cart	res;
+	t_cart	camdir;
 
-	vectorsizing(step, camdir, &res, NULL);
-	camera->crdstm.pos.x += res.x;
-	camera->crdstm.pos.y += res.y;
-	camera->crdstm.pos.z += res.z;
+	cartcopy(&camera->ox.vector, &camdir, 1);
+	if (objsdir->y)
+		cartcopy(&camera->oy.vector, &camdir, 1);
+	else if (objsdir->z)
+		cartcopy(&camera->oz.vector, &camdir, 1);
+	vectorsizing(step, &camdir, &res, NULL);
+	vectodot(&camera->pos, &res, FALSE);
 	vectorsizing(step, objsdir, &res, NULL);
-	crsr = camera->objs;
-	while (crsr)
+	while (camobjs)
 	{
-		obj = objcast(crsr);
-		obj->crdstm.pos.x += res.x;
-		obj->crdstm.pos.y += res.y;
-		obj->crdstm.pos.z += res.z;
+		obj = objcast(camobjs);
+		vectodot(&obj->crdstm.pos, &res, FALSE);
 		if (obj->dots.dotsnum)
 			vrtxtranslation(obj->dots.pos, obj->dots.dotsnum, objsdir, step);
-		crsr = crsr->next;
+		camobjs = camobjs->next;
 	}
 }

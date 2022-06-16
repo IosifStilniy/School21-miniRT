@@ -35,8 +35,6 @@ void	initview(t_list *objs, t_camera *camera)
 	t_rot	rot;
 
 	objtoobjaxis(WORLD, &camera->crdstm, &rot);
-	negativevector(&rot.axis.vector);
-	negativevector(&rot.xyaxis.vector);
 	objtoobjpos(&camera->crdstm.pos, &camera->lightpos);
 	quartrot(&camera->lightpos, &rot.axis);
 	quartrot(&camera->lightpos, &rot.xyaxis);
