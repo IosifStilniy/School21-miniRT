@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/16 21:34:44 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/17 17:33:06 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,8 @@ int	keyuphndlr(int keycode, t_info *info)
 
 int	mousemove(int x, int y, t_info *info)
 {
-	camrotating(&info->win, x, y);
-	if (info->keybrd.render)
-		ft_draw_screen(info);
-	else
-		framepic(&info->win, info->win.camera.objs, &info->data, info->mlx_ptr);
+	camrotating(&info->win.camera, info->objects, x, y);
+	ft_draw_screen(info);
 	mlx_mouse_move(info->win.win, 0, info->mouse.yshift);
 	return (0);
 }

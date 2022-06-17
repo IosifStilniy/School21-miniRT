@@ -6,13 +6,13 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/08 16:44:18 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/14 19:22:49 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/17 18:24:29 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-static int	ft_create_trgb(int t, int r, int g, int b)
+unsigned int	ft_create_trgb(int t, int r, int g, int b)
 {
 	return (t << 24 | r << 16 | g << 8 | b);
 }

@@ -1,23 +1,23 @@
 #include "minirt.h"
 
-void	paintdot(t_cart *dot, t_cart *dir, t_data *img, t_bool *painted)
+void	paintdot(t_cart dotdir[2], t_ui color, t_data *img, t_bool *painted)
 {
 	long int	x;
 	long int	y;
 	char		*pxl;
 
-	*painted = ((dot->x < 0 && dir->x < 0) || (dot->x > RESX - 1 && dir->x > 0));
-	*painted += ((dot->y < 0 && dir->y < 0) || (dot->y > RESY - 1 && dir->y > 0));
-	if ((*painted))
+	*painted = ((dotdir[0].x < 0 && dotdir[1].x < 0) || (dotdir[0].x > RESX - 1 && dotdir[1].x > 0));
+	*painted += ((dotdir[0].y < 0 && dotdir[1].y < 0) || (dotdir[0].y > RESY - 1 && dotdir[1].y > 0));
+	if (*painted)
 		return ;
-	if (dot->x < 0 || dot->x > RESX - 1)
+	if (dotdir[0].x < 0 || dotdir[0].x > RESX - 1)
 		return ;
-	if (dot->y < 0 || dot->y > RESY - 1)
+	if (dotdir[0].y < 0 || dotdir[0].y > RESY - 1)
 		return ;
-	x = lrintf(dot->x);
-	y = lrintf(dot->y);
+	x = lrintf(dotdir[0].x);
+	y = lrintf(dotdir[0].y);
 	pxl = img->addr + y * img->line_length + x * (img->bits_per_pixel / 8);
-	*(t_ui *)pxl = FRAMECLR;
+	*(t_ui *)pxl = color;
 }
 
 long int	dirdefiner(t_cart *start, t_cart *dir)
@@ -33,31 +33,31 @@ long int	dirdefiner(t_cart *start, t_cart *dir)
 	return (ceilf(length / vectorlength(dir)) + 1);
 }
 
-void	paintline(t_cart start, t_cart end, float focus, t_data *img)
+void	paintline(t_cart src[2], t_ui color, float focus, t_data *img)
 {
-	t_cart		dir;
+	// t_cart		dir;
 	t_bool		painted;
 	long int	stepcount;
 
-	if (start.z < 1 || end.z < 1)
+	if (src[0].z < 1 || src[1].z < 1)
 		return ;
-	start.x = start.x * focus / start.z + img->cntr.x;
-	start.y = start.y * focus / start.z + img->cntr.y;
-	end.x = end.x * focus / end.z + img->cntr.x;
-	end.y = end.y * focus / end.z + img->cntr.y;
-	if ((start.x < 0 && end.x < 0) || (start.x > RESX - 1 && end.x > RESX - 1))
+	src[0].x = src[0].x * focus / src[0].z + img->cntr.x;
+	src[0].y = src[0].y * focus / src[0].z + img->cntr.y;
+	src[1].x = src[1].x * focus / src[1].z + img->cntr.x;
+	src[1].y = src[1].y * focus / src[1].z + img->cntr.y;
+	if ((src[0].x < 0 && src[1].x < 0) || (src[0].x > RESX - 1 && src[1].x > RESX - 1)
+		|| (src[0].y < 0 && src[1].y < 0) || (src[0].y > RESY - 1 && src[1].y > RESY - 1))
 		return ;
-	if ((start.y < 0 && end.y < 0) || (start.y > RESY - 1 && end.y > RESY - 1))
-		return ;
-	dir = end;
-	stepcount = dirdefiner(&start, &dir);
+	// dir = src[1];
+	// stepcount = dirdefiner(&src[0], &dir);
+	stepcount = dirdefiner(&src[0], &src[1]);
 	painted = FALSE;
 	while (stepcount-- && !painted)
 	{
-		paintdot(&start, &dir, img, &painted);
-		start.x += dir.x;
-		start.y += dir.y;
-		start.z += dir.z;
+		paintdot(src, color, img, &painted);
+		src[0].x += src[1].x;
+		src[0].y += src[1].y;
+		src[0].z += src[1].z;
 	}
 }
 
@@ -83,29 +83,29 @@ t_bool	objinframe(t_obj *obj, t_res *winctr, float focus)
 	return ((0 <= objpos.y && objpos.y <= RESY));
 }
 
-void	framepic(t_win *win, t_list *camobjs, t_data *img, void *mlx)
+void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img)
 {
 	t_obj	*obj;
 	t_bool	inframe;
-	t_vrtx	*pos;
+	t_cart	paintdots[2];
+	t_ui	color;
 	int		i;
 
-	img->img = mlx_new_image(mlx, img->res.x, img->res.y);
-	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
-	ft_bzero(img->addr, img->line_length * RESY);
+	ft_bzero(img->addr, img->line_length * img->res.y);
 	while (camobjs)
 	{
 		obj = camobjs->content;
 		if (!obj->dots.dotsnum)
-			planeframing(obj, &win->camera, img);
-		inframe = objinframe(obj, &win->cntr, win->camera.focus);
-		pos = obj->dots.pos;
+			planeframing(obj, camera, img);
+		inframe = objinframe(obj, wincntr, camera->focus);
+		color = ft_create_trgb(0, obj->colrs.x * 255, obj->colrs.y * 255, obj->colrs.z * 255);
 		i = -1;
 		while (obj->dots.dotsnum && inframe && ++i < obj->dots.routsize)
-			paintline(pos[obj->dots.rout[i][0]].dot,
-				pos[obj->dots.rout[i][1]].dot, win->camera.focus, img);
+		{
+			paintdots[0] = obj->dots.pos[obj->dots.rout[i][0]].dot;
+			paintdots[1] = obj->dots.pos[obj->dots.rout[i][1]].dot;
+			paintline(paintdots, color, camera->focus, img);
+		}
 		camobjs = camobjs->next;
 	}
-	mlx_put_image_to_window(mlx, win->win, img->img, win->cntr.x - img->cntr.x, win->cntr.y - img->cntr.y);
-	mlx_destroy_image(mlx, img->img);
 }

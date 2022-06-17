@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/16 21:58:29 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/17 17:34:56 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,7 @@ int	main(int argc, char **argv)
 	info.win.camera.lightpos = info.lights.pos;
 	initview(info.objects, &info.win.camera);
 	info.keybrd.render = FALSE;
-	framepic(&info.win, info.win.camera.objs, &info.data, info.mlx_ptr);
-	// ft_draw_screen(&info);
+	ft_draw_screen(&info);
 	info.mouse.yshift = 0;
 	mlx_hook(info.win.win, 2, 1L, &keydownhndlr, &info);
 	mlx_hook(info.win.win, 3, 1L << 1, &keyuphndlr, &info);

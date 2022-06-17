@@ -1,27 +1,48 @@
 #include "minirt.h"
 
-void	lineprinter(t_cart startend[2], t_cart *dir, float focus, t_data *img)
+void	lineprinter(t_cart startenddir[3], t_ui color, float focus, t_data *img)
 {
-	t_cart	start;
-	t_cart	end;
+	t_cart	grid[2];
+	t_cart	paint[2];
 	int		i;
 
-	start = startend[0];
-	end = startend[1];
 	i = -1;
+	grid[0] = startenddir[0];
+	grid[1] = startenddir[1];
 	while (++i < GRIDLINES - 1)
 	{
-		dottranslation(&start, dir, GRIDSIZE);
-		dottranslation(&end, dir, GRIDSIZE);
-		paintline(start, end, focus, img);
+		dottranslation(&grid[0], &startenddir[2], GRIDSIZE);
+		dottranslation(&grid[1], &startenddir[2], GRIDSIZE);
+		paint[0] = grid[0];
+		paint[1] = grid[1];
+		paintline(paint, color, focus, img);
 	}
 }
 
-void	gridbuilder(t_crdstm *plane, t_vrtx *pos, float focus, t_data *img)
+void	gridprinter(t_cart *start, t_obj *plane, float focus, t_data *img)
+{
+	t_cart	dst[3];
+	t_cart	end;
+	t_ui	color;
+
+	color = ft_create_trgb(0, plane->colrs.x * 255, plane->colrs.y * 255, plane->colrs.z * 255);
+	dotcrdstmtrnsltn(start, &dst[0], 1, &plane->crdstm);
+	vectodot(&dst[0], &plane->crdstm.pos, FALSE);
+	cartbuilder(start->x + GRIDLINES * GRIDSIZE, start->y, 0, &end);
+	dotcrdstmtrnsltn(&end, &dst[1], 1, &plane->crdstm);
+	vectodot(&dst[1], &plane->crdstm.pos, FALSE);
+	dst[2] = plane->crdstm.oy.vector;
+	lineprinter(dst, color, focus, img);
+	cartbuilder(start->x, start->y + GRIDLINES * GRIDSIZE, 0, &end);
+	dotcrdstmtrnsltn(&end, &dst[1], 1, &plane->crdstm);
+	vectodot(&dst[1], &plane->crdstm.pos, FALSE);
+	dst[2] = plane->crdstm.ox.vector;
+	lineprinter(dst, color, focus, img);
+}
+
+void	gridbuilder(t_obj *plane, t_vrtx *pos, float focus, t_data *img)
 {
 	t_cart	start;
-	t_cart	end;
-	t_cart	dst[2];
 	int		i;
 
 	i = -1;
@@ -29,19 +50,10 @@ void	gridbuilder(t_crdstm *plane, t_vrtx *pos, float focus, t_data *img)
 	{
 		if (pos[i].dot.x == INFINITY || pos[i].dot.y == INFINITY)
 			continue ;
-		cartbuilder((lrintf(pos[i].dot.x) / GRIDSIZE - GRIDLINES / 2) * GRIDSIZE,
-					(lrintf(pos[i].dot.y) / GRIDSIZE - GRIDLINES / 2) * GRIDSIZE,
-					0, &start);
-		dotcrdstmtrnsltn(&start, &dst[0], 1, plane);
-		vectodot(&dst[0], &plane->pos, FALSE);
-		cartbuilder(start.x + GRIDLINES * GRIDSIZE, start.y, 0, &end);
-		dotcrdstmtrnsltn(&end, &dst[1], 1, plane);
-		vectodot(&dst[1], &plane->pos, FALSE);
-		lineprinter(dst, &plane->oy.vector, focus, img);
-		cartbuilder(start.x, start.y + GRIDLINES * GRIDSIZE, 0, &end);
-		dotcrdstmtrnsltn(&end, &dst[1], 1, plane);
-		vectodot(&dst[1], &plane->pos, FALSE);
-		lineprinter(dst, &plane->ox.vector, focus, img);
+		start.x = (lrintf(pos[i].dot.x) / GRIDSIZE - GRIDLINES / 2) * GRIDSIZE;
+		start.y = (lrintf(pos[i].dot.y) / GRIDSIZE - GRIDLINES / 2) * GRIDSIZE;
+		start.z = 0;
+		gridprinter(&start, plane, focus,img);
 	}
 }
 
@@ -71,5 +83,5 @@ void	planeframing(t_obj *plane, t_camera *camera, t_data *img)
 		vectodot(&plane->dots.pos[i].dot, &cam.pos, FALSE);
 	}
 	if (inframe)
-		gridbuilder(&plane->crdstm, plane->dots.pos, camera->focus, img);
+		gridbuilder(plane, plane->dots.pos, camera->focus, img);
 }

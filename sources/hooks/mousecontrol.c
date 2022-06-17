@@ -6,40 +6,11 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:06 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/14 21:04:30 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/17 17:46:36 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
-
-void	camrotating(t_win *win, int x, int y)
-{
-	t_axis	curpos;
-	t_cart	oz;
-	t_axis	axis;
-	t_list	*crsr;
-	t_obj	*obj;
-
-	cartbuilder(x, y, 1000, &curpos.vector);
-	vectorsizing(1, &curpos.vector, &curpos.vector, NULL);
-	cartbuilder(0, 0, 1, &oz);
-	axisbuilder(&oz, &curpos.vector, &axis);
-	if (comparef(axis.ang, 0, 0.1 * M_PI / 180))
-		return ;
-	dotcrdstmtrnsltn(&axis.vector, &curpos.vector, 1, &win->camera.crdstm);
-	crdstmrotbyaxis(&win->camera.crdstm, &curpos, NULL);
-	negativevector(&axis.vector);
-	quartrot(&win->camera.lightpos, &axis);
-	crsr = win->camera.objs;
-	while (crsr)
-	{
-		obj = crsr->content;
-		crdstmrotbyaxis(&obj->crdstm, &axis, NULL);
-		quartrot(&obj->crdstm.pos, &axis);
-		engine(&obj->dots, &obj->polys, &obj->crdstm);
-		crsr = crsr->next;
-	}
-}
 
 // void	mouserotating(t_info *info, int x, int y)
 // {

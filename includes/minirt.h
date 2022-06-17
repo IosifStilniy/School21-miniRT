@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/16 21:26:34 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/17 19:50:36 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -319,9 +319,8 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
-void	camrotating(t_win *win, int x, int y);
-void	camshifting(t_crdstm *camera, t_list *camobjs, t_cart *objsdir, float step);
-void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end);
+void	camrotating(t_camera *camera, t_list *objs, int x, int y);
+void	camshifting(t_camera *camera, t_list *camobjs, t_cart *objsdir, float step);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
 void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_crdstm *crdstm);
 void	dottranslation(t_cart *dot, t_cart *direction, float step);
@@ -337,7 +336,6 @@ void	axisbuilder(t_cart *v1, t_cart *v2, t_axis *axis);
 void	cartbuilder(float x, float y, float z, t_cart *dot);
 void	cartcopy(t_cart *src, t_cart *dst, int count);
 void	crdstmcopy(t_crdstm *src, t_crdstm *dst);
-void	flatanglehandler(t_rot *rot, t_cart *ref);
 void	vectodot(t_cart *vector, t_cart *start, t_bool normilize);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
 float	vectorlength(t_cart *dot);
@@ -350,8 +348,8 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 void	createcamobjs(t_list **camobjs, t_list *objs);
 void	createframerouts(t_list *objs);
 void	initview(t_list *objs, t_camera *camera);
-void	framepic(t_win *win, t_list *camobjs, t_data *img, void *mlx);
-void	paintline(t_cart start, t_cart end, float focus, t_data *img);
+void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img);
+void	paintline(t_cart src[2], t_ui color, float focus, t_data *img);
 void	planeframing(t_obj *plane, t_camera *camera, t_data *img);
 
 // Hooks for orientation and movement in space
@@ -376,6 +374,7 @@ t_obj	*objcast(t_list *lst);
 
 // MyFUncs
 
+t_ui	ft_create_trgb(int t, int r, int g, int b);
 void	ft_draw_screen(t_info *info);
 
 float	ft_max(float a, float b);

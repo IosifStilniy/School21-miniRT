@@ -15,26 +15,6 @@ void	vrtxtranslation(t_vrtx *vrtxs, int dotnum, t_cart *direction, float step)
 	}
 }
 
-void	crdstmrot(t_crdstm *crdstm, t_rot *rot, t_cart *start, t_cart *end)
-{
-	float	ang;
-	t_axis	ref;
-
-	rot->start = start;
-	rot->end = end;
-	flatanglehandler(rot, NULL);
-	if (&crdstm->ox.vector == start || &crdstm->oy.vector == start)
-	{
-		ang = rot->axis.ang;
-		axisbuilder(&crdstm->oz.vector, &rot->axis.vector, &ref);
-		rot->axis = crdstm->oz;
-		if (comparef(ref.ang, M_PI, 0.001))
-			negativevector(&rot->axis.vector);
-		rot->axis.ang = ang;
-	}
-	crdstmrotbyaxis(crdstm, &rot->axis, NULL);
-}
-
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis)
 {
 	quartrot(&crdstm->oz.vector, zaxis);
