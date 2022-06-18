@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/17 19:50:36 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/18 19:20:56 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,6 +229,12 @@ typedef struct s_obj {
 	t_rot		*rot;
 }	t_obj;
 
+typedef struct t_trans {
+	float		pos[4][4];
+	float		crdstm[4][4];
+	float		trans[4][4];
+}	t_trans;
+
 typedef struct s_camera {
 	t_crdstm	crdstm;
 	t_bool		framemod;
@@ -319,23 +325,26 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
-void	camrotating(t_camera *camera, t_list *objs, int x, int y);
-void	camshifting(t_camera *camera, t_list *camobjs, t_cart *objsdir, float step);
+void	camrotating(t_camera *camera, t_info *info, int x, int y);
+void	camshifting(t_camera *camera, t_info *info, t_cart *objsdir, float step);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
 void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_crdstm *crdstm);
 void	dottranslation(t_cart *dot, t_cart *direction, float step);
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm);
-void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot);
 void	objtoobjpos(t_cart *center, t_cart *dot);
 void	vrtxtranslation(t_vrtx *vrtxs, int dotnum, t_cart *direction, float step);
 void	quartrot(t_cart *pos, t_axis *axis);
+
+// Matrix
+
+void	worldtocammatrix(float transmatrix[4][4], float crdstmmatrix[4][4], float posmatrix[4][4], t_crdstm *cam);
+void	transpos(t_cart	*pos, float transmatrix[4][4]);
 
 // Vector utils
 
 void	axisbuilder(t_cart *v1, t_cart *v2, t_axis *axis);
 void	cartbuilder(float x, float y, float z, t_cart *dot);
 void	cartcopy(t_cart *src, t_cart *dst, int count);
-void	crdstmcopy(t_crdstm *src, t_crdstm *dst);
 void	vectodot(t_cart *vector, t_cart *start, t_bool normilize);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
 float	vectorlength(t_cart *dot);
@@ -347,7 +356,7 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 
 void	createcamobjs(t_list **camobjs, t_list *objs);
 void	createframerouts(t_list *objs);
-void	initview(t_list *objs, t_camera *camera);
+void	initview(t_list *objs, t_camera *camera, t_light *light);
 void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img);
 void	paintline(t_cart src[2], t_ui color, float focus, t_data *img);
 void	planeframing(t_obj *plane, t_camera *camera, t_data *img);

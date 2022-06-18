@@ -35,7 +35,6 @@ long int	dirdefiner(t_cart *start, t_cart *dir)
 
 void	paintline(t_cart src[2], t_ui color, float focus, t_data *img)
 {
-	// t_cart		dir;
 	t_bool		painted;
 	long int	stepcount;
 
@@ -48,8 +47,6 @@ void	paintline(t_cart src[2], t_ui color, float focus, t_data *img)
 	if ((src[0].x < 0 && src[1].x < 0) || (src[0].x > RESX - 1 && src[1].x > RESX - 1)
 		|| (src[0].y < 0 && src[1].y < 0) || (src[0].y > RESY - 1 && src[1].y > RESY - 1))
 		return ;
-	// dir = src[1];
-	// stepcount = dirdefiner(&src[0], &dir);
 	stepcount = dirdefiner(&src[0], &src[1]);
 	painted = FALSE;
 	while (stepcount-- && !painted)

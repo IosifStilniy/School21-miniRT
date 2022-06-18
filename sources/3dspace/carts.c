@@ -41,14 +41,6 @@ void	vectodot(t_cart *vector, t_cart *start, t_bool normilize)
 	vector->z /= length;
 }
 
-void	crdstmcopy(t_crdstm *src, t_crdstm *dst)
-{
-	cartcopy(&src->pos, &dst->pos, 1);
-	cartcopy(&src->ox.vector, &dst->ox.vector, 1);
-	cartcopy(&src->oy.vector, &dst->oy.vector, 1);
-	cartcopy(&src->oz.vector, &dst->oz.vector, 1);
-}
-
 void	dottranslation(t_cart *dot, t_cart *direction, float step)
 {
 	t_cart	res;

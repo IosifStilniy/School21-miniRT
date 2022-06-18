@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/17 17:34:56 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/18 18:54:35 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,7 @@ int	main(int argc, char **argv)
 	createframerouts(info.objects);
 	info.win.camera.objs = NULL;
 	createcamobjs(&info.win.camera.objs, info.objects);
-	info.win.camera.lightpos = info.lights.pos;
-	initview(info.objects, &info.win.camera);
+	initview(info.objects, &info.win.camera, &info.lights);
 	info.keybrd.render = FALSE;
 	ft_draw_screen(&info);
 	info.mouse.yshift = 0;

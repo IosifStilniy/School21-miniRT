@@ -6,36 +6,38 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/17 22:03:02 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/18 19:12:09 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-void	quartrot(t_cart *pos, t_axis *axis)
-{	
-	float	mlts[3][3];
-	float	halfang;
-	float	real;
-	t_cart	axsr;
+static void	quartmult(t_axis *q, t_axis *p, t_axis *result)
+{
+	result->ang = q->ang * p->ang - q->vector.x * p->vector.x - q->vector.y * p->vector.y - q->vector.z * p->vector.z;
+	result->vector.x = q->ang * p->vector.x + q->vector.x * p->ang + q->vector.y * p->vector.z - q->vector.z * p->vector.y;
+	result->vector.y = q->ang * p->vector.y - q->vector.x * p->vector.z + q->vector.y * p->ang + q->vector.z * p->vector.x;
+	result->vector.z = q->ang * p->vector.z + q->vector.x * p->vector.y - q->vector.y * p->vector.x + q->vector.z * p->ang;
+}
 
-	halfang = axis->ang / 2;
-	real = cosf(halfang);
-	axsr.x = sinf(halfang) * axis->vector.x;
-	axsr.y = sinf(halfang) * axis->vector.y;
-	axsr.z = sinf(halfang) * axis->vector.z;
-	mlts[0][0] = (1 - 2 * (powf(axsr.y, 2) + powf(axsr.z, 2))) * pos->x;
-	mlts[0][1] = (2 * (axsr.x * axsr.y - axsr.z * real)) * pos->y;
-	mlts[0][2] = (2 * (axsr.x * axsr.z + axsr.y * real)) * pos->z;
-	mlts[1][0] = (2 * (axsr.x * axsr.y + axsr.z * real)) * pos->x;
-	mlts[1][1] = (1 - 2 * (powf(axsr.x, 2) + powf(axsr.z, 2))) * pos->y;
-	mlts[1][2] = (2 * (axsr.y * axsr.z - axsr.x * real)) * pos->z;
-	mlts[2][0] = (2 * (axsr.x * axsr.z - axsr.y * real)) * pos->x;
-	mlts[2][1] = (2 * (axsr.y * axsr.z + axsr.x * real)) * pos->y;
-	mlts[2][2] = (1 - 2 * (powf(axsr.x, 2) + powf(axsr.y, 2))) * pos->z;
-	pos->x = mlts[0][0] + mlts[0][1] + mlts[0][2];
-	pos->y = mlts[1][0] + mlts[1][1] + mlts[1][2];
-	pos->z = mlts[2][0] + mlts[2][1] + mlts[2][2];
+void	quartrot(t_cart *pos, t_axis *axis)
+{
+	t_axis	axsr;
+	t_axis	posq;
+	t_axis	result;
+
+	axsr.ang = cosf(axis->ang / 2);
+	axsr.vector.x = sinf(axis->ang / 2) * axis->vector.x;
+	axsr.vector.y = sinf(axis->ang / 2) * axis->vector.y;
+	axsr.vector.z = sinf(axis->ang / 2) * axis->vector.z;
+	posq.ang = 0;
+	posq.vector.x = pos->x;
+	posq.vector.y = pos->y;
+	posq.vector.z = pos->z;
+	quartmult(&axsr, &posq, &result);
+	negativevector(&axsr.vector);
+	quartmult(&result, &axsr, &posq);
+	*pos = posq.vector;
 }
 
 void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_crdstm *crdstm)
@@ -66,29 +68,4 @@ void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm)
 	i = -1;
 	while (++i < polys->polynum)
 		dotcrdstmtrnsltn(&polys->poly[i].srcnorm, &polys->poly[i].norm, 1, crdstm);
-}
-
-void	objtoobjaxis(t_crdstm *src, t_crdstm *dst, t_rot *rot)
-{
-	t_crdstm	world;
-	t_axis		zaxis;
-	
-	vectorbuilder(1, 0, 0, &world.ox);
-	vectorbuilder(0, 1, 0, &world.oy);
-	vectorbuilder(0, 0, 1, &world.oz);
-	if (!src)
-		src = &world;
-	if (!dst)
-		dst = &world;
-	axisbuilder(&src->oz.vector, &dst->oz.vector, &zaxis);
-	if (comparef(zaxis.ang, M_PI, 0.0001))
-		cartcopy(&src->ox.vector, &zaxis.vector, 1);
-	crdstmrotbyaxis(src, &zaxis, NULL);
-	rot->axis = zaxis;
-	negativevector(&rot->axis.vector);
-	axisbuilder(&src->ox.vector, &dst->ox.vector, &zaxis);
-	if (comparef(zaxis.ang, M_PI, 0.0001))
-		cartcopy(&src->oz.vector, &zaxis.vector, 1);
-	rot->xyaxis = zaxis;
-	negativevector(&rot->xyaxis.vector);
 }

@@ -27,27 +27,26 @@ void	createcamobjs(t_list **camobjs, t_list *objs)
 	}
 }
 
-void	initview(t_list *objs, t_camera *camera)
+void	initview(t_list *objs, t_camera *camera, t_light *light)
 {
+	t_trans	trans;
 	t_list	*crsr;
 	t_list	*camcrsr;
 	t_obj	*camobj;
-	t_rot	rot;
 
-	objtoobjaxis(WORLD, &camera->crdstm, &rot);
-	objtoobjpos(&camera->crdstm.pos, &camera->lightpos);
-	quartrot(&camera->lightpos, &rot.axis);
-	quartrot(&camera->lightpos, &rot.xyaxis);
+	worldtocammatrix(trans.trans, trans.crdstm, trans.pos, &camera->crdstm);
+	camera->lightpos = light->pos;
+	transpos(&camera->lightpos, trans.trans);
 	crsr = objs;
 	camcrsr = camera->objs;
 	while (crsr)
 	{
 		camobj = camcrsr->content;
-		crdstmcopy(&objcast(crsr)->crdstm, &camobj->crdstm);
-		objtoobjpos(&camera->crdstm.pos, &camobj->crdstm.pos);
-		quartrot(&camobj->crdstm.pos, &rot.axis);
-		quartrot(&camobj->crdstm.pos, &rot.xyaxis);
-		crdstmrotbyaxis(&camobj->crdstm, &rot.axis, &rot.xyaxis);
+		camobj->crdstm = objcast(crsr)->crdstm;
+		transpos(&camobj->crdstm.pos, trans.trans);
+		transpos(&camobj->crdstm.ox.vector, trans.crdstm);
+		transpos(&camobj->crdstm.oy.vector, trans.crdstm);
+		transpos(&camobj->crdstm.oz.vector, trans.crdstm);
 		engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
 		camcrsr = camcrsr->next;
 		crsr = crsr->next;

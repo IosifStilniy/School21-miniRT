@@ -60,17 +60,19 @@ void	gridbuilder(t_obj *plane, t_vrtx *pos, float focus, t_data *img)
 void	planeframing(t_obj *plane, t_camera *camera, t_data *img)
 {
 	t_crdstm	cam;
+	t_trans		trans;
 	t_cart		corners[CRNRS];
 	t_bool		inframe;
 	int			i;
 
+	cartbuilder(0, 0, 0, &cam.pos);
 	cartbuilder(0, 0, 1, &cam.oz.vector);
 	crdstmdefiner(&cam);
-	cartbuilder(-plane->crdstm.pos.x, -plane->crdstm.pos.y, -plane->crdstm.pos.z, &cam.pos);
-	objtoobjaxis(WORLD, &plane->crdstm, plane->rot);
-	crdstmrotbyaxis(&cam, &plane->rot->axis, &plane->rot->xyaxis);
-	quartrot(&cam.pos, &plane->rot->axis);
-	quartrot(&cam.pos, &plane->rot->xyaxis);
+	worldtocammatrix(trans.trans, trans.crdstm, trans.pos, &plane->crdstm);
+	transpos(&cam.pos, trans.trans);
+	transpos(&cam.ox.vector, trans.crdstm);
+	transpos(&cam.oy.vector, trans.crdstm);
+	transpos(&cam.oz.vector, trans.crdstm);
 	inframe = FALSE;
 	i = -1;
 	while (++i < CRNRS)
