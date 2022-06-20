@@ -25,7 +25,7 @@ float	sphereparser(char *str, t_obj *obj, char *prog)
 
 	rad = ft_atof(str) / 2.0f;
 	str = skipnumnspaces(str);
-	ft_get_color_values(str, &obj->colrs, prog);
+	ft_get_color_values(str, obj->colrs, prog);
 	vectorbuilder(1, 0, 0, &obj->crdstm.ox);
 	vectorbuilder(0, 1, 0, &obj->crdstm.oy);
 	vectorbuilder(0, 0, 1, &obj->crdstm.oz);
@@ -46,7 +46,7 @@ float	cylinderparser(char *str, t_obj *obj, char *prog)
 	str = skipnumnspaces(str);
 	height = ft_atof(str);
 	str = skipnumnspaces(str);
-	ft_get_color_values(str, &obj->colrs, prog);
+	ft_get_color_values(str, obj->colrs, prog);
 	return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
 }
 
@@ -58,7 +58,7 @@ void	planeparser(char *str, t_obj *obj, char *prog)
 	vectorbuilder(norm.x, norm.y, norm.z, &obj->crdstm.oz);
 	vectorsizing(1, &obj->crdstm.oz.vector, &obj->crdstm.oz.vector, &obj->crdstm.oz.length);
 	crdstmdefiner(&obj->crdstm);
-	ft_get_color_values(str, &obj->colrs, prog);
+	ft_get_color_values(str, obj->colrs, prog);
 	obj->dots.dotsnum = 0;
 	obj->polys.polynum = 0;
 }

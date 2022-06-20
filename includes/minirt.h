@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/18 19:20:56 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/20 22:06:40 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 # define KEY_L 37
 # define KEY_C 8
 # define KEY_R 15
+# define KEY_I 34
 # define KEY_UP 126
 # define KEY_LEFT 123
 # define KEY_DOWN 125
@@ -209,7 +210,7 @@ typedef struct s_dots {
 	int		dotsnum;
 	t_vrtx	*dots;
 	t_vrtx	*pos;
-	float	scale;
+	t_cart	*scale;
 	int		(*rout)[2];
 	int		routsize;
 }	t_dots;
@@ -223,7 +224,7 @@ typedef struct s_polys {
 typedef struct s_obj {
 	t_dots		dots;
 	t_polys		polys;
-	t_cart		colrs;
+	t_cart		*colrs;
 	t_crdstm	crdstm;
 	float		outframe;
 	t_rot		*rot;
@@ -261,10 +262,33 @@ typedef struct s_mouse {
 
 typedef struct s_keybrd {
 	t_bool	render;
-	t_bool	focus;
-	t_bool	movecam;
+	t_bool	interface;
 	t_bool	legend;
 }	t_keybrd;
+
+typedef struct s_button {
+	t_res	leftup;
+	t_res	bottomright;
+}	t_button;
+
+typedef struct s_step {
+	float	step;
+	float	stepping;
+}	t_step;
+
+typedef struct s_intrfc {
+	t_step		fov;
+	t_step		size;
+	t_step		color;
+	t_res		campos;
+	t_res		objpos;
+	t_res		frame;
+	t_button	arrows[20];
+	t_button	attach;
+	t_obj		*selected;
+	t_data		cam;
+	t_data		obj;
+}	t_intrfc;
 
 typedef struct s_info
 {
@@ -278,7 +302,7 @@ typedef struct s_info
 	char		*prog;
 	t_mouse		mouse;
 	t_keybrd	keybrd;
-	int			kal;
+	t_intrfc	interface;
 }	t_info;
 
 // Parsing the file.
@@ -328,7 +352,7 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 void	camrotating(t_camera *camera, t_info *info, int x, int y);
 void	camshifting(t_camera *camera, t_info *info, t_cart *objsdir, float step);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
-void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_crdstm *crdstm);
+void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, t_cart *scale, t_crdstm *crdstm);
 void	dottranslation(t_cart *dot, t_cart *direction, float step);
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm);
 void	objtoobjpos(t_cart *center, t_cart *dot);
@@ -360,6 +384,10 @@ void	initview(t_list *objs, t_camera *camera, t_light *light);
 void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img);
 void	paintline(t_cart src[2], t_ui color, float focus, t_data *img);
 void	planeframing(t_obj *plane, t_camera *camera, t_data *img);
+
+// Interface
+
+t_obj	*selectobject(t_list *camobjs, t_cart *vec);
 
 // Hooks for orientation and movement in space
 

@@ -28,7 +28,7 @@ void	camrotating(t_camera *camera, t_info *info, int x, int y)
 	axisbuilder(&oz, &curpos.vector, &axis);
 	if (comparef(axis.ang, 0, 0.1 * M_PI / 180))
 		return ;
-	dotcrdstmtrnsltn(&axis.vector, &curpos.vector, 1, &camera->crdstm);
+	dotcrdstmtrnsltn(&axis.vector, &curpos.vector, NULL, &camera->crdstm);
 	curpos.ang = axis.ang;
 	crdstmrotbyaxis(&camera->crdstm, &curpos, NULL);
 	initview(info->objects, camera, &info->lights);

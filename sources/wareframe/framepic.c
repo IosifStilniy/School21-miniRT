@@ -95,7 +95,7 @@ void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img)
 		if (!obj->dots.dotsnum)
 			planeframing(obj, camera, img);
 		inframe = objinframe(obj, wincntr, camera->focus);
-		color = ft_create_trgb(0, obj->colrs.x * 255, obj->colrs.y * 255, obj->colrs.z * 255);
+		color = ft_create_trgb(0, obj->colrs->x * 255, obj->colrs->y * 255, obj->colrs->z * 255);
 		i = -1;
 		while (obj->dots.dotsnum && inframe && ++i < obj->dots.routsize)
 		{

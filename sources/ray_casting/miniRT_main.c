@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/17 17:34:51 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/20 19:03:07 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static int	ft_find_shapes(t_info *info, t_cart ray, t_list *object)
 		if (current->dots.dotsnum != 0 && ft_get_intersection_with_sphere(ray, (t_cart){0, 0, 0}, object->content) < distance)
 		{
 			distance = ft_get_sphere_cone_phit(ray, &current->polys, current->dots.pos, &closest_poly);
-			closest_color = current->colrs;
+			closest_color = *current->colrs;
 		}
 		object = object->next;
 	}
@@ -95,6 +95,7 @@ static void	ft_raytracing_algorithm(t_info *info)
 
 void	ft_draw_screen(t_info *info)
 {
+	mlx_destroy_image(info->mlx_ptr, info->data.img);
 	info->data.img = mlx_new_image(info->mlx_ptr, info->data.res.x, info->data.res.y);
 	info->data.addr = mlx_get_data_addr(info->data.img, &info->data.bits_per_pixel, &info->data.line_length, &info->data.endian);
 	if (info->keybrd.render)
@@ -102,5 +103,4 @@ void	ft_draw_screen(t_info *info)
 	else
 		framepic(&info->win.camera, &info->win.cntr, info->win.camera.objs, &info->data);
 	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img, info->win.cntr.x - info->data.cntr.x, info->win.cntr.y - info->data.cntr.y);
-	mlx_destroy_image(info->mlx_ptr, info->data.img);
 }

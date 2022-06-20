@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/18 19:12:09 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/20 18:55:38 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,22 @@ void	quartrot(t_cart *pos, t_axis *axis)
 	*pos = posq.vector;
 }
 
-void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_crdstm *crdstm)
+void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, t_cart *scale, t_crdstm *crdstm)
 {
-	dst->x = src->x * crdstm->ox.vector.x + src->y * crdstm->oy.vector.x + src->z * crdstm->oz.vector.x;
-	dst->y = src->x * crdstm->ox.vector.y + src->y * crdstm->oy.vector.y + src->z * crdstm->oz.vector.y;
-	dst->z = src->x * crdstm->ox.vector.z + src->y * crdstm->oy.vector.z + src->z * crdstm->oz.vector.z;
-	if (comparef(scale, 1, 0.001))
-		return ;
-	dst->x *= scale;
-	dst->y *= scale;
-	dst->z *= scale;
+	t_cart	defscale;
+
+	cartbuilder(1, 1, 1, &defscale);
+	if (!scale)
+		scale = &defscale;
+	dst->x = src->x * crdstm->ox.vector.x * scale->x;
+	dst->y = src->x * crdstm->ox.vector.y * scale->x;
+	dst->z = src->x * crdstm->ox.vector.z * scale->x;
+	dst->x += src->y * crdstm->oy.vector.x * scale->y;
+	dst->y += src->y * crdstm->oy.vector.y * scale->y;
+	dst->z += src->y * crdstm->oy.vector.z * scale->y;
+	dst->x += src->z * crdstm->oz.vector.x * scale->z;
+	dst->y += src->z * crdstm->oz.vector.y * scale->z;
+	dst->z += src->z * crdstm->oz.vector.z * scale->z;
 }
 
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm)
@@ -63,9 +69,9 @@ void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm)
 		dots->pos[i].dot.x += crdstm->pos.x;
 		dots->pos[i].dot.y += crdstm->pos.y;
 		dots->pos[i].dot.z += crdstm->pos.z;
-		dotcrdstmtrnsltn(&dots->dots[i].norm, &dots->pos[i].norm, 1, crdstm);
+		dotcrdstmtrnsltn(&dots->dots[i].norm, &dots->pos[i].norm, NULL, crdstm);
 	}
 	i = -1;
 	while (++i < polys->polynum)
-		dotcrdstmtrnsltn(&polys->poly[i].srcnorm, &polys->poly[i].norm, 1, crdstm);
+		dotcrdstmtrnsltn(&polys->poly[i].srcnorm, &polys->poly[i].norm, NULL, crdstm);
 }

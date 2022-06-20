@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:43:02 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/18 18:58:47 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/20 18:55:51 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	keyshifting(int keycode, t_info *info)
 	if (axis.x + axis.y + axis.z)
 	{
 		res.ang = DEFANG * M_PI / 180;
-		dotcrdstmtrnsltn(&axis, &res.vector, 1, &info->win.camera.crdstm);
+		dotcrdstmtrnsltn(&axis, &res.vector, NULL, &info->win.camera.crdstm);
 		crdstmrotbyaxis(&info->win.camera.crdstm, &res, NULL);
 		initview(info->objects, &info->win.camera, &info->lights);
 	}
