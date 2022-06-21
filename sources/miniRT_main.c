@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/20 22:32:59 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/21 20:03:33 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,63 +45,6 @@ int	repairmouse(int x, int y, t_info *info)
 	}
 	mlx_hook(info->win.win, 6, 1L << 6, &mousemove, info);
 	return (0);
-}
-
-t_button	definebtn(int leftx, int lefty, int xsize, int ysize)
-{
-	t_button btn;
-
-	btn.leftup.x = leftx;
-	btn.leftup.y = lefty;
-	btn.bottomright.x = leftx + xsize;
-	btn.bottomright.y = lefty + ysize;
-	return (btn);
-}
-
-void	definearrowframes(t_button arrows[20], int leftx, int rghtx, t_res *frame)
-{
-	arrows[0] = definebtn(frame->x + leftx, 38, 10, 20);
-	arrows[1] = definebtn(frame->x + rghtx, 38, 10, 20);
-	arrows[2] = definebtn(frame->x + leftx, 63, 10, 20);
-	arrows[3] = definebtn(frame->x + rghtx, 63, 10, 20);
-	arrows[4] = definebtn(frame->x + leftx, 203, 10, 20);
-	arrows[5] = definebtn(frame->x + rghtx, 203, 10, 20);
-	arrows[6] = definebtn(frame->x + leftx, 233, 10, 20);
-	arrows[7] = definebtn(frame->x + rghtx, 233, 10, 20);
-	arrows[8] = definebtn(frame->x + leftx, 253, 10, 20);
-	arrows[9] = definebtn(frame->x + rghtx, 253, 10, 20);
-	arrows[10] = definebtn(frame->x + leftx, 283, 10, 20);
-	arrows[11] = definebtn(frame->x + rghtx, 283, 10, 20);
-	arrows[12] = definebtn(frame->x + leftx, 393, 10, 20);
-	arrows[13] = definebtn(frame->x + rghtx, 393, 10, 20);
-	arrows[14] = definebtn(frame->x + leftx, 423, 10, 20);
-	arrows[15] = definebtn(frame->x + rghtx, 423, 10, 20);
-	arrows[16] = definebtn(frame->x + leftx, 453, 10, 20);
-	arrows[17] = definebtn(frame->x + rghtx, 453, 10, 20);
-	arrows[18] = definebtn(frame->x + leftx, 483, 10, 20);
-	arrows[19] = definebtn(frame->x + rghtx, 483, 10, 20);
-}
-
-void	initinterface(t_intrfc *interface, void *mlx, t_res *win)
-{
-	interface->cam.img = mlx_xpm_file_to_image(mlx, "caminterface.xpm",
-		&interface->cam.res.x, &interface->cam.res.y);
-	interface->campos.x = win->x - interface->cam.res.x;
-	interface->campos.y = 0;
-	interface->obj.img = mlx_xpm_file_to_image(mlx, "objinterface.xpm",
-		&interface->obj.res.x, &interface->obj.res.y);
-	interface->objpos.x = win->x - interface->obj.res.x;
-	interface->objpos.y = interface->cam.res.y;
-	interface->frame.x = interface->campos.x;
-	interface->frame.y = interface->objpos.y + interface->obj.res.y;
-	interface->fov.step = 5 * M_PI / 360;
-	interface->fov.stepping = 0.5 * M_PI / 180;
-	interface->size.step = 0.1;
-	interface->size.stepping = 0.1;
-	interface->color.step = 10.f / 255.f;
-	interface->color.stepping = 1.f / 255.f;
-	interface->selected = NULL;
-	definearrowframes(interface->arrows, 63, 93, &interface->frame);
 }
 
 int	main(int argc, char **argv)

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/20 22:06:40 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/21 22:26:30 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,6 +236,11 @@ typedef struct t_trans {
 	float		trans[4][4];
 }	t_trans;
 
+typedef struct s_attach {
+	t_obj		*obj;
+	t_crdstm	crdstm;
+}	t_attach;
+
 typedef struct s_camera {
 	t_crdstm	crdstm;
 	t_bool		framemod;
@@ -246,6 +251,7 @@ typedef struct s_camera {
 	t_cart		lightpos;
 	t_bool		determined;
 	t_cart		corners[CRNRS];
+	t_attach	attached;
 }	t_camera;
 
 typedef struct s_win {
@@ -276,14 +282,26 @@ typedef struct s_step {
 	float	stepping;
 }	t_step;
 
-typedef struct s_intrfc {
+typedef struct s_sens {
+	t_step		mouse;
+	t_step		move;
+	float		mval;
+	float		kval;
+}	t_sens;
+
+typedef struct s_settings {
 	t_step		fov;
 	t_step		size;
 	t_step		color;
+	t_sens		sens;
+}	t_settings;
+
+typedef struct s_intrfc {
+	t_settings	settings;
 	t_res		campos;
 	t_res		objpos;
 	t_res		frame;
-	t_button	arrows[20];
+	t_button	arrows[24];
 	t_button	attach;
 	t_obj		*selected;
 	t_data		cam;
@@ -349,6 +367,7 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
+void	camfromobjcrdstm(t_crdstm *cam, t_attach *attached);
 void	camrotating(t_camera *camera, t_info *info, int x, int y);
 void	camshifting(t_camera *camera, t_info *info, t_cart *objsdir, float step);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
@@ -387,11 +406,18 @@ void	planeframing(t_obj *plane, t_camera *camera, t_data *img);
 
 // Interface
 
+t_bool	changeparams(int x, int y, t_intrfc *intrfc, t_win *win);
+t_bool	inbounds(t_button btn, int x, int y);
+void	initinterface(t_intrfc *interface, void *mlx, t_res *win);
+void	interfacebuilder(t_info *info);
+void	roundselected(t_cart *pos, float outframe, t_win *win, void *mlx);
 t_obj	*selectobject(t_list *camobjs, t_cart *vec);
 
 // Hooks for orientation and movement in space
 
-void	keyshifting(int keycode, t_info *info);
+void	keyaxisbuilder(int keycode, t_cart *axis);
+void	keydirbuilder(int keycode, t_cart *dir);
+t_bool	keyshifting(int keycode, t_info *info);
 void	scrolling(int btn, t_info *info);
 int		mousemove(int x, int y, t_info *info);
 void	mouserotating(t_info *info, int x, int y);

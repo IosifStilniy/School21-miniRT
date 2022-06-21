@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/20 19:00:27 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/21 19:59:13 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ void	definecamera(t_camera *camera, t_res *wincntr)
 	camera->focus = wincntr->x / tanf(camera->fov);
 	if (camera->focus < 1)
 		camera->focus = 1;
+	camera->attached.obj = NULL;
 	cartbuilder(0, 0, 1, &camera->corners[0]);
 	cartbuilder(-wincntr->x, -wincntr->y, camera->focus, &camera->corners[1]);
 	cartbuilder(wincntr->x, -wincntr->y, camera->focus, &camera->corners[2]);
