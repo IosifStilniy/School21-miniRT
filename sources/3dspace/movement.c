@@ -17,6 +17,8 @@ void	camshifting(t_camera *camera, t_info *info, t_cart *dir, float step)
 		camdir = camera->crdstm.oy.vector;
 	else if (dir->z)
 		camdir = camera->crdstm.oz.vector;
+	if (dir->x + dir->y + dir->z < 0)
+		negativevector(&camdir);
 	vectorsizing(step, &camdir, &camdir, NULL);
 	if (camera->attached.obj)
 	{

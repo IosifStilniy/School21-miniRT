@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/21 22:26:30 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/22 22:21:21 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -352,6 +352,7 @@ float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
 void	definepols(t_vrtx *dots, float radius, t_axis *rotcircle);
 void	polarjointing(t_vrtx *dots, t_poly *poly, void *txtr, int dotnum);
 void	polarsurfing(t_vrtx *dots, t_poly **poly, int lttd, void *txtr);
+void	repairspherenormal(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr);
 float	spherebuilder(t_dots *dots, t_polys *polys, float radius);
 void	surfing(t_poly *poly, int *dotindxs, t_vrtx *dots, void *txtr);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
@@ -417,7 +418,7 @@ t_obj	*selectobject(t_list *camobjs, t_cart *vec);
 
 void	keyaxisbuilder(int keycode, t_cart *axis);
 void	keydirbuilder(int keycode, t_cart *dir);
-t_bool	keyshifting(int keycode, t_info *info);
+void	keyshifting(t_cart *dir, t_cart *axis, t_info *info);
 void	scrolling(int btn, t_info *info);
 int		mousemove(int x, int y, t_info *info);
 void	mouserotating(t_info *info, int x, int y);

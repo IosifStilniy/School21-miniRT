@@ -33,14 +33,14 @@ void	interfacebuilder(t_info *info)
 
 	campos = &info->interface.campos;
 	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->interface.cam.img, campos->x, campos->y);
-	printvalue(info->interface.settings.sens.mval, campos->x + 63, campos->y + 10, info);
-	printvalue(info->interface.settings.sens.kval, campos->x + 63, campos->y + 20, info);
-	printvalue(info->win.camera.fov * 360 / M_PI, campos->x + 63, campos->y + 30, info);
-	printvalue(info->interface.settings.fov.step * 360 / M_PI, campos->x + 10, campos->y + 40, info);
+	printvalue(info->interface.settings.sens.mval, campos->x + 63, campos->y + 45, info);
+	printvalue(info->interface.settings.sens.kval, campos->x + 63, campos->y + 70, info);
+	printvalue(info->win.camera.fov * 360 / M_PI, campos->x + 63, campos->y + 133, info);
+	printvalue(info->interface.settings.fov.step * 360 / M_PI, campos->x + 63, campos->y + 158, info);
 	if (info->win.camera.attached.obj)
-		mlx_string_put(info->mlx_ptr, info->win.win, campos->x + 63, campos->y + 50, FRAMECLR, "TRUE");
+		mlx_string_put(info->mlx_ptr, info->win.win, campos->x + 63, campos->y + 175, FRAMECLR, "TRUE");
 	else
-		mlx_string_put(info->mlx_ptr, info->win.win, campos->x + 63, campos->y + 50, FRAMECLR, "FALSE");
+		mlx_string_put(info->mlx_ptr, info->win.win, campos->x + 63, campos->y + 175, FRAMECLR, "FALSE");
 	if (!info->interface.selected)
 		return ;
 	objpos = &info->interface.objpos;

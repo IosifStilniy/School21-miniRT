@@ -7,10 +7,10 @@ static void	surfdefiner(t_vrtx *dots, t_poly **poly, int dotnum, void *txtr)
 	dotindxs[0] = dotnum;
 	dotindxs[1] = dotnum - 1 - (RNDSGMNTS - 2);
 	dotindxs[2] = dotnum - 1;
-	surfing(++(*poly), dotindxs, dots, txtr);
+	repairspherenormal(++(*poly), dotindxs, dots, txtr);
 	dotindxs[1] = dotnum - (RNDSGMNTS - 2);
 	dotindxs[2] = dotnum - 1 - (RNDSGMNTS - 2);
-	surfing(++(*poly), dotindxs, dots, txtr);
+	repairspherenormal(++(*poly), dotindxs, dots, txtr);
 }
 
 static int	beltsurfing(t_vrtx *dots, t_poly **polys, int dotnum, void *txtr)
@@ -58,10 +58,10 @@ static void	jointing(t_vrtx *dots, t_poly *polys, int dotsnum, void *txtr)
 		dotindxs[0] = i + 2;
 		dotindxs[1] = i - 1 + 2;
 		dotindxs[2] = dotsnum - 1 - (i - 1);
-		surfing(++polys, dotindxs, dots, txtr);
+		repairspherenormal(++polys, dotindxs, dots, txtr);
 		dotindxs[1] = dotsnum - 1 - (i - 1);
 		dotindxs[2] = dotsnum - 1 - i;
-		surfing(++polys, dotindxs, dots, txtr);
+		repairspherenormal(++polys, dotindxs, dots, txtr);
 	}
 }
 

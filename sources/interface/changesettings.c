@@ -65,14 +65,14 @@ t_bool	changeparams(int x, int y, t_intrfc *intrfc, t_win *win)
 	int		i;
 
 	if (!intrfc->selected)
-		return ;
+		return (FALSE);
 	btn = FALSE;
 	i = -1;
 	while (++i < 24)
 		if (inbounds(intrfc->arrows[i], x, y) && ++btn)
 			break ;
 	if (!btn)
-		return ;
+		return (FALSE);
 	if (i / 2 >= 8)
 		return (changecart(i - 12, intrfc->selected->colrs, &intrfc->settings.color));
 	else if (i / 2 >= 4)

@@ -6,56 +6,51 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/21 22:41:04 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/22 22:34:41 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int	keydownhndlr(int keycode, t_info *info)
+void	rotateattached(t_cart *dir, t_axis *axis, t_info *info)
 {
-	if (keycode == KEY_R)
-		info->keybrd.render = !info->keybrd.render;
+	if (!info->win.camera.attached.obj)
+		return ;
+	if (dir->x + dir->y + dir->z)
+		vectodot(&info->win.camera.attached.crdstm.pos, dir, FALSE);
 	else
-		keyshifting(keycode, info);
-	ft_draw_screen(info);
-	return (0);
+	{
+		axis->ang = M_PI_2;
+		quartrot(&info->win.camera.attached.crdstm.pos, axis);
+		crdstmrotbyaxis(&info->win.camera.attached.crdstm, axis, NULL);
+	}
+	camfromobjcrdstm(&info->win.camera.crdstm, &info->win.camera.attached);
+	initview(info->objects, &info->win.camera, &info->lights);
 }
 
-int	rotateattached(int keycode, t_info *info)
+int	keydownhndlr(int keycode, t_info *info)
 {
 	t_cart	dir;
 	t_axis	axis;
+	t_bool	movement;
 
-	if (!info->win.camera.attached.obj)
-		return (0);
 	keydirbuilder(keycode, &dir);
 	keyaxisbuilder(keycode, &axis.vector);
-	if (dir.x + dir.y + dir.z)
-		vectodot(&info->win.camera.attached.crdstm.pos, &dir, FALSE);
-	else if (axis.vector.x + axis.vector.y + axis.vector.z)
-	{
-		axis.ang = M_PI_2;
-		quartrot(&info->win.camera.attached.crdstm.pos, &axis);
-		crdstmrotbyaxis(&info->win.camera.attached.crdstm, &axis, NULL);
-	}
+	movement = lrintf(dir.x + dir.y + dir.z + axis.vector.x + axis.vector.y + axis.vector.z);
+	if (movement && !info->keybrd.interface)
+		keyshifting(&dir, &axis.vector, info);
+	else if (movement && info->keybrd.interface)
+		rotateattached(&dir, &axis, info);
 	else
 		return (0);
-	camfromobjcrdstm(&info->win.camera.crdstm, &info->win.camera.attached);
-	initview(info->objects, &info->win.camera, &info->lights);
-	return (0);
-}
-
-int	emptymove(int x, int y, t_info *info)
-{
-	(void)x;
-	(void)y;
-	(void)info;
+	ft_draw_screen(info);
 	return (0);
 }
 
 int	mousemove(int x, int y, t_info *info)
 {
+	if (info->keybrd.interface)
+		return (0);
 	camrotating(&info->win.camera, info, x, y);
 	ft_draw_screen(info);
 	mlx_mouse_move(info->win.win, 0, info->mouse.yshift);
@@ -82,7 +77,7 @@ int	btnup(int btn, int x, int y, t_info *info)
 {
 	t_axis	vec;
 
-	if (btn != LMB)
+	if (btn != LMB || !info->keybrd.interface)
 		return (0);
 	vectorbuilder(x, y, info->win.camera.focus, &vec);
 	if (!(info->interface.frame.x <= x && x <= info->win.res.x))
@@ -104,9 +99,7 @@ int	btnup(int btn, int x, int y, t_info *info)
 
 int	btnpress(int btn, int x, int y, t_info *info)
 {
-	t_bool	reprint;
-
-	if (btn != LMB)
+	if (btn != LMB || !info->keybrd.interface)
 		return (0);
 	if (changeparams(x, y, &info->interface, &info->win))
 		ft_draw_screen(info);
@@ -115,21 +108,19 @@ int	btnpress(int btn, int x, int y, t_info *info)
 	if (info->interface.selected)
 		roundselected(&info->interface.selected->crdstm.pos, info->interface.selected->outframe, &info->win, info->mlx_ptr);
 	interfacebuilder(info);
+	return (0);
 }
 
 int	keyuphndlr(int keycode, t_info *info)
 {
 	if (keycode == KEY_I)
 		info->keybrd.interface = (!info->keybrd.interface);
+	else if (keycode == KEY_R)
+		info->keybrd.render = !info->keybrd.render;
 	else if (keycode == KEY_ESC)
 		exit(0);
-	mlx_hook(info->win.win, 2, 1L, &keydownhndlr, &info);
-	mlx_hook(info->win.win, 6, 1L << 6, &mousemove, info);
-	if (!info->keybrd.interface)
+	else
 		return (0);
-	mlx_hook(info->win.win, 2, 1L, &rotateattached, &info);
-	mlx_hook(info->win.win, 4, 1L << 2, &btnpress, info);
-	mlx_hook(info->win.win, 5, 1L << 3, &btnup, info);
-	mlx_hook(info->win.win, 6, 1L << 6, &emptymove, info);
+	ft_draw_screen(info);
 	return (0);
 }
