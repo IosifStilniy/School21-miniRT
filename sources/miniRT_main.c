@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/22 22:40:38 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/23 20:55:24 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,6 @@ void	wininit(t_info *info, char *prog, char *file)
 	info->data.img = mlx_new_image(info->mlx_ptr, info->data.res.x, info->data.res.y);
 	info->data.cntr.x = info->data.res.x / 2;
 	info->data.cntr.y = info->data.res.y / 2;
-	// info->data.addr = mlx_get_data_addr(info->data.img,
-	// 		&info->data.bits_per_pixel, &info->data.line_length,
-	// 		&info->data.endian);
 }
 
 int	repairmouse(int x, int y, t_info *info)
@@ -52,9 +49,9 @@ void	pudge(t_info *info)
 	info->keybrd.render = FALSE;
 	info->keybrd.interface = FALSE;
 	info->mouse.yshift = 0;
+	mlx_mouse_hide();
 	mlx_hook(info->win.win, 2, 1L, &keydownhndlr, info);
 	mlx_hook(info->win.win, 3, 1L << 1, &keyuphndlr, info);
-	mlx_hook(info->win.win, 4, 1L << 2, &btnpress, info);
 	mlx_hook(info->win.win, 5, 1L << 3, &btnup, info);
 	mlx_hook(info->win.win, 6, 1L << 6, &repairmouse, info);
 }

@@ -47,7 +47,7 @@ void	initview(t_list *objs, t_camera *camera, t_light *light)
 		transpos(&camobj->crdstm.ox.vector, trans.crdstm);
 		transpos(&camobj->crdstm.oy.vector, trans.crdstm);
 		transpos(&camobj->crdstm.oz.vector, trans.crdstm);
-		engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
+		engine(&camobj->dots, &camobj->polys, &camobj->crdstm, &camobj->outframe);
 		camcrsr = camcrsr->next;
 		crsr = crsr->next;
 	}

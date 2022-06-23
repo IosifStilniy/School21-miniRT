@@ -3,6 +3,9 @@
 void	camfromobjcrdstm(t_crdstm *cam, t_attach *attached)
 {
 	dotcrdstmtrnsltn(&attached->crdstm.pos, &cam->pos, NULL, &attached->obj->crdstm);
+	cam->pos.x += attached->obj->crdstm.pos.x;
+	cam->pos.y += attached->obj->crdstm.pos.y;
+	cam->pos.z += attached->obj->crdstm.pos.z;
 	dotcrdstmtrnsltn(&attached->crdstm.ox.vector, &cam->ox.vector, NULL, &attached->obj->crdstm);
 	dotcrdstmtrnsltn(&attached->crdstm.oy.vector, &cam->oy.vector, NULL, &attached->obj->crdstm);
 	dotcrdstmtrnsltn(&attached->crdstm.oz.vector, &cam->oz.vector, NULL, &attached->obj->crdstm);

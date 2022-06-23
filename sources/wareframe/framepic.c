@@ -29,6 +29,8 @@ long int	dirdefiner(t_cart *start, t_cart *dir)
 	length = vectorlength(dir);
 	vectorsizing(1, dir, dir, NULL);
 	cartbuilder(dir->x, dir->y, 0, &xydir);
+	if (comparef(vectorlength(&xydir), 0, 0.001))
+		return (1);
 	vectorsizing(1 / vectorlength(&xydir), dir, dir, NULL);
 	return (ceilf(length / vectorlength(dir)) + 1);
 }
@@ -77,7 +79,7 @@ t_bool	objinframe(t_obj *obj, t_res *winctr, float focus)
 	objpos.y = objpos.y * focus / dstnc + winctr->y;
 	if (!(0 <= objpos.x && objpos.x <= RESX))
 		return (FALSE);
-	return ((0 <= objpos.y && objpos.y <= RESY));
+	return (0 <= objpos.y && objpos.y <= RESY);
 }
 
 void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img)

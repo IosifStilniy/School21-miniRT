@@ -8,24 +8,30 @@ void	changevalue(float *param, float step, t_bool increase)
 		*param -= step;
 }
 
-t_bool	changecart(int arrow, t_cart *param, t_step *step)
+t_bool	changecart(int arrow, t_cart *param, float bounds[2], t_step *step)
 {
 	int		row;
+	float	*val;
 	t_bool	increase;
 
 	row = arrow / 2;
 	increase = arrow % 2;
 	if (!row)
-		changevalue(&param->x, step->step, increase);
+		val = &param->x;
 	else if (row == 1)
-		changevalue(&param->y, step->step, increase);
+		val = &param->y;
 	else if (row == 2)
-		changevalue(&param->z, step->step, increase);
+		val = &param->z;
 	else
 	{
 		changevalue(&step->step, step->stepping, increase);
 		return (FALSE);
 	}
+	changevalue(val, step->step, increase);
+	if (bounds && *val < bounds[0])
+		*val = bounds[0];
+	else if (bounds && *val > bounds[1])
+		*val = bounds[1];
 	return (TRUE);
 }
 
@@ -62,10 +68,11 @@ void	changesensetive(int arrow, t_sens *sens)
 t_bool	changeparams(int x, int y, t_intrfc *intrfc, t_win *win)
 {
 	t_bool	btn;
+	float	colorbounds[2];
 	int		i;
 
-	if (!intrfc->selected)
-		return (FALSE);
+	colorbounds[0] = 0;
+	colorbounds[1] = 1;
 	btn = FALSE;
 	i = -1;
 	while (++i < 24)
@@ -73,10 +80,10 @@ t_bool	changeparams(int x, int y, t_intrfc *intrfc, t_win *win)
 			break ;
 	if (!btn)
 		return (FALSE);
-	if (i / 2 >= 8)
-		return (changecart(i - 12, intrfc->selected->colrs, &intrfc->settings.color));
-	else if (i / 2 >= 4)
-		return (changecart(i - 4, intrfc->selected->dots.scale, &intrfc->settings.size));
+	if (intrfc->selected && i / 2 >= 8)
+		return (changecart(i - 16, intrfc->selected->colrs, colorbounds, &intrfc->settings.color));
+	else if (intrfc->selected && i / 2 >= 4)
+		return (changecart(i - 8, intrfc->selected->dots.scale, NULL, &intrfc->settings.size));
 	else if (i / 2 >= 2)
 		return (changecamparams(i - 4, win, &intrfc->settings.fov));
 	changesensetive(i, &intrfc->settings.sens);

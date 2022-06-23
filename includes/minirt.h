@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/22 22:21:21 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/23 17:49:47 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -374,7 +374,7 @@ void	camshifting(t_camera *camera, t_info *info, t_cart *objsdir, float step);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
 void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, t_cart *scale, t_crdstm *crdstm);
 void	dottranslation(t_cart *dot, t_cart *direction, float step);
-void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm);
+void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, float *outframe);
 void	objtoobjpos(t_cart *center, t_cart *dot);
 void	vrtxtranslation(t_vrtx *vrtxs, int dotnum, t_cart *direction, float step);
 void	quartrot(t_cart *pos, t_axis *axis);
@@ -402,6 +402,7 @@ void	createcamobjs(t_list **camobjs, t_list *objs);
 void	createframerouts(t_list *objs);
 void	initview(t_list *objs, t_camera *camera, t_light *light);
 void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img);
+t_bool	objinframe(t_obj *obj, t_res *winctr, float focus);
 void	paintline(t_cart src[2], t_ui color, float focus, t_data *img);
 void	planeframing(t_obj *plane, t_camera *camera, t_data *img);
 
