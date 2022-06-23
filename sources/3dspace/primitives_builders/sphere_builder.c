@@ -16,6 +16,7 @@ static void	surfdefiner(t_vrtx *dots, t_poly **poly, int dotnum, void *txtr)
 static int	beltsurfing(t_vrtx *dots, t_poly **polys, int dotnum, void *txtr)
 {
 	int	dotsinround;
+
 	dotsinround = 0;
 	while (++dotsinround < (RNDSGMNTS - 2) / 2)
 		surfdefiner(dots, polys, ++dotnum, txtr);
@@ -34,6 +35,7 @@ static void	dotfiller(t_vrtx *dots, t_poly *polys, float radius, void *txtr)
 	vectorbuilder(1, 0, 0, &rotltd);
 	step = 2 * M_PI / RNDSGMNTS;
 	lttd = 0;
+	rotltd.ang = 0;
 	while (++lttd < RNDSGMNTS / 2)
 	{
 		rotltd.ang += step;

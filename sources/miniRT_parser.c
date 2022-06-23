@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_parser.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/09 22:02:19 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/15 22:08:38 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,15 +51,14 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *p
 	str = ft_get_position_values(prog, str, &camera->crdstm.pos);
 	str = ft_get_position_values(prog, str, &norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &camera->crdstm.oz);
-	if (!comparef(camera->crdstm.oz.length, 1, 0.001))
-		customerr(prog, INVDEF, TRUE);
+	vectorsizing(1, &camera->crdstm.oz.vector, &camera->crdstm.oz.vector, &camera->crdstm.oz.length);
 	crdstmdefiner(&camera->crdstm);
 	while (ft_strchr(SPACES, *str))
 		str++;
 	if (!ft_strchr("0123456789", *str))
 		customerr(prog, INVDEF, TRUE);
-	camera->view.xfov = ft_atoi(str) * M_PI / 360;
-	if (!(-0.001 <= camera->view.xfov && camera->view.xfov <= 90.001))
+	camera->fov = ft_atoi(str) * M_PI / 360;
+	if (!(-0.001 <= camera->fov && camera->fov <= 90.001))
 		customerr(prog, INVDEF, TRUE);
 	while (ft_strchr("0123456789", *str))
 		str++;
@@ -95,33 +94,21 @@ static void	primitivesbuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 	objcast(*objs)->dots.scale = 1;
 }
 
-void	cameradefinition(t_view *view, t_cart corners[4], t_res *wincntr)
+void	definecamera(t_camera *camera, t_res *wincntr)
 {
-	t_axis	xaxis;
-	t_axis	yaxis;
-	int		i;
+	int	i;
 
-	if (view->focus < 1.001)
-		view->focus = 1;
-	view->xfov = atanf(wincntr->x / view->focus);
-	view->yfov = atanf(wincntr->y / view->focus);
-	i = -1;
-	while (++i < 4)
-		cartbuilder(0, 0, 1, corners + i);
-	xaxis.ang = view->yfov;
-	yaxis.ang = view->xfov;
-	vectorbuilder(0, -1, 0, &yaxis);
-	vectorbuilder(-1, 0, 0, &xaxis);
-	quartrot(corners, &yaxis);
-	quartrot(corners, &xaxis);
-	quartrot(corners + 1, &yaxis);
-	quartrot(corners + 3, &xaxis);
-	vectorbuilder(0, 1, 0, &yaxis);
-	vectorbuilder(1, 0, 0, &xaxis);
-	quartrot(corners + 1, &xaxis);
-	quartrot(corners + 2, &yaxis);
-	quartrot(corners + 2, &xaxis);
-	quartrot(corners + 3, &yaxis);
+	camera->focus = wincntr->x / tanf(camera->fov);
+	if (camera->focus < 1)
+		camera->focus = 1;
+	cartbuilder(0, 0, 1, &camera->corners[0]);
+	cartbuilder(-wincntr->x, -wincntr->y, camera->focus, &camera->corners[1]);
+	cartbuilder(wincntr->x, -wincntr->y, camera->focus, &camera->corners[2]);
+	cartbuilder(wincntr->x, wincntr->y, camera->focus, &camera->corners[3]);
+	cartbuilder(-wincntr->x, wincntr->y, camera->focus, &camera->corners[4]);
+	i = 0;
+	while (++i < CRNRS)
+		vectorsizing(1, &camera->corners[i], &camera->corners[i], NULL);
 }
 
 void	ft_read_information(int fd, t_info *info)
@@ -147,6 +134,5 @@ void	ft_read_information(int fd, t_info *info)
 	}
 	if (!(info->win.camera.determined * info->lights.determined * info->a_light.determined))
 		customerr(info->prog, "undefined camera and/or lights", TRUE);
-	info->win.camera.view.focus = info->win.cntr.x / tanf(info->win.camera.view.xfov);
-	cameradefinition(&info->win.camera.view, info->win.camera.corners, &info->win.cntr);
+	definecamera(&info->win.camera, &info->win.cntr);
 }

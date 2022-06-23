@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hooks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/09 23:30:04 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/18 18:59:02 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,8 @@ int	keyuphndlr(int keycode, t_info *info)
 
 int	mousemove(int x, int y, t_info *info)
 {
-	camrotating(&info->win.camera, info->win.win, x, y);
-	ft_draw_screen(info);;
-	// createview(&info->win.camera);
+	camrotating(&info->win.camera, info, x, y);
+	ft_draw_screen(info);
+	mlx_mouse_move(info->win.win, 0, info->mouse.yshift);
 	return (0);
 }

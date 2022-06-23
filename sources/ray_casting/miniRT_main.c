@@ -6,151 +6,95 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/10 23:41:06 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/23 14:20:44 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-static t_cart	ft_cast_ray(float x, float y, float z)
+void	ft_cast_ray(t_ray *ray, t_cart direction, t_cart origin)
 {
-	t_cart	ray;
-
-	ray.x = x;
-	ray.y = y;
-	ray.z = z;
-	return (ft_get_vector_norm(ray, ft_get_vector_length(ray)));
+	ray->dir.x = direction.x;
+	ray->dir.y = direction.y;
+	ray->dir.z = direction.z;
+	ray->orig.x = origin.x;
+	ray->orig.y = origin.y;
+	ray->orig.z = origin.z;
+	ray->dir = ft_get_vector_norm(ray->dir, ft_get_vector_length(ray->dir));
 }
 
-static	float	ft_get_sphere_cone_phit(t_cart ray, t_polys *polys, t_vrtx *dots, t_poly *closest_poly)
+static void	ft_get_color_from_shapes(int *color, t_ray ray,
+			t_list *objects, t_info *info)
 {
-	int		i;
-	t_cart	p[3];
-	float	distance;
-	float	temp_distance;
+	t_obj	*obj;
+	float	dist[2];
+	t_cart	c_norm;
+	t_cart	c_phit;
+	t_cart	c_color;
 
-	i = -1;
-	distance = INFINITY;
-	while (++i < polys->polynum)
+	dist[0] = INFINITY;
+	while (objects)
 	{
-		temp_distance = ft_get_intersection_with_poly(ray, (t_cart){0, 0, 0}, polys->poly[i].norm, dots[polys->poly[i].dots[0]].dot);
-		if (temp_distance < distance)
+		obj = (t_obj *)objects->content;
+		if (obj->dots.dotsnum && ft_intersect_sphere(ray, obj) < INFINITY)
+			ft_intersect_polygon(ray, &c_norm, obj, &dist[1]);
+		else if (!obj->dots.dotsnum)
+			ft_intersect_plane(ray, obj->crdstm.oz.vector, obj->crdstm.pos, &dist[1]);
+		if (dist[1] < dist[0])
 		{
-			p[0] = dots[polys->poly[i].dots[0]].dot;
-			p[1] = dots[polys->poly[i].dots[1]].dot;
-			p[2] = dots[polys->poly[i].dots[2]].dot;
-			if (ft_get_intersection_with_triangle(p, ft_multiply_vector(ray, temp_distance), polys->poly[i].norm))
-			{
-				distance = temp_distance;
-				*closest_poly = polys->poly[i];
-			}
+			dist[0] = dist[1];
+			c_color = obj->colrs;
+			if (!obj->dots.dotsnum)
+				c_norm = obj->crdstm.oz.vector;
 		}
+		objects = objects->next;
 	}
-	return (distance);
-}
-
-static int	ft_find_shapes(t_info *info, t_cart ray, t_list *object)
-{
-	t_obj	*current;
-	float	distance;
-	t_cart	closest_color;
-	t_poly	closest_poly;
-
-	distance = INFINITY;
-	while (object)
-	{
-		current = object->content;
-		if (current->dots.dotsnum != 0 && ft_get_intersection_with_sphere(ray, (t_cart){0, 0, 0}, object->content) < distance)
-		{
-			distance = ft_get_sphere_cone_phit(ray, &current->polys, current->dots.pos, &closest_poly);
-			closest_color = current->colrs;
-		}
-		object = object->next;
-	}
-	if (distance != INFINITY)
-		return (ft_find_light(ft_multiply_vector(ray, distance - 0.0001f), closest_poly.norm, closest_color, info));
-	return (0x00000000);
+	c_phit = ft_multiply_vector(ray.dir, dist[0]);
+	*color = ft_shadowing(c_phit, c_norm, c_color, info);
 }
 
 static void	ft_raytracing_algorithm(t_info *info)
 {
-	t_cart	screen_pixel;
-	t_cart	ray;
+	t_ray	ray;
+	t_cart	origin;
+	t_cart	direction;
+	t_cart	pixel;
 	int		color;
 
-	screen_pixel.z = info->win.camera.view.focus;
-	screen_pixel.y = -1;
-	while (++screen_pixel.y < RESY)
+	origin.x = 0.0f;
+	origin.y = 0.0f;
+	origin.z = 0.0f;
+	pixel.z = info->win.camera.focus;
+	pixel.y = -1;
+	while (++pixel.y < RESY)
 	{
-		screen_pixel.x = -1;
-		while (++screen_pixel.x < RESX)
+		pixel.x = -1;
+		while (++pixel.x < RESX)
 		{
-			ray = ft_cast_ray(screen_pixel.x - info->win.cntr.x, info->win.cntr.y - screen_pixel.y, screen_pixel.z);
-			color = ft_find_shapes(info, ray, info->win.camera.camobjs.objs);
-			my_mlx_pixel_put(&info->data, screen_pixel.x, screen_pixel.y, color);
+			direction.x = pixel.x - info->win.cntr.x;
+			direction.y = info->win.cntr.y - pixel.y;
+			direction.z = pixel.z;
+			ft_cast_ray(&ray, direction, origin);
+			ft_get_color_from_shapes(&color, ray, info->win.camera.objs, info);
+			my_mlx_pixel_put(&info->data, pixel.x, pixel.y, color);
 		}
 	}
 }
 
 void	ft_draw_screen(t_info *info)
 {
-	ft_raytracing_algorithm(info);
-	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img, 0, 0);
+	info->data.img = mlx_new_image(info->mlx_ptr,
+			info->data.res.x, info->data.res.y);
+	info->data.addr = mlx_get_data_addr(info->data.img,
+			&info->data.bits_per_pixel, &info->data.line_length,
+			&info->data.endian);
+	if (info->keybrd.render)
+		ft_raytracing_algorithm(info);
+	else
+		framepic(&info->win.camera, &info->win.cntr,
+			info->win.camera.objs, &info->data);
+	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img,
+		info->win.cntr.x - info->data.cntr.x,
+		info->win.cntr.y - info->data.cntr.y);
+	mlx_destroy_image(info->mlx_ptr, info->data.img);
 }
-
-// static int	ft_find_shapes(t_info *info, t_cart ray, t_list *object)
-// {
-// 	t_obj	*current;
-// 	t_obj	*closest_object;
-// 	float	temp_distance;
-// 	float	distance;
-
-// 	distance = INFINITY;
-// 	while (object)
-// 	{
-// 		current = object->content;
-// 		if (current->dots.dotsnum != 0)
-// 			temp_distance = ft_get_intersection_with_sphere(ray,
-// 					(t_cart){0, 0, 0}, object->content);
-// 		else
-// 			temp_distance = ft_get_intersection_with_plane(ray,
-// 					(t_cart){0, 0, 0}, object->content);
-// 		if (temp_distance < distance)
-// 		{
-// 			distance = temp_distance;
-// 			closest_object = object->content;
-// 		}
-// 		object = object->next;
-// 	}
-// 	if (distance != INFINITY)
-// 		return (ft_find_light(ft_multiply_vector(ray, distance),
-// 				closest_object, info));
-// 	return (0x00000000);
-// }
-
-// static void	ft_raytracing_algorithm(t_info *info)
-// {
-// 	t_cart	screen_pixel;
-// 	t_cart	ray;
-// 	int		color;
-
-// 	screen_pixel.z = info->win.camera.view.focus;
-// 	screen_pixel.y = -1;
-// 	while (++screen_pixel.y < RESY)
-// 	{
-// 		screen_pixel.x = -1;
-// 		while (++screen_pixel.x < RESX)
-// 		{
-// 			ray = ft_cast_ray(screen_pixel.x - info->win.cntr.x, info->win.cntr.y - screen_pixel.y, screen_pixel.z);
-// 			color = ft_find_shapes(info, ray, info->win.camera.camobjs.objs);
-// 			my_mlx_pixel_put(&info->data, screen_pixel.x,
-// 				screen_pixel.y, color);
-// 		}
-// 	}
-// }
-
-// void	ft_draw_screen(t_info *info)
-// {
-// 	ft_raytracing_algorithm(info);
-// 	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img, 0, 0);
-// }

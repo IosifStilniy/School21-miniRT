@@ -19,9 +19,9 @@ void	cartcopy(t_cart *src, t_cart *dst, int count)
 
 void	negativevector(t_cart *dot)
 {
-	dot->x = -dot->x;
-	dot->y = -dot->y;
-	dot->z = -dot->z;
+	dot->x *= -1;
+	dot->y *= -1;
+	dot->z *= -1;
 }
 
 void	vectodot(t_cart *vector, t_cart *start, t_bool normilize)
@@ -41,25 +41,12 @@ void	vectodot(t_cart *vector, t_cart *start, t_bool normilize)
 	vector->z /= length;
 }
 
-void	crdstmcopy(t_crdstm *src, t_crdstm *dst)
+void	dottranslation(t_cart *dot, t_cart *direction, float step)
 {
-	cartcopy(&src->pos, &dst->pos, 1);
-	cartcopy(&src->ox.vector, &dst->ox.vector, 1);
-	cartcopy(&src->oy.vector, &dst->oy.vector, 1);
-	cartcopy(&src->oz.vector, &dst->oz.vector, 1);
-}
+	t_cart	res;
 
-void	dotstranslation(t_cart *dots, int dotnum, t_cart *direction, float step)
-{
-	t_axis	res;
-	int		i;
-
-	vectorsizing(step, direction, &res.vector, &res.length);
-	i = -1;
-	while (++i < dotnum)
-	{
-		dots[i].x += res.vector.x;
-		dots[i].y += res.vector.y;
-		dots[i].z += res.vector.z;
-	}
+	vectorsizing(step, direction, &res, NULL);
+	dot->x += res.x;
+	dot->y += res.y;
+	dot->z += res.z;
 }
