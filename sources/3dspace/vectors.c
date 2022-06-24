@@ -25,9 +25,11 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm)
 
 	if (centraldot)
 	{
-		cartbuilder(dot1->x - centraldot->x, dot1->y - centraldot->y, dot1->z - centraldot->z, &d1);
+		d1 = *dot1;
+		objtoobjpos(centraldot, &d1);
 		dot1 = &d1;
-		cartbuilder(dot2->x - centraldot->x, dot2->y - centraldot->y, dot2->z - centraldot->z, &d2);
+		d2 = *dot2;
+		objtoobjpos(centraldot, &d2);
 		dot2 = &d2;
 	}
 	norm->x = dot1->y * dot2->z - dot1->z * dot2->y;

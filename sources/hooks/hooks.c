@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/23 21:00:01 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/24 21:17:12 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	rotateattached(t_cart *dir, t_axis *axis, t_info *info)
 	if (!info->win.camera.attached.obj)
 		return ;
 	if (dir->x + dir->y + dir->z)
-		vectodot(&info->win.camera.attached.crdstm.pos, dir, FALSE);
+		vectodot(&info->win.camera.attached.crdstm.pos, dir);
 	else
 	{
 		axis->ang = M_PI_2;

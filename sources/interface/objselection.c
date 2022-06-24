@@ -97,27 +97,23 @@ void	roundselected(t_cart *pos, float outframe, t_win *win, void *mlx)
 t_obj	*selectobject(t_list *camobjs, t_cart *vec)
 {
 	t_obj	*obj;
-	t_cart	res;
+	t_cart	objdir;
+	t_axis	res;
 	t_obj	*nearest;
 
 	nearest = NULL;
 	while (camobjs)
 	{
 		obj = camobjs->content;
-		if (obj->crdstm.pos.z < 1 || !obj->dots.dotsnum)
+		if (obj->crdstm.pos.z > 1 && obj->dots.dotsnum)
 		{
-			camobjs = camobjs->next;
-			continue ;
+			objdir = obj->crdstm.pos;
+			vectorsizing(1, &objdir, &objdir, NULL);
+			axisbuilder(&objdir, vec, &res);
+			if (res.ang <= atan2f(obj->outframe, vectorlength(&obj->crdstm.pos))
+				&& (!nearest || obj->crdstm.pos.z < nearest->crdstm.pos.z))
+				nearest = obj;
 		}
-		vectorsizing(obj->crdstm.pos.z / vec->z, vec, &res, NULL);
-		objtoobjpos(&obj->crdstm.pos, &res);
-		if (vectorlength(&res) > obj->outframe)
-		{
-			camobjs = camobjs->next;
-			continue ;
-		}
-		if (!nearest || obj->crdstm.pos.z < nearest->crdstm.pos.z)
-			nearest = obj;
 		camobjs = camobjs->next;
 	}
 	return (nearest);

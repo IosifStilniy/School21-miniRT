@@ -25,11 +25,11 @@ void	camshifting(t_camera *camera, t_info *info, t_cart *dir, float step)
 	vectorsizing(step, &camdir, &camdir, NULL);
 	if (camera->attached.obj)
 	{
-		vectodot(&camera->attached.obj->crdstm.pos, &camdir, FALSE);
+		vectodot(&camera->attached.obj->crdstm.pos, &camdir);
 		camfromobjcrdstm(&camera->crdstm, &camera->attached);
 	}
 	else
-		vectodot(&camera->crdstm.pos, &camdir, FALSE);
+		vectodot(&camera->crdstm.pos, &camdir);
 	initview(info->objects, camera, &info->lights);
 }
 

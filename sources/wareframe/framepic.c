@@ -90,7 +90,6 @@ void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img)
 	t_ui	color;
 	int		i;
 
-	ft_bzero(img->addr, img->line_length * img->res.y);
 	while (camobjs)
 	{
 		obj = camobjs->content;

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/23 17:49:47 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/24 21:16:42 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,6 +166,11 @@ typedef struct s_cart {
 	float	y;
 	float	z;
 }	t_cart;
+
+typedef	struct s_ray {
+	t_cart	dir;
+	t_cart	orig;
+}	t_ray;
 
 typedef struct s_axis {
 	t_cart	vector;
@@ -389,7 +394,7 @@ void	transpos(t_cart	*pos, float transmatrix[4][4]);
 void	axisbuilder(t_cart *v1, t_cart *v2, t_axis *axis);
 void	cartbuilder(float x, float y, float z, t_cart *dot);
 void	cartcopy(t_cart *src, t_cart *dst, int count);
-void	vectodot(t_cart *vector, t_cart *start, t_bool normilize);
+void	vectodot(t_cart *vector, t_cart *start);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
 float	vectorlength(t_cart *dot);
 void	vectorsizing(float newlength, t_cart *src, t_cart *vecres, float *lngthres);
@@ -427,7 +432,6 @@ void	mouseshifting(t_info *info, int x, int y);
 void	mousezooming(t_info *info, int y);
 int		keydownhndlr(int keycode, t_info *info);
 int		keyuphndlr(int keycode, t_info *info);
-int		btnpress(int btn, int x, int y, t_info *info);
 int		btnup(int btn, int x, int y, t_info *info);
 
 //Utils
@@ -453,16 +457,13 @@ t_cart	ft_multiply_vectors(t_cart vect_a, t_cart vect_b);
 t_cart	ft_substract_vectors(t_cart vect_a, t_cart vect_b);
 t_cart	ft_get_cross_product(t_cart vect_a, t_cart vect_b);
 
-int		ft_find_light(t_cart phit, t_cart norm, t_cart color, t_info *info);
+void	ft_cast_ray(t_ray *ray, t_cart direction, t_cart origin);
 
-float	ft_get_intersection_with_poly(t_cart ray_dir,
-	t_cart ray_orig, t_cart norm_vector, t_cart pos);
-float	ft_get_intersection_with_plane(t_cart ray_dir,
-			t_cart ray_orig, t_obj *plane);
-float	ft_get_intersection_with_sphere(t_cart ray_dir,
-			t_cart ray_orig, t_obj *sphere);
-int		ft_get_intersection_with_triangle(t_cart p[3],
-			t_cart phit, t_cart norm_vector);
+unsigned int		ft_shadowing(t_cart phit, t_cart object_norm, t_cart object_color, t_info *info); 
 
+float	ft_intersect_sphere(t_ray ray, t_obj *sphere);
+void	ft_intersect_plane(t_ray ray, t_cart norm_vector, t_cart pos, float *closest_distance);
+void	ft_intersect_polygon(t_ray ray, t_cart *closest_norm, t_obj *object, float *closest_distance);
+int		ft_intersect_triangle(t_vrtx p[3], t_cart phit, float dist[2], t_cart *closest_norm, t_cart norm);
 
 #endif

@@ -6,9 +6,9 @@ void	surfing(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr)
 	poly->dots[1] = dotindxs[1];
 	poly->dots[2] = dotindxs[2];
 	normbuilder(&dots[poly->dots[0]].dot, &dots[poly->dots[1]].dot, &dots[poly->dots[2]].dot, &poly->srcnorm);
-	vectodot(&dots[poly->dots[0]].norm, &poly->srcnorm, TRUE);
-	vectodot(&dots[poly->dots[1]].norm, &poly->srcnorm, TRUE);
-	vectodot(&dots[poly->dots[2]].norm, &poly->srcnorm, TRUE);
+	vectodot(&dots[poly->dots[0]].norm, &poly->srcnorm);
+	vectodot(&dots[poly->dots[1]].norm, &poly->srcnorm);
+	vectodot(&dots[poly->dots[2]].norm, &poly->srcnorm);
 	poly->txtr = txtr;
 }
 
@@ -16,6 +16,7 @@ void	repairspherenormal(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr)
 {
 	t_cart	ref;
 	t_axis	res;
+	int		buf;
 
 	surfing(poly, dotindxs, dots, txtr);
 	ref = dots[dotindxs[0]].dot;
@@ -23,11 +24,14 @@ void	repairspherenormal(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr)
 	axisbuilder(&ref, &poly->srcnorm, &res);
 	if (res.ang < M_PI_2)
 		return ;
-	negativevector(&poly->srcnorm);
+	buf = poly->dots[2];
+	poly->dots[2] = poly->dots[1];
+	poly->dots[1] = buf;
+	normbuilder(&dots[poly->dots[0]].dot, &dots[poly->dots[1]].dot, &dots[poly->dots[2]].dot, &poly->srcnorm);
 	vectorsizing(2, &poly->srcnorm, &ref, NULL);
-	vectodot(&dots[poly->dots[0]].norm, &ref, TRUE);
-	vectodot(&dots[poly->dots[1]].norm, &ref, TRUE);
-	vectodot(&dots[poly->dots[2]].norm, &ref, TRUE);
+	vectodot(&dots[poly->dots[0]].norm, &ref);
+	vectodot(&dots[poly->dots[1]].norm, &ref);
+	vectodot(&dots[poly->dots[2]].norm, &ref);
 }
 
 void	polarsurfing(t_vrtx *dots, t_poly **poly, int lttd, void *txtr)
