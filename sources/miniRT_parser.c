@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/24 21:28:13 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/25 13:50:18 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,11 +94,7 @@ static void	primitivesbuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 		planeparser(str, obj, prog);
 	else if (i == 2)
 		obj->outframe = cylinderparser(str, obj, prog);
-	obj->dots.scale = malloc(sizeof(*obj->dots.scale));
-	cartbuilder(1, 1, 1, obj->dots.scale);
-	i = -1;
-	while (++i < obj->dots.dotsnum)
-		vectorsizing(1, &obj->dots.dots[i].norm, &obj->dots.dots[i].norm, NULL);
+	definevrtxsnorms(&obj->dots, &obj->polys);
 }
 
 void	definecamera(t_camera *camera, t_res *wincntr)

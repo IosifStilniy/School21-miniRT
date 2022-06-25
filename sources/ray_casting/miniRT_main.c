@@ -6,24 +6,20 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/24 20:50:21 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/25 16:25:10 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-void	ft_cast_ray(t_ray *ray, t_cart direction, t_cart origin)
+void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin)
 {
-	ray->dir.x = direction.x;
-	ray->dir.y = direction.y;
-	ray->dir.z = direction.z;
-	ray->orig.x = origin.x;
-	ray->orig.y = origin.y;
-	ray->orig.z = origin.z;
-	ray->dir = ft_get_vector_norm(ray->dir, ft_get_vector_length(ray->dir));
+	ray->dir = *direction;
+	ray->orig = *origin;
+	ray->dir = ft_get_vector_norm(&ray->dir, ft_get_vector_length(&ray->dir));
 }
 
-static void	ft_get_color_from_shapes(unsigned int *color, t_ray ray,
+static void	ft_get_color_from_shapes(t_ui *color, t_ray ray,
 			t_list *objects, t_info *info)
 {
 	t_obj	*obj;
@@ -39,7 +35,7 @@ static void	ft_get_color_from_shapes(unsigned int *color, t_ray ray,
 		if (obj->dots.dotsnum && ft_intersect_sphere(ray, obj) < INFINITY)
 			ft_intersect_polygon(ray, &c_norm, obj, &dist[1]);
 		else if (!obj->dots.dotsnum)
-			ft_intersect_plane(ray, obj->crdstm.oz.vector, obj->crdstm.pos, &dist[1]);
+			ft_intersect_plane(ray, &obj->crdstm.oz.vector, &obj->crdstm.pos, &dist[1]);
 		if (dist[1] < dist[0])
 		{
 			dist[0] = dist[1];
@@ -49,8 +45,8 @@ static void	ft_get_color_from_shapes(unsigned int *color, t_ray ray,
 		}
 		objects = objects->next;
 	}
-	c_phit = ft_multiply_vector(ray.dir, dist[0]);
-	*color = ft_shadowing(c_phit, c_norm, c_color, info);
+	c_phit = ft_multiply_vector(&ray.dir, dist[0]);
+	*color = ft_shadowing(&c_phit, &c_norm, &c_color, info);
 }
 
 static void	ft_raytracing_algorithm(t_info *info)
@@ -59,7 +55,7 @@ static void	ft_raytracing_algorithm(t_info *info)
 	t_cart	origin;
 	t_cart	direction;
 	t_cart	pixel;
-	unsigned int		color;
+	t_ui	color;
 
 	origin.x = 0.0f;
 	origin.y = 0.0f;
@@ -72,9 +68,9 @@ static void	ft_raytracing_algorithm(t_info *info)
 		while (++pixel.x < RESX)
 		{
 			direction.x = pixel.x - info->win.cntr.x;
-			direction.y = info->win.cntr.y - pixel.y;
+			direction.y = pixel.y - info->win.cntr.y;
 			direction.z = pixel.z;
-			ft_cast_ray(&ray, direction, origin);
+			ft_cast_ray(&ray, &direction, &origin);
 			ft_get_color_from_shapes(&color, ray, info->win.camera.objs, info);
 			my_mlx_pixel_put(&info->data, pixel.x, pixel.y, color);
 		}

@@ -23,13 +23,15 @@ void	createcamobjs(t_list **camobjs, t_list *objs)
 	}
 }
 
-void	checkplanenorm(t_cart *norm, t_cart *oz)
+void	checkplanenorm(t_crdstm *plane, t_poly *poly, t_dots *dots)
 {
-	*norm = *oz;
-	if (oz->z <= 0.001)
+	if (dots->dotsnum || plane->pos.z < 1)
 		return ;
-	negativevector(norm);
-	vectorsizing(1, norm, norm, NULL);
+	poly->norm = plane->oz.vector;
+	if (plane->oz.vector.z <= 0.001)
+		return ;
+	negativevector(&poly->norm);
+	vectorsizing(1, &poly->norm, &poly->norm, NULL);
 }
 
 void	initview(t_list *objs, t_camera *camera, t_light *light)
@@ -52,8 +54,7 @@ void	initview(t_list *objs, t_camera *camera, t_light *light)
 		transpos(&camobj->crdstm.ox.vector, trans.crdstm);
 		transpos(&camobj->crdstm.oy.vector, trans.crdstm);
 		transpos(&camobj->crdstm.oz.vector, trans.crdstm);
-		if (!camobj->dots.dotsnum && camobj->crdstm.pos.z > 0)
-			checkplanenorm(&camobj->polys.poly->norm, &camobj->crdstm.oz.vector);
+		checkplanenorm(&camobj->crdstm, camobj->polys.poly, &camobj->dots);
 		engine(&camobj->dots, &camobj->polys, &camobj->crdstm, &camobj->outframe);
 		camcrsr = camcrsr->next;
 		crsr = crsr->next;

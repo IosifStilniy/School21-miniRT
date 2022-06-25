@@ -6,27 +6,11 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/24 21:17:12 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/25 18:02:24 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
-
-void	rotateattached(t_cart *dir, t_axis *axis, t_info *info)
-{
-	if (!info->win.camera.attached.obj)
-		return ;
-	if (dir->x + dir->y + dir->z)
-		vectodot(&info->win.camera.attached.crdstm.pos, dir);
-	else
-	{
-		axis->ang = M_PI_2;
-		quartrot(&info->win.camera.attached.crdstm.pos, axis);
-		crdstmrotbyaxis(&info->win.camera.attached.crdstm, axis, NULL);
-	}
-	camfromobjcrdstm(&info->win.camera.crdstm, &info->win.camera.attached);
-	initview(info->objects, &info->win.camera, &info->lights);
-}
 
 int	keydownhndlr(int keycode, t_info *info)
 {
@@ -124,6 +108,8 @@ int	keyuphndlr(int keycode, t_info *info)
 	{
 		info->keybrd.render = !info->keybrd.render;
 		ft_draw_screen(info);
+		if (info->keybrd.interface && !info->keybrd.render)
+			interfacebuilder(info);
 	}
 	else if (keycode == KEY_ESC)
 		exit(0);

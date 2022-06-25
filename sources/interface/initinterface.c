@@ -49,11 +49,11 @@ static void	initsettings(t_settings *settings)
 
 void	initinterface(t_intrfc *interface, void *mlx, t_res *win)
 {
-	interface->cam.img = mlx_xpm_file_to_image(mlx, "sources/interface/caminterface.xpm",
+	interface->cam.img = mlx_xpm_file_to_image(mlx, CAMLEGEND,
 		&interface->cam.res.x, &interface->cam.res.y);
 	interface->campos.x = win->x - interface->cam.res.x;
 	interface->campos.y = 0;
-	interface->obj.img = mlx_xpm_file_to_image(mlx, "sources/interface/objinterface.xpm",
+	interface->obj.img = mlx_xpm_file_to_image(mlx, OBJLEGEND,
 		&interface->obj.res.x, &interface->obj.res.y);
 	interface->objpos.x = win->x - interface->obj.res.x;
 	interface->objpos.y = interface->cam.res.y;
@@ -61,7 +61,8 @@ void	initinterface(t_intrfc *interface, void *mlx, t_res *win)
 	interface->frame.y = interface->objpos.y + interface->obj.res.y;
 	interface->selected = NULL;
 	initsettings(&interface->settings);
-	definearrowframes(interface->arrows, 63 + interface->frame.x, interface->objpos.y);
+	definearrowframes(interface->arrows, 63 + interface->frame.x,
+		interface->objpos.y);
 	interface->attach.leftup.x = interface->campos.x + 13;
 	interface->attach.leftup.y = 183;
 	interface->attach.bottomright.x = interface->attach.leftup.x + 100;

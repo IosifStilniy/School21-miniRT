@@ -81,9 +81,11 @@ t_bool	changeparams(int x, int y, t_intrfc *intrfc, t_win *win)
 	if (!btn)
 		return (FALSE);
 	if (intrfc->selected && i / 2 >= 8)
-		return (changecart(i - 16, intrfc->selected->colrs, colorbounds, &intrfc->settings.color));
+		return (changecart(i - 16, intrfc->selected->colrs, colorbounds,
+			&intrfc->settings.color));
 	else if (intrfc->selected && i / 2 >= 4)
-		return (changecart(i - 8, intrfc->selected->dots.scale, NULL, &intrfc->settings.size));
+		return (changecart(i - 8, intrfc->selected->dots.scale, NULL,
+			&intrfc->settings.size));
 	else if (i / 2 >= 2)
 		return (changecamparams(i - 4, win, &intrfc->settings.fov));
 	changesensetive(i, &intrfc->settings.sens);

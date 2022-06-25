@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/24 21:16:42 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/25 18:15:56 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,14 @@
 #  define RNDSGMNTS 24
 # endif
 
+# ifndef CAMLEGEND
+#  define CAMLEGEND "sources/interface/caminterface.xpm"
+# endif
+
+# ifndef OBJLEGEND
+#  define OBJLEGEND "sources/interface/objinterface.xpm"
+# endif
+
 # ifndef INVINP
 #  define INVINP "needs one arg: [filename].rt"
 # endif
@@ -201,7 +209,8 @@ typedef struct s_light {
 
 typedef struct s_poly {
 	int		dots[3];
-	t_cart	*txtr;
+	t_data	*txtr;
+	t_data	*heightmap;
 	t_cart	srcnorm;
 	t_cart	norm;
 }	t_poly;
@@ -209,6 +218,7 @@ typedef struct s_poly {
 typedef struct s_vrtx {
 	t_cart	dot;
 	t_cart	norm;
+	t_cart	uv;
 }	t_vrtx;
 
 typedef struct s_dots {
@@ -223,6 +233,7 @@ typedef struct s_dots {
 typedef struct s_polys {
 	int			polynum;
 	t_data		*txtr;
+	t_data		*heightmap;
 	t_poly		*poly;
 }	t_polys;
 
@@ -354,11 +365,14 @@ So no 10.1 in simple integers.
 
 int		circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skippols);
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
+void	cylindermapping(t_vrtx *dots);
+void	definevrtxsnorms(t_dots *dots, t_polys *polys);
 void	definepols(t_vrtx *dots, float radius, t_axis *rotcircle);
 void	polarjointing(t_vrtx *dots, t_poly *poly, void *txtr, int dotnum);
 void	polarsurfing(t_vrtx *dots, t_poly **poly, int lttd, void *txtr);
 void	repairspherenormal(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr);
 float	spherebuilder(t_dots *dots, t_polys *polys, float radius);
+void	spheremapping(t_vrtx *dots, int dotsnum);
 void	surfing(t_poly *poly, int *dotindxs, t_vrtx *dots, void *txtr);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
@@ -381,7 +395,7 @@ void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, t_cart *scale, t_crdstm *crdstm)
 void	dottranslation(t_cart *dot, t_cart *direction, float step);
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, float *outframe);
 void	objtoobjpos(t_cart *center, t_cart *dot);
-void	vrtxtranslation(t_vrtx *vrtxs, int dotnum, t_cart *direction, float step);
+void	rotateattached(t_cart *dir, t_axis *axis, t_info *info);
 void	quartrot(t_cart *pos, t_axis *axis);
 
 // Matrix
@@ -447,23 +461,23 @@ t_ui	ft_create_trgb(int t, int r, int g, int b);
 void	ft_draw_screen(t_info *info);
 
 float	ft_max(float a, float b);
-t_cart	ft_inverse_vector(t_cart vect);
-float	ft_get_vector_length(t_cart vect);
-t_cart	ft_summ_vectors(t_cart vect_a, t_cart vect_b);
-t_cart	ft_get_vector_norm(t_cart vector, float length);
-float	ft_get_dot_product(t_cart vect_a, t_cart vect_b);
-t_cart	ft_multiply_vector(t_cart vect, float multiplier);
-t_cart	ft_multiply_vectors(t_cart vect_a, t_cart vect_b);
-t_cart	ft_substract_vectors(t_cart vect_a, t_cart vect_b);
-t_cart	ft_get_cross_product(t_cart vect_a, t_cart vect_b);
+t_cart	ft_inverse_vector(t_cart *vect);
+float	ft_get_vector_length(t_cart *vect);
+t_cart	ft_summ_vectors(t_cart *vect_a, t_cart *vect_b);
+t_cart	ft_get_vector_norm(t_cart *vector, float length);
+float	ft_get_dot_product(t_cart *vect_a, t_cart *vect_b);
+t_cart	ft_multiply_vector(t_cart *vect, float multiplier);
+t_cart	ft_multiply_vectors(t_cart *vect_a, t_cart *vect_b);
+t_cart	ft_substract_vectors(t_cart *vect_a, t_cart *vect_b);
+t_cart	ft_get_cross_product(t_cart *vect_a, t_cart *vect_b);
 
-void	ft_cast_ray(t_ray *ray, t_cart direction, t_cart origin);
+void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin);
 
-unsigned int		ft_shadowing(t_cart phit, t_cart object_norm, t_cart object_color, t_info *info); 
+t_ui	ft_shadowing(t_cart *phit, t_cart *object_norm, t_cart *object_color, t_info *info); 
 
 float	ft_intersect_sphere(t_ray ray, t_obj *sphere);
-void	ft_intersect_plane(t_ray ray, t_cart norm_vector, t_cart pos, float *closest_distance);
+void	ft_intersect_plane(t_ray ray, t_cart *norm_vector, t_cart *pos, float *closest_distance);
 void	ft_intersect_polygon(t_ray ray, t_cart *closest_norm, t_obj *object, float *closest_distance);
-int		ft_intersect_triangle(t_vrtx p[3], t_cart phit, float dist[2], t_cart *closest_norm, t_cart norm);
+int		ft_intersect_triangle(t_vrtx p[3], t_cart *phit, float dist[2], t_cart *closest_norm, t_cart *norm);
 
 #endif

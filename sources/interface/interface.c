@@ -76,7 +76,8 @@ void	interfacebuilder(t_info *info)
 	if (info->interface.selected)
 	{
 		if (objinframe(selected, &info->win.cntr, info->win.camera.focus))
-			roundselected(&selected->crdstm.pos, selected->outframe, &info->win, info->mlx_ptr);
+			roundselected(&selected->crdstm.pos, selected->outframe,
+				&info->win, info->mlx_ptr);
 		printobjinterface(info->mlx_ptr, &info->win, &info->interface, info);
 	}
 	printcaminterface(info->mlx_ptr, &info->win, &info->interface, info);

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/23 20:55:24 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/25 18:22:00 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,14 @@ void	wininit(t_info *info, char *prog, char *file)
 	free(buf);
 	info->win.res.x = RESX;
 	info->win.res.y = RESY;
-	info->win.win = mlx_new_window(info->mlx_ptr, info->win.res.x, info->win.res.y, info->win.header);
+	info->win.win = mlx_new_window(info->mlx_ptr, info->win.res.x,
+		info->win.res.y, info->win.header);
 	info->win.cntr.x = info->win.res.x / 2;
 	info->win.cntr.y = info->win.res.y / 2;
 	info->data.res.x = RESX;
 	info->data.res.y = RESY;
-	info->data.img = mlx_new_image(info->mlx_ptr, info->data.res.x, info->data.res.y);
+	info->data.img = mlx_new_image(info->mlx_ptr, info->data.res.x,
+		info->data.res.y);
 	info->data.cntr.x = info->data.res.x / 2;
 	info->data.cntr.y = info->data.res.y / 2;
 }
@@ -83,6 +85,7 @@ int	main(int argc, char **argv)
 	initinterface(&info.interface, info.mlx_ptr, &info.win.res);
 	initview(info.objects, &info.win.camera, &info.lights);
 	pudge(&info);
+	printf("%d\n", objcast(info.objects)->polys.polynum * ft_lstsize(info.objects));
 	ft_draw_screen(&info);
 	mlx_loop(info.mlx_ptr);
 	return (0);

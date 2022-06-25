@@ -27,6 +27,8 @@ long int	dirdefiner(t_cart *start, t_cart *dir)
 
 	objtoobjpos(start, dir);
 	length = vectorlength(dir);
+	if (comparef(length, 0, 0.001))
+		return (1);
 	vectorsizing(1, dir, dir, NULL);
 	cartbuilder(dir->x, dir->y, 0, &xydir);
 	if (comparef(vectorlength(&xydir), 0, 0.001))

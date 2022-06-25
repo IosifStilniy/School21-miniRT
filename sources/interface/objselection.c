@@ -11,7 +11,8 @@ void	paintgradline(t_cart dots[2], t_axis *color, int numstep, t_data *img)
 		x = lrintf(dots[0].x) + img->cntr.x;
 		y = lrintf(dots[0].y) + img->cntr.y;
 		pxl = img->addr + y * img->line_length + x * (img->bits_per_pixel / 8);
-		*(t_ui *)pxl = ft_create_trgb(0, color->vector.x * 255, color->vector.y * 255, color->vector.z * 255);
+		*(t_ui *)pxl = ft_create_trgb(0, color->vector.x * 255,
+			color->vector.y * 255, color->vector.z * 255);
 		if (color->vector.z - color->ang > 0)
 			color->vector.z -= color->ang;
 		else if (color->vector.x - color->ang > 0)
@@ -62,7 +63,8 @@ void	transparentimg(t_data *img)
 		y = -1;
 		while (++y < img->res.y)
 		{
-			pxl = img->addr + y * img->line_length + x * (img->bits_per_pixel / 8);
+			pxl = img->addr + y * img->line_length +
+				x * (img->bits_per_pixel / 8);
 			*(t_ui *)pxl = 0xFF000000;
 		}
 	}
@@ -84,12 +86,15 @@ void	roundselected(t_cart *pos, float outframe, t_win *win, void *mlx)
 	img.cntr.x = size / 2;
 	img.cntr.y = size / 2;
 	img.img = mlx_new_image(mlx, img.res.x, img.res.y);
-	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
+	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel,
+		&img.line_length, &img.endian);
 	transparentimg(&img);
 	circledotsfiller(dots, outframe, NULL, FALSE);
 	paintgradcircle(&img, dots);
-	imgpos.x = lrintf(pos->x * win->camera.focus / pos->z) + win->cntr.x - img.cntr.x;
-	imgpos.y = lrintf(pos->y * win->camera.focus / pos->z) + win->cntr.y - img.cntr.y;
+	imgpos.x = lrintf(pos->x * win->camera.focus / pos->z) +
+		win->cntr.x - img.cntr.x;
+	imgpos.y = lrintf(pos->y * win->camera.focus / pos->z) +
+		win->cntr.y - img.cntr.y;
 	mlx_put_image_to_window(mlx, win->win, img.img, imgpos.x, imgpos.y);
 	mlx_destroy_image(mlx, img.img);
 }
@@ -110,8 +115,9 @@ t_obj	*selectobject(t_list *camobjs, t_cart *vec)
 			objdir = obj->crdstm.pos;
 			vectorsizing(1, &objdir, &objdir, NULL);
 			axisbuilder(&objdir, vec, &res);
-			if (res.ang <= atan2f(obj->outframe, vectorlength(&obj->crdstm.pos))
-				&& (!nearest || obj->crdstm.pos.z < nearest->crdstm.pos.z))
+			if (res.ang <= atan2f(obj->outframe,
+				vectorlength(&obj->crdstm.pos))
+					&& (!nearest || obj->crdstm.pos.z < nearest->crdstm.pos.z))
 				nearest = obj;
 		}
 		camobjs = camobjs->next;

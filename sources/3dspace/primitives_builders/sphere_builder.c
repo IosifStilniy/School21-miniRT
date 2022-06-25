@@ -85,5 +85,6 @@ float	spherebuilder(t_dots *dots, t_polys *polys, float radius)
 	while (++lttd < RNDSGMNTS / 2)
 		polarsurfing(dots->dots, &buf, lttd, polys->txtr);
 	polarjointing(dots->dots, polys->poly + polys->polynum - 5, polys->txtr, dots->dotsnum);
+	spheremapping(dots->dots, dots->dotsnum);
 	return (radius);
 }

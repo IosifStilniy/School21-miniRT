@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:43:02 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/23 19:22:38 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/25 17:59:45 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,20 +47,21 @@ void	keyshifting(t_cart *dir, t_cart *axis, t_info *info)
 	initview(info->objects, &info->win.camera, &info->lights);
 }
 
-// void	scrolling(int btn, t_info *info)
-// {
-// 	if (btn == SCRL_UP && info->win->view.scale.cur > 0.9 * info->win->res.y)
-// 		return ;
-// 	info->win->view.scale.old = info->win->view.scale.cur;
-// 	if (!info->win->view.scale.cur && btn == SCRL_UP)
-// 		info->win->view.scale.cur = 0.1;
-// 	info->win->view.scale.cur *= 1 - 0.1 * (btn != SCRL_UP)
-// 		+ 0.1 * (btn == SCRL_UP);
-// 	info->win->view.scale.cur *= (info->win->view.scale.cur > 0);
-// 	engine(info->win, info->dots);
-// 	imgdefiner(info->img, info->win, info->mlx);
-// 	paintpic(info->dots, info->img, info->win, info->mlx);
-// }
+void	rotateattached(t_cart *dir, t_axis *axis, t_info *info)
+{
+	if (!info->win.camera.attached.obj)
+		return ;
+	if (dir->x + dir->y + dir->z)
+		vectodot(&info->win.camera.attached.crdstm.pos, dir);
+	else
+	{
+		axis->ang = M_PI_2;
+		quartrot(&info->win.camera.attached.crdstm.pos, axis);
+		crdstmrotbyaxis(&info->win.camera.attached.crdstm, axis, NULL);
+	}
+	camfromobjcrdstm(&info->win.camera.crdstm, &info->win.camera.attached);
+	initview(info->objects, &info->win.camera, &info->lights);
+}
 
 int	finish(void)
 {
