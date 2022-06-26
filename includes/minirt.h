@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/22 16:33:19 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/26 20:49:56 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 # define KEY_L 37
 # define KEY_C 8
 # define KEY_R 15
+# define KEY_I 34
 # define KEY_UP 126
 # define KEY_LEFT 123
 # define KEY_DOWN 125
@@ -104,6 +105,14 @@
 
 # ifndef RNDSGMNTS
 #  define RNDSGMNTS 24
+# endif
+
+# ifndef CAMLEGEND
+#  define CAMLEGEND "sources/interface/caminterface.xpm"
+# endif
+
+# ifndef OBJLEGEND
+#  define OBJLEGEND "sources/interface/objinterface.xpm"
 # endif
 
 # ifndef INVINP
@@ -200,7 +209,8 @@ typedef struct s_light {
 
 typedef struct s_poly {
 	int		dots[3];
-	t_cart	*txtr;
+	t_data	*txtr;
+	t_data	*heightmap;
 	t_cart	srcnorm;
 	t_cart	norm;
 }	t_poly;
@@ -208,13 +218,14 @@ typedef struct s_poly {
 typedef struct s_vrtx {
 	t_cart	dot;
 	t_cart	norm;
+	t_cart	uv;
 }	t_vrtx;
 
 typedef struct s_dots {
 	int		dotsnum;
 	t_vrtx	*dots;
 	t_vrtx	*pos;
-	float	scale;
+	t_cart	*scale;
 	int		(*rout)[2];
 	int		routsize;
 }	t_dots;
@@ -222,13 +233,14 @@ typedef struct s_dots {
 typedef struct s_polys {
 	int			polynum;
 	t_data		*txtr;
+	t_data		*heightmap;
 	t_poly		*poly;
 }	t_polys;
 
 typedef struct s_obj {
 	t_dots		dots;
 	t_polys		polys;
-	t_cart		colrs;
+	t_cart		*colrs;
 	t_crdstm	crdstm;
 	float		outframe;
 	t_rot		*rot;
@@ -240,6 +252,11 @@ typedef struct t_trans {
 	float		trans[4][4];
 }	t_trans;
 
+typedef struct s_attach {
+	t_obj		*obj;
+	t_crdstm	crdstm;
+}	t_attach;
+
 typedef struct s_camera {
 	t_crdstm	crdstm;
 	t_bool		framemod;
@@ -250,6 +267,7 @@ typedef struct s_camera {
 	t_cart		lightpos;
 	t_bool		determined;
 	t_cart		corners[CRNRS];
+	t_attach	attached;
 }	t_camera;
 
 typedef struct s_win {
@@ -266,10 +284,45 @@ typedef struct s_mouse {
 
 typedef struct s_keybrd {
 	t_bool	render;
-	t_bool	focus;
-	t_bool	movecam;
+	t_bool	interface;
 	t_bool	legend;
 }	t_keybrd;
+
+typedef struct s_button {
+	t_res	leftup;
+	t_res	bottomright;
+}	t_button;
+
+typedef struct s_step {
+	float	step;
+	float	stepping;
+}	t_step;
+
+typedef struct s_sens {
+	t_step		mouse;
+	t_step		move;
+	float		mval;
+	float		kval;
+}	t_sens;
+
+typedef struct s_settings {
+	t_step		fov;
+	t_step		size;
+	t_step		color;
+	t_sens		sens;
+}	t_settings;
+
+typedef struct s_intrfc {
+	t_settings	settings;
+	t_res		campos;
+	t_res		objpos;
+	t_res		frame;
+	t_button	arrows[24];
+	t_button	attach;
+	t_obj		*selected;
+	t_data		cam;
+	t_data		obj;
+}	t_intrfc;
 
 typedef struct s_info
 {
@@ -283,7 +336,7 @@ typedef struct s_info
 	char		*prog;
 	t_mouse		mouse;
 	t_keybrd	keybrd;
-	int			kal;
+	t_intrfc	interface;
 }	t_info;
 
 // Parsing the file.
@@ -312,10 +365,14 @@ So no 10.1 in simple integers.
 
 int		circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skippols);
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
+void	cylindermapping(t_vrtx *dots);
+void	definevrtxsnorms(t_dots *dots, t_polys *polys);
 void	definepols(t_vrtx *dots, float radius, t_axis *rotcircle);
 void	polarjointing(t_vrtx *dots, t_poly *poly, void *txtr, int dotnum);
 void	polarsurfing(t_vrtx *dots, t_poly **poly, int lttd, void *txtr);
+void	repairspherenormal(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr);
 float	spherebuilder(t_dots *dots, t_polys *polys, float radius);
+void	spheremapping(t_vrtx *dots, int dotsnum);
 void	surfing(t_poly *poly, int *dotindxs, t_vrtx *dots, void *txtr);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
@@ -330,14 +387,15 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
+void	camfromobjcrdstm(t_crdstm *cam, t_attach *attached);
 void	camrotating(t_camera *camera, t_info *info, int x, int y);
 void	camshifting(t_camera *camera, t_info *info, t_cart *objsdir, float step);
 void	crdstmrotbyaxis(t_crdstm *crdstm, t_axis *zaxis, t_axis *xyaxis);
-void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, int scale, t_crdstm *crdstm);
+void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, t_cart *scale, t_crdstm *crdstm);
 void	dottranslation(t_cart *dot, t_cart *direction, float step);
-void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm);
+void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, float *outframe);
 void	objtoobjpos(t_cart *center, t_cart *dot);
-void	vrtxtranslation(t_vrtx *vrtxs, int dotnum, t_cart *direction, float step);
+void	rotateattached(t_cart *dir, t_axis *axis, t_info *info);
 void	quartrot(t_cart *pos, t_axis *axis);
 
 // Matrix
@@ -350,7 +408,7 @@ void	transpos(t_cart	*pos, float transmatrix[4][4]);
 void	axisbuilder(t_cart *v1, t_cart *v2, t_axis *axis);
 void	cartbuilder(float x, float y, float z, t_cart *dot);
 void	cartcopy(t_cart *src, t_cart *dst, int count);
-void	vectodot(t_cart *vector, t_cart *start, t_bool normilize);
+void	vectodot(t_cart *vector, t_cart *start);
 void	vectorbuilder(float x, float y, float z, t_axis *vector);
 float	vectorlength(t_cart *dot);
 void	vectorsizing(float newlength, t_cart *src, t_cart *vecres, float *lngthres);
@@ -363,12 +421,24 @@ void	createcamobjs(t_list **camobjs, t_list *objs);
 void	createframerouts(t_list *objs);
 void	initview(t_list *objs, t_camera *camera, t_light *light);
 void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img);
+t_bool	objinframe(t_obj *obj, t_res *winctr, float focus);
 void	paintline(t_cart src[2], t_ui color, float focus, t_data *img);
 void	planeframing(t_obj *plane, t_camera *camera, t_data *img);
 
+// Interface
+
+t_bool	changeparams(int x, int y, t_intrfc *intrfc, t_win *win);
+t_bool	inbounds(t_button btn, int x, int y);
+void	initinterface(t_intrfc *interface, void *mlx, t_res *win);
+void	interfacebuilder(t_info *info);
+void	roundselected(t_cart *pos, float outframe, t_win *win, void *mlx);
+t_obj	*selectobject(t_list *camobjs, t_cart *vec);
+
 // Hooks for orientation and movement in space
 
-void	keyshifting(int keycode, t_info *info);
+void	keyaxisbuilder(int keycode, t_cart *axis);
+void	keydirbuilder(int keycode, t_cart *dir);
+void	keyshifting(t_cart *dir, t_cart *axis, t_info *info);
 void	scrolling(int btn, t_info *info);
 int		mousemove(int x, int y, t_info *info);
 void	mouserotating(t_info *info, int x, int y);
@@ -376,7 +446,6 @@ void	mouseshifting(t_info *info, int x, int y);
 void	mousezooming(t_info *info, int y);
 int		keydownhndlr(int keycode, t_info *info);
 int		keyuphndlr(int keycode, t_info *info);
-int		btnpress(int btn, int x, int y, t_info *info);
 int		btnup(int btn, int x, int y, t_info *info);
 
 //Utils
@@ -392,25 +461,26 @@ t_ui	ft_create_trgb(int t, int r, int g, int b);
 void	ft_draw_screen(t_info *info);
 
 float	ft_max(float a, float b);
-t_cart	ft_inverse_vector(t_cart vect);
-float	ft_get_vector_length(t_cart vect);
-t_cart	ft_summ_vectors(t_cart vect_a, t_cart vect_b);
-t_cart	ft_get_vector_norm(t_cart vector, float length);
-float	ft_get_dot_product(t_cart vect_a, t_cart vect_b);
-t_cart	ft_multiply_vector(t_cart vect, float multiplier);
-t_cart	ft_multiply_vectors(t_cart vect_a, t_cart vect_b);
-t_cart	ft_substract_vectors(t_cart vect_a, t_cart vect_b);
-t_cart	ft_get_cross_product(t_cart vect_a, t_cart vect_b);
+void	ft_get_vector_norm(t_cart *vector);
+void	ft_inverse_vector(t_cart *vect, t_cart *dest);
+void	ft_get_vector_length(t_cart *vect, float *dest);
+void	ft_summ_vectors(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+void	ft_get_dot_product(t_cart *vect_a, t_cart *vect_b, float *dest);
+void	ft_multiply_vector(t_cart *vect, float multiplier, t_cart *dest);
+void	ft_multiply_vectors(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+void	ft_substract_vectors(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+void	ft_get_cross_product(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
 
+void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin);
 
-void	ft_cast_ray(t_ray *ray, t_cart direction, t_cart origin);
-
-int		ft_shadowing(t_cart phit, t_cart object_norm, t_cart object_color, t_info *info); 
+unsigned int	ft_shadowing(t_cart *phit, t_cart *object_norm, t_cart *object_color, t_info *info); 
 
 float	ft_intersect_sphere(t_ray ray, t_obj *sphere);
-void	ft_intersect_plane(t_ray ray, t_cart norm_vector, t_cart pos, float *closest_distance);
+void	ft_intersect_plane(t_ray ray, t_cart *norm_vector, t_cart *pos, float *closest_distance);
 void	ft_intersect_polygon(t_ray ray, t_cart *closest_norm, t_obj *object, float *closest_distance);
-int		ft_intersect_triangle(t_vrtx p[3], t_cart phit, float dist[2], t_cart *closest_norm, t_cart norm);
 
+int	ft_intersect_triangle(t_vrtx p[3], t_cart phit, t_cart norm, float k[3]);
+
+// int		ft_intersect_triangle(t_vrtx p[3], t_cart *phit, float dist[2], t_cart *closest_norm, t_cart *norm);
 
 #endif
