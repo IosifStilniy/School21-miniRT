@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/23 20:24:52 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/26 19:18:00 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,20 +67,20 @@ void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, float *outframe)
 	i = -1;
 	while (++i < dots->dotsnum)
 	{
-		dotcrdstmtrnsltn(&dots->dots[i].dot, &dots->pos[i].dot, dots->scale, crdstm);
-		lng = vectorlength(&dots->pos[i].dot);
+		dotcrdstmtrnsltn(&dots->dots[i], &dots->pos[i], dots->scale, crdstm);
+		lng = vectorlength(&dots->pos[i]);
 		if (*outframe < lng)
 			*outframe = lng;
-		dots->pos[i].dot.x += crdstm->pos.x;
-		dots->pos[i].dot.y += crdstm->pos.y;
-		dots->pos[i].dot.z += crdstm->pos.z;
-		dotcrdstmtrnsltn(&dots->dots[i].norm, &dots->pos[i].norm, dots->scale, crdstm);
-		vectorsizing(1, &dots->pos[i].norm, &dots->pos[i].norm, NULL);
+		dots->pos[i].x += crdstm->pos.x;
+		dots->pos[i].y += crdstm->pos.y;
+		dots->pos[i].z += crdstm->pos.z;
 	}
 	i = -1;
 	while (++i < polys->polynum)
 	{
-		dotcrdstmtrnsltn(&polys->poly[i].srcnorm, &polys->poly[i].norm, dots->scale, crdstm);
-		vectorsizing(1, &polys->poly[i].norm, &polys->poly[i].norm, NULL);
+		dotcrdstmtrnsltn(&polys->poly[i].srcnorm, &polys->poly[i].norm, NULL, crdstm);
+		dotcrdstmtrnsltn(&polys->poly[i].vrtxs[0].srcnorm, &polys->poly[i].vrtxs[0].norm, NULL, crdstm);
+		dotcrdstmtrnsltn(&polys->poly[i].vrtxs[1].srcnorm, &polys->poly[i].vrtxs[1].norm, NULL, crdstm);
+		dotcrdstmtrnsltn(&polys->poly[i].vrtxs[2].srcnorm, &polys->poly[i].vrtxs[2].norm, NULL, crdstm);
 	}
 }

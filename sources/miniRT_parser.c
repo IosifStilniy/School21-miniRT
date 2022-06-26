@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/25 13:50:18 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/26 19:46:03 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,21 +80,21 @@ static void	primitivesbuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 	while (++i < NUMPRMTVS)
 		if (!ft_strncmp(&PRMTVS[2 * i], str, 2))
 			break ;
-	if (i == NUMPRMTVS)
+	if (++str && ++str && i == NUMPRMTVS)
 		customerr(prog, INVDEF, TRUE);
-	str += 2;
 	obj = malloc(sizeof(*obj));
 	ft_lstadd_front(objs, ft_lstnew(obj));
 	obj->rot = rot;
 	str = ft_get_position_values(prog, str, &obj->crdstm.pos);
 	obj->colrs = malloc(sizeof(*obj->colrs));
+	obj->dots.scale = malloc(sizeof(*obj->dots.scale));
+	cartbuilder(1, 1, 1, obj->dots.scale);
 	if (!i)
 		obj->outframe = sphereparser(str, obj, prog);
 	else if (i == 1)
 		planeparser(str, obj, prog);
 	else if (i == 2)
 		obj->outframe = cylinderparser(str, obj, prog);
-	definevrtxsnorms(&obj->dots, &obj->polys);
 }
 
 void	definecamera(t_camera *camera, t_res *wincntr)

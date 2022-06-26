@@ -25,15 +25,15 @@ void	paintgradline(t_cart dots[2], t_axis *color, int numstep, t_data *img)
 	}
 }
 
-void	paintgradcircle(t_data *img, t_vrtx dots[RNDSGMNTS])
+void	paintgradcircle(t_data *img, t_cart dots[RNDSGMNTS])
 {
 	t_cart	startdir[2];
 	t_axis	color;
 	int		numstep;
 	int		i;
 
-	startdir[1] = dots[1].dot;
-	objtoobjpos(&dots[0].dot, &startdir[1]);
+	startdir[1] = dots[1];
+	objtoobjpos(&dots[0], &startdir[1]);
 	numstep = lrintf(vectorlength(&startdir[1]));
 	vectorbuilder(1, 1, 1, &color);
 	vectorsizing(color.length, &color.vector, &color.vector, &color.length);
@@ -41,10 +41,10 @@ void	paintgradcircle(t_data *img, t_vrtx dots[RNDSGMNTS])
 	i = -1;
 	while (++i < RNDSGMNTS)
 	{
-		startdir[0] = dots[RNDSGMNTS - 1].dot;
+		startdir[0] = dots[RNDSGMNTS - 1];
 		if (i)
-			startdir[0] = dots[i - 1].dot;
-		startdir[1] = dots[i].dot;
+			startdir[0] = dots[i - 1];
+		startdir[1] = dots[i];
 		objtoobjpos(&startdir[0], &startdir[1]);
 		vectorsizing(1, &startdir[1], &startdir[1], NULL);
 		paintgradline(startdir, &color, numstep, img);
@@ -72,7 +72,7 @@ void	transparentimg(t_data *img)
 
 void	roundselected(t_cart *pos, float outframe, t_win *win, void *mlx)
 {
-	t_vrtx	dots[RNDSGMNTS];
+	t_cart	dots[RNDSGMNTS];
 	t_data	img;
 	t_res	imgpos;
 	int		size;

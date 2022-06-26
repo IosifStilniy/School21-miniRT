@@ -1,18 +1,16 @@
 #include "minirt.h"
 
-void	definepols(t_vrtx *dots, float radius, t_axis *rotcircle)
+void	definepols(t_cart *dots, float radius, t_axis *rotcircle)
 {
-	cartbuilder(radius, 0, 0, &dots->dot);
-	cartbuilder(0, 0, 0, &dots->norm);
-	cartbuilder(-radius, 0, 0, &dots[1].dot);
-	cartbuilder(0, 0, 0, &dots[1].norm);
+	cartbuilder(radius, 0, 0, &dots[0]);
+	cartbuilder(-radius, 0, 0, &dots[1]);
 	if (!rotcircle)
 		return ;
-	quartrot(&dots->dot, rotcircle);
-	quartrot(&dots[1].dot, rotcircle);
+	quartrot(&dots[0], rotcircle);
+	quartrot(&dots[1], rotcircle);
 }
 
-int	circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skippols)
+int	circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols)
 {
 	float	step;
 	int		dotnum;
@@ -24,11 +22,10 @@ int	circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skipp
 	dotnum = -1;
 	while (++dotnum < RNDSGMNTS - 2 * skippols)
 	{
-		cartbuilder(0, 0, 0, &dots[dotnum].norm);
-		cartbuilder(radius, 0, 0, &dots[dotnum].dot);
-		quartrot(&dots[dotnum].dot, &rotdot);
+		cartbuilder(radius, 0, 0, &dots[dotnum]);
+		quartrot(&dots[dotnum], &rotdot);
 		if (rotcircle)
-			quartrot(&dots[dotnum].dot, rotcircle);
+			quartrot(&dots[dotnum], rotcircle);
 		rotdot.ang += step;
 		if (skippols && dotnum + 1 == (RNDSGMNTS - 2) / 2)
 			rotdot.ang += step;

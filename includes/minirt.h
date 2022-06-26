@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/25 18:15:56 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/26 21:08:09 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,24 +207,26 @@ typedef struct s_light {
 	t_bool		determined;
 }	t_light;
 
-typedef struct s_poly {
-	int		dots[3];
-	t_data	*txtr;
-	t_data	*heightmap;
-	t_cart	srcnorm;
-	t_cart	norm;
-}	t_poly;
-
 typedef struct s_vrtx {
-	t_cart	dot;
+	int		dot;
+	t_cart	srcnorm;
 	t_cart	norm;
 	t_cart	uv;
 }	t_vrtx;
 
+typedef struct s_poly {
+	t_vrtx	vrtxs[3];
+	t_data	*txtr;
+	t_data	*heightmap;
+	t_bool	interpolate;
+	t_cart	srcnorm;
+	t_cart	norm;
+}	t_poly;
+
 typedef struct s_dots {
 	int		dotsnum;
-	t_vrtx	*dots;
-	t_vrtx	*pos;
+	t_cart	*dots;
+	t_cart	*pos;
 	t_cart	*scale;
 	int		(*rout)[2];
 	int		routsize;
@@ -339,6 +341,16 @@ typedef struct s_info
 	t_intrfc	interface;
 }	t_info;
 
+typedef struct s_import {
+	t_list	*v;
+	t_list	*vn;
+	t_list	*vt;
+	t_list	*f;
+	t_data	*txtr;
+	t_data	*heightmap;
+}	t_import;
+
+
 // Parsing the file.
 
 void	crdstmdefiner(t_crdstm *crdstm);
@@ -363,17 +375,18 @@ So no 10.1 in simple integers.
 
 // Object-like elements information.
 
-int		circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skippols);
+int		circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols);
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
-void	cylindermapping(t_vrtx *dots);
-void	definevrtxsnorms(t_dots *dots, t_polys *polys);
-void	definepols(t_vrtx *dots, float radius, t_axis *rotcircle);
-void	polarjointing(t_vrtx *dots, t_poly *poly, void *txtr, int dotnum);
-void	polarsurfing(t_vrtx *dots, t_poly **poly, int lttd, void *txtr);
-void	repairspherenormal(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr);
+void	cylindermapping(t_cart *dots, t_poly *polys, int polynum);
+void	definecylindervrtxs(t_cart *dots, t_poly *polys, int polynum);
+void	definespherevrtxs(t_cart *dots, t_poly *polys, int polynum);
+void	definepols(t_cart *dots, float radius, t_axis *rotcircle);
+void	polarjointing(t_cart *dots, t_poly *poly, void *txtr, int dotnum);
+void	polarsurfing(t_cart *dots, t_poly **poly, int lttd, void *txtr);
+void	repairspherenormal(t_poly *poly, int dotindxs[3], t_cart *dots, void *txtr);
 float	spherebuilder(t_dots *dots, t_polys *polys, float radius);
-void	spheremapping(t_vrtx *dots, int dotsnum);
-void	surfing(t_poly *poly, int *dotindxs, t_vrtx *dots, void *txtr);
+void	spheremapping(t_cart *dots, t_poly *polys, int polynum);
+void	surfing(t_poly *poly, int *dotindxs, t_cart *dots, void *txtr);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
 int		ft_fill_plane_info(char **piece, t_info *info);

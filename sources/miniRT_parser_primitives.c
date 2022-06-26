@@ -70,23 +70,3 @@ void	planeparser(char *str, t_obj *obj, char *prog)
 	obj->dots.dotsnum = 0;
 	obj->polys.polynum = 0;
 }
-
-void	definevrtxsnorms(t_dots *dots, t_polys *polys)
-{
-	t_poly	*poly;
-	int		i;
-
-	dots->scale = malloc(sizeof(*dots->scale));
-	cartbuilder(1, 1, 1, dots->scale);
-	i = -1;
-	while (++i < polys->polynum)
-	{
-		poly = &polys->poly[i];
-		vectodot(&dots->dots[poly->dots[0]].norm, &poly->srcnorm);
-		vectodot(&dots->dots[poly->dots[1]].norm, &poly->srcnorm);
-		vectodot(&dots->dots[poly->dots[2]].norm, &poly->srcnorm);
-	}	
-	i = -1;
-	while (++i < dots->dotsnum)
-		vectorsizing(1, &dots->dots[i].norm, &dots->dots[i].norm, NULL);
-}
