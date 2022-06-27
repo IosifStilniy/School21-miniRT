@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/18 18:59:02 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/25 18:02:24 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,63 +14,104 @@
 
 int	keydownhndlr(int keycode, t_info *info)
 {
-	// if (keycode == KEY_SHIFT)
-	// 	info->keybrd.focus = (!info->keybrd.focus);
-	keyshifting(keycode, info);
+	t_cart	dir;
+	t_axis	axis;
+	t_bool	movement;
+
+	keydirbuilder(keycode, &dir);
+	keyaxisbuilder(keycode, &axis.vector);
+	movement = lrintf(dir.x + dir.y + dir.z + axis.vector.x + axis.vector.y + axis.vector.z);
+	if (movement && !info->keybrd.interface)
+		keyshifting(&dir, &axis.vector, info);
+	else if (movement && info->keybrd.interface)
+		rotateattached(&dir, &axis, info);
+	else
+		return (0);
+	ft_draw_screen(info);
+	if (info->keybrd.interface)
+		interfacebuilder(info);
+	return (0);
+}
+
+int	mousemove(int x, int y, t_info *info)
+{
+	if (info->keybrd.interface)
+		return (0);
+	camrotating(&info->win.camera, info, x, y);
+	ft_draw_screen(info);
+	mlx_mouse_move(info->win.win, 0, info->mouse.yshift);
+	return (0);
+}
+
+t_bool	attachobj(t_camera *camera, t_obj *camobj, t_list *objs)
+{
+	if (!camobj || camera->attached.obj == camobj || !camobj->dots.dotsnum)
+	{
+		camera->attached.obj = NULL;
+		return (FALSE);
+	}
+	while (objs && objcast(objs)->dots.dots != camobj->dots.dots)
+		objs = objs->next;
+	if (!objs)
+		return (FALSE);
+	camera->attached.obj = objs->content;
+	camera->attached.crdstm.pos.x = 0;
+	camera->attached.crdstm.pos.y = -1.3 * camobj->outframe;
+	camera->attached.crdstm.pos.z = -1.3 * camobj->outframe;
+	vectorbuilder(0, 0, 1, &camera->attached.crdstm.oz);
+	crdstmdefiner(&camera->attached.crdstm);
+	camfromobjcrdstm(&camera->crdstm, &camera->attached);
+	return (TRUE);
+}
+
+int	btnup(int btn, int x, int y, t_info *info)
+{
+	t_axis	vec;
+	t_bool	refresh;
+
+	if (btn != LMB || !info->keybrd.interface)
+		return (0);
+	vectorbuilder(x - info->win.cntr.x, y - info->win.cntr.y, info->win.camera.focus, &vec);
+	refresh = changeparams(x, y, &info->interface, &info->win);
+	if (!(info->interface.frame.x <= x && x <= info->win.res.x)
+		|| !(0 <= y && y <= info->interface.frame.y))
+		info->interface.selected = selectobject(info->win.camera.objs, &vec.vector);
+	else if (inbounds(info->interface.attach, x, y) && attachobj(&info->win.camera, info->interface.selected, info->objects) && ++refresh)
+		info->interface.selected = NULL;
+	if (refresh)
+		initview(info->objects, &info->win.camera, &info->lights);
+	if (refresh)
+		ft_draw_screen(info);
+	if (!refresh)
+		mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img, 0, 0);
+	interfacebuilder(info);
 	return (0);
 }
 
 int	keyuphndlr(int keycode, t_info *info)
 {
-	// if (keycode == KEY_SHIFT)
-	// 	info->keybrd.focus = (!info->keybrd.focus);
-	// else if (keycode == KEY_L)
-	// 	info->keybrd.legend = (!info->keybrd.legend);
-	// else if (keycode == KEY_C)
-	// 	info->keybrd.movecam = (!info->keybrd.movecam);
-	/*else*/ if (keycode == KEY_ESC)
+	if (keycode == KEY_I)
+	{
+		mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img, 0, 0);
+		info->keybrd.interface = (!info->keybrd.interface);
+		if (info->keybrd.interface)
+		{
+			interfacebuilder(info);
+			mlx_mouse_show();
+			return (0);
+		}
+		info->interface.selected = NULL;
+		mlx_mouse_hide();
+		mlx_mouse_move(info->win.win, 0, info->mouse.yshift);
+	}
+	else if (keycode == KEY_R)
+	{
+		info->keybrd.render = !info->keybrd.render;
+		ft_draw_screen(info);
+		if (info->keybrd.interface && !info->keybrd.render)
+			interfacebuilder(info);
+	}
+	else if (keycode == KEY_ESC)
 		exit(0);
-	(void)info;
-	return (0);
-}
-
-// int	btnpress(int btn, int x, int y, t_info *info)
-// {
-// 	info->mouse.pos.x = x - info->img->shift.crdstm.x;
-// 	info->mouse.pos.y = y - info->img->shift.crdstm.y;
-// 	if (btn == LMB)
-// 	{
-// 		info->mouse.pos.x -= info->win.cntr.x;
-// 		info->mouse.pos.y -= info->win.cntr.y;
-// 		info->mouse.rot = (!info->mouse.rot);
-// 		vectorbuilder(info->mouse.pos.x, info->mouse.pos.y,
-// 			info->win->view.dstnc, &info->mouse.vpos.v1);
-// 		if (info->keybrd.zrot)
-// 			vectorbuilder(info->mouse.pos.x, info->mouse.pos.y, 0,
-// 				&info->mouse.vpos.v1);
-// 	}
-// 	if (btn == MMB)
-// 		info->mouse.shift = (!info->mouse.shift);
-// 	if (btn == SCRL_UP || btn == SCRL_DOWN)
-// 		scrolling(btn, info);
-// 	return (0);
-// }
-
-// int	btnup(int btn, int x, int y, t_info *info)
-// {
-// 	x++;
-// 	y++;
-// 	if (btn == MMB)
-// 		info->mouse.shift = (!info->mouse.shift);
-// 	if (btn == LMB)
-// 		info->mouse.rot = (!info->mouse.rot);
-// 	return (0);
-// }
-
-int	mousemove(int x, int y, t_info *info)
-{
-	camrotating(&info->win.camera, info, x, y);
-	ft_draw_screen(info);
-	mlx_mouse_move(info->win.win, 0, info->mouse.yshift);
 	return (0);
 }

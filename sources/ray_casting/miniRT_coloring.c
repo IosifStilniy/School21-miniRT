@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/08 16:44:18 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/22 16:33:14 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/27 12:31:05 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,24 +29,25 @@ static void	ft_get_sphere_cone_shadow(t_ray ray, t_polys *polys,
 	dist[0] = INFINITY;
 	while (++i < polys->polynum)
 	{
-		ft_intersect_plane(ray, polys->poly[i].norm,
-			dots[polys->poly[i].dots[0]].dot, &dist[1]);
+		ft_intersect_plane(ray, &polys->poly[i].norm,
+			&dots[polys->poly[i].dots[0]].dot, &dist[1]);
 		if (dist[1] < dist[0])
 		{
 			p[0] = dots[polys->poly[i].dots[0]];
 			p[1] = dots[polys->poly[i].dots[1]];
 			p[2] = dots[polys->poly[i].dots[2]];
-			phit = ft_summ_vectors(ft_multiply_vector(ray.dir, dist[1] + 0.0001f), ray.orig);
-			if (ft_intersect_triangle(p, phit, dist, NULL, polys->poly[i].norm))
+			ft_multiply_vector(&ray.dir, dist[1] + 0.0001f, &phit);
+			ft_summ_vectors(&phit, &ray.orig, &phit);
+			if (ft_intersect_triangle(p, phit, polys->poly[i].norm, NULL))
 			{
-				*closest_distance = dist[0];
+				*closest_distance = dist[1];
 				return ;
 			}
 		}
 	}
 }
 
-static int	ft_is_in_shadow(t_cart phit, t_list *object, t_cart lightpos)
+static int	ft_is_in_shadow(t_cart *phit, t_list *object, t_cart *lightpos)
 {
 	t_ray	new_ray;
 	t_cart	direction;
@@ -55,9 +56,9 @@ static int	ft_is_in_shadow(t_cart phit, t_list *object, t_cart lightpos)
 	t_obj	*current;
 
 	distance_to_object = INFINITY;
-	direction = ft_substract_vectors(lightpos, phit);
-	distance_to_light = ft_get_vector_length(direction);
-	ft_cast_ray(&new_ray, direction, phit);
+	ft_substract_vectors(lightpos, phit, &direction);
+	ft_get_vector_length(&direction, &distance_to_light);
+	ft_cast_ray(&new_ray, &direction, phit);
 	while (object)
 	{
 		current = (t_obj *)object->content;
@@ -65,8 +66,8 @@ static int	ft_is_in_shadow(t_cart phit, t_list *object, t_cart lightpos)
 			ft_get_sphere_cone_shadow(new_ray, &current->polys, current->dots.pos, &distance_to_object);
 		else if (!current->dots.dotsnum)
 		{
-			new_ray.orig = ft_multiply_vector(new_ray.orig, 1 - 50 * __FLT_EPSILON__);
-			ft_intersect_plane(new_ray, current->crdstm.oz.vector, current->crdstm.pos, &distance_to_object);
+			ft_multiply_vector(&new_ray.orig, 1 - 50 * __FLT_EPSILON__, &new_ray.orig);
+			ft_intersect_plane(new_ray, &current->crdstm.oz.vector, &current->crdstm.pos, &distance_to_object);
 		}
 		if (distance_to_object < distance_to_light)
 			return (0);
@@ -75,7 +76,7 @@ static int	ft_is_in_shadow(t_cart phit, t_list *object, t_cart lightpos)
 	return (1);
 }
 
-static	int	ft_get_color_value(float color_koef[3], float al_color,
+static int	ft_get_color_value(float color_koef[3], float al_color,
 			float l_color)
 {
 	float	color;
@@ -97,29 +98,33 @@ static	int	ft_get_color_value(float color_koef[3], float al_color,
 										towards light around object normal vector at phit 
 */
 
-int	ft_shadowing(t_cart phit, t_cart object_norm, t_cart object_color,
-		t_info *info)
+unsigned int	ft_shadowing(t_cart *phit, t_cart *object_norm,
+			t_cart *object_color, t_info *info)
 {
 	t_cart	n_vect[4];
+	t_cart	mltvec;
 	t_cart	lk[2];
 	float	ck[3];
 
-	if (phit.x == INFINITY || phit.y == INFINITY || phit.z == INFINITY)
+	if (phit->x == INFINITY || phit->y == INFINITY || phit->z == INFINITY)
 		return (0x00000000);
 	ck[0] = info->a_light.light_ratio;
-	lk[0] = ft_multiply_vectors(info->a_light.color, object_color);
-	if (!ft_is_in_shadow(phit, info->win.camera.objs, info->win.camera.lightpos))
+	ft_multiply_vectors(&info->a_light.color, object_color, &lk[0]);
+	if (!ft_is_in_shadow(phit, info->win.camera.objs, &info->win.camera.lightpos))
 		return (ft_create_trgb(0, ck[0] * lk[0].x * 255,
 				ck[0] * lk[0].y * 255, ck[0] * lk[0].z * 255));
-	n_vect[0] = ft_inverse_vector(phit);
-	n_vect[0] = ft_get_vector_norm(n_vect[0], ft_get_vector_length(n_vect[0]));
-	n_vect[1] = ft_substract_vectors(info->win.camera.lightpos, phit);
-	n_vect[1] = ft_get_vector_norm(n_vect[1], ft_get_vector_length(n_vect[1]));
-	n_vect[2] = object_norm;
-	n_vect[3] = ft_substract_vectors(ft_multiply_vector(n_vect[2], 2 * ft_get_dot_product(n_vect[1], n_vect[2])), n_vect[1]);
-	n_vect[3] = ft_get_vector_norm(n_vect[3], ft_get_vector_length(n_vect[3]));
-	ck[1] = ft_max(ft_get_dot_product(n_vect[1], n_vect[2]), 0.0f) * info->lights.light_ratio;
-	ck[2] = powf(ft_max(ft_get_dot_product(n_vect[3], n_vect[0]), 0.0f), 1000.0f) * info->lights.light_ratio;
-	lk[1] = ft_multiply_vectors(info->lights.color, object_color);
+	ft_inverse_vector(phit, &n_vect[0]);
+	ft_get_vector_norm(&n_vect[0]);
+	ft_substract_vectors(&info->win.camera.lightpos, phit, &n_vect[1]);
+	ft_get_vector_norm(&n_vect[1]);
+	n_vect[2] = *object_norm;
+	ft_get_dot_product(&n_vect[1], &n_vect[2], &ck[1]);
+	ft_multiply_vector(&n_vect[2], 2 * ck[1], &mltvec);
+	ft_substract_vectors(&mltvec, &n_vect[1], &n_vect[3]);
+	ft_get_vector_norm(&n_vect[3]);
+	ck[1] = ft_max(ck[1], 0.0f) * info->lights.light_ratio;
+	ft_get_dot_product(&n_vect[3], &n_vect[0], &ck[2]);
+	ck[2] = powf(ft_max(ck[2], 0.0f), 1000.0f) * info->lights.light_ratio;
+	ft_multiply_vectors(&info->lights.color, object_color, &lk[1]);
 	return (ft_create_trgb(0, ft_get_color_value(ck, lk[0].x, lk[1].x), ft_get_color_value(ck, lk[0].y, lk[1].y), ft_get_color_value(ck, lk[0].z, lk[1].z)));
 }

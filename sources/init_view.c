@@ -12,19 +12,26 @@ void	createcamobjs(t_list **camobjs, t_list *objs)
 		camobj = ft_lstlast(*camobjs)->content;
 		camobj->rot = obj->rot;
 		camobj->outframe = obj->outframe;
-		camobj->dots.rout = obj->dots.rout;
-		camobj->dots.routsize = obj->dots.routsize;
-		camobj->dots.dotsnum = obj->dots.dotsnum;
-		camobj->dots.dots = obj->dots.dots;
+		camobj->dots = obj->dots;
 		camobj->dots.pos = malloc(sizeof(*camobj->dots.pos)
 			* (camobj->dots.dotsnum + CRNRS * (!camobj->dots.dotsnum)));
-		camobj->dots.scale = obj->dots.scale;
-		camobj->polys.poly = obj->polys.poly;
-		camobj->polys.txtr = obj->polys.txtr;
-		camobj->polys.polynum = obj->polys.polynum;
+		camobj->polys = obj->polys;
+		if (!camobj->polys.polynum)
+			camobj->polys.poly = malloc(sizeof(*camobj->polys.poly));
 		camobj->colrs = obj->colrs;
 		objs = objs->next;
 	}
+}
+
+void	checkplanenorm(t_crdstm *plane, t_poly *poly, t_dots *dots)
+{
+	if (dots->dotsnum || plane->pos.z < 1)
+		return ;
+	poly->norm = plane->oz.vector;
+	if (plane->oz.vector.z <= 0.001)
+		return ;
+	negativevector(&poly->norm);
+	vectorsizing(1, &poly->norm, &poly->norm, NULL);
 }
 
 void	initview(t_list *objs, t_camera *camera, t_light *light)
@@ -47,7 +54,8 @@ void	initview(t_list *objs, t_camera *camera, t_light *light)
 		transpos(&camobj->crdstm.ox.vector, trans.crdstm);
 		transpos(&camobj->crdstm.oy.vector, trans.crdstm);
 		transpos(&camobj->crdstm.oz.vector, trans.crdstm);
-		engine(&camobj->dots, &camobj->polys, &camobj->crdstm);
+		checkplanenorm(&camobj->crdstm, camobj->polys.poly, &camobj->dots);
+		engine(&camobj->dots, &camobj->polys, &camobj->crdstm, &camobj->outframe);
 		camcrsr = camcrsr->next;
 		crsr = crsr->next;
 	}

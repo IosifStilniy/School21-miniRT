@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/15 22:08:38 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/25 13:50:18 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *p
 static void	primitivesbuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 {
 	int		i;
+	t_obj	*obj;
 
 	while (ft_strchr(SPACES, *str))
 		str++;
@@ -82,16 +83,18 @@ static void	primitivesbuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 	if (i == NUMPRMTVS)
 		customerr(prog, INVDEF, TRUE);
 	str += 2;
-	ft_lstadd_front(objs, ft_lstnew(malloc(sizeof(t_obj))));
-	objcast(*objs)->rot = rot;
-	str = ft_get_position_values(prog, str, &objcast(*objs)->crdstm.pos);
+	obj = malloc(sizeof(*obj));
+	ft_lstadd_front(objs, ft_lstnew(obj));
+	obj->rot = rot;
+	str = ft_get_position_values(prog, str, &obj->crdstm.pos);
+	obj->colrs = malloc(sizeof(*obj->colrs));
 	if (!i)
-		objcast(*objs)->outframe = sphereparser(str, (*objs)->content, prog);
+		obj->outframe = sphereparser(str, obj, prog);
 	else if (i == 1)
-		planeparser(str, (*objs)->content, prog);
+		planeparser(str, obj, prog);
 	else if (i == 2)
-		objcast(*objs)->outframe = cylinderparser(str, (*objs)->content, prog);
-	objcast(*objs)->dots.scale = 1;
+		obj->outframe = cylinderparser(str, obj, prog);
+	definevrtxsnorms(&obj->dots, &obj->polys);
 }
 
 void	definecamera(t_camera *camera, t_res *wincntr)
@@ -101,6 +104,7 @@ void	definecamera(t_camera *camera, t_res *wincntr)
 	camera->focus = wincntr->x / tanf(camera->fov);
 	if (camera->focus < 1)
 		camera->focus = 1;
+	camera->attached.obj = NULL;
 	cartbuilder(0, 0, 1, &camera->corners[0]);
 	cartbuilder(-wincntr->x, -wincntr->y, camera->focus, &camera->corners[1]);
 	cartbuilder(wincntr->x, -wincntr->y, camera->focus, &camera->corners[2]);

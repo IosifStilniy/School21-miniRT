@@ -25,17 +25,17 @@ void	gridprinter(t_cart *start, t_obj *plane, float focus, t_data *img)
 	t_cart	end;
 	t_ui	color;
 
-	color = ft_create_trgb(0, plane->colrs.x * 255, plane->colrs.y * 255, plane->colrs.z * 255);
-	dotcrdstmtrnsltn(start, &dst[0], 1, &plane->crdstm);
-	vectodot(&dst[0], &plane->crdstm.pos, FALSE);
+	color = ft_create_trgb(0, plane->colrs->x * 255, plane->colrs->y * 255, plane->colrs->z * 255);
+	dotcrdstmtrnsltn(start, &dst[0], NULL, &plane->crdstm);
+	vectodot(&dst[0], &plane->crdstm.pos);
 	cartbuilder(start->x + GRIDLINES * GRIDSIZE, start->y, 0, &end);
-	dotcrdstmtrnsltn(&end, &dst[1], 1, &plane->crdstm);
-	vectodot(&dst[1], &plane->crdstm.pos, FALSE);
+	dotcrdstmtrnsltn(&end, &dst[1], NULL, &plane->crdstm);
+	vectodot(&dst[1], &plane->crdstm.pos);
 	dst[2] = plane->crdstm.oy.vector;
 	lineprinter(dst, color, focus, img);
 	cartbuilder(start->x, start->y + GRIDLINES * GRIDSIZE, 0, &end);
-	dotcrdstmtrnsltn(&end, &dst[1], 1, &plane->crdstm);
-	vectodot(&dst[1], &plane->crdstm.pos, FALSE);
+	dotcrdstmtrnsltn(&end, &dst[1], NULL, &plane->crdstm);
+	vectodot(&dst[1], &plane->crdstm.pos);
 	dst[2] = plane->crdstm.ox.vector;
 	lineprinter(dst, color, focus, img);
 }
@@ -78,11 +78,11 @@ void	planeframing(t_obj *plane, t_camera *camera, t_data *img)
 	while (++i < CRNRS)
 	{
 		cartbuilder(INFINITY, INFINITY, INFINITY, &plane->dots.pos[i].dot);
-		dotcrdstmtrnsltn(&camera->corners[i], &corners[i], 1, &cam);
+		dotcrdstmtrnsltn(&camera->corners[i], &corners[i], NULL, &cam);
 		if (corners[i].z * cam.pos.z > 0 || !++inframe)
 			continue ;
 		vectorsizing(fabsf(cam.pos.z / corners[i].z), &corners[i], &plane->dots.pos[i].dot, NULL);
-		vectodot(&plane->dots.pos[i].dot, &cam.pos, FALSE);
+		vectodot(&plane->dots.pos[i].dot, &cam.pos);
 	}
 	if (inframe)
 		gridbuilder(plane, plane->dots.pos, camera->focus, img);

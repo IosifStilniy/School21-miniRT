@@ -6,10 +6,22 @@ void	surfing(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr)
 	poly->dots[1] = dotindxs[1];
 	poly->dots[2] = dotindxs[2];
 	normbuilder(&dots[poly->dots[0]].dot, &dots[poly->dots[1]].dot, &dots[poly->dots[2]].dot, &poly->srcnorm);
-	vectodot(&dots[poly->dots[0]].norm, &poly->srcnorm, TRUE);
-	vectodot(&dots[poly->dots[1]].norm, &poly->srcnorm, TRUE);
-	vectodot(&dots[poly->dots[2]].norm, &poly->srcnorm, TRUE);
 	poly->txtr = txtr;
+}
+
+void	repairspherenormal(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr)
+{
+	int		buf;
+	float	dest;
+
+	surfing(poly, dotindxs, dots, txtr);
+	ft_get_dot_product(&dots[dotindxs[0]].dot, &poly->srcnorm, &dest);
+	if (dest > 0)
+		return ;
+	buf = poly->dots[2];
+	poly->dots[2] = poly->dots[1];
+	poly->dots[1] = buf;
+	normbuilder(&dots[poly->dots[0]].dot, &dots[poly->dots[1]].dot, &dots[poly->dots[2]].dot, &poly->srcnorm);
 }
 
 void	polarsurfing(t_vrtx *dots, t_poly **poly, int lttd, void *txtr)
@@ -19,19 +31,19 @@ void	polarsurfing(t_vrtx *dots, t_poly **poly, int lttd, void *txtr)
 	dotindxs[0] = 0;
 	dotindxs[1] = (lttd - 1) * (RNDSGMNTS - 2) + 2;
 	dotindxs[2] = lttd * (RNDSGMNTS - 2) + 2;
-	surfing(++(*poly), dotindxs, dots, txtr);
+	repairspherenormal(++(*poly), dotindxs, dots, txtr);
 	dotindxs[0] = 0;
 	dotindxs[1] += (RNDSGMNTS - 2) - 1;
 	dotindxs[2] += (RNDSGMNTS - 2) - 1;
-	surfing(++(*poly), dotindxs, dots, txtr);
+	repairspherenormal(++(*poly), dotindxs, dots, txtr);
 	dotindxs[0] = 1;
 	dotindxs[1] = lttd * (RNDSGMNTS - 2) + (RNDSGMNTS - 2) / 2 - 1 + 2;
 	dotindxs[2] = (lttd - 1) * (RNDSGMNTS - 2) + (RNDSGMNTS - 2) / 2 - 1 + 2;
-	surfing(++(*poly), dotindxs, dots, txtr);
+	repairspherenormal(++(*poly), dotindxs, dots, txtr);
 	dotindxs[0] = 1;
 	dotindxs[1]++;
 	dotindxs[2]++;
-	surfing(++(*poly), dotindxs, dots, txtr);
+	repairspherenormal(++(*poly), dotindxs, dots, txtr);
 }
 
 void	polarjointing(t_vrtx *dots, t_poly *poly, void *txtr, int dotnum)
@@ -41,17 +53,17 @@ void	polarjointing(t_vrtx *dots, t_poly *poly, void *txtr, int dotnum)
 	dotindxs[0] = 0;
 	dotindxs[1] = dotnum - 1;
 	dotindxs[2] = 2;
-	surfing(++poly, dotindxs, dots, txtr);
+	repairspherenormal(++poly, dotindxs, dots, txtr);
 	dotindxs[0] = 0;
-	dotindxs[1] -= (RNDSGMNTS - 2) / 2;
-	dotindxs[2] += (RNDSGMNTS - 2) / 2;
-	surfing(++poly, dotindxs, dots, txtr);
+	dotindxs[1] -= (RNDSGMNTS - 2) - 1;
+	dotindxs[2] += (RNDSGMNTS - 2) - 1;
+	repairspherenormal(++poly, dotindxs, dots, txtr);
 	dotindxs[0] = 1;
 	dotindxs[1] = 2 + (RNDSGMNTS - 2) / 2 - 1;
 	dotindxs[2] = dotnum - (RNDSGMNTS - 2) / 2;
-	surfing(++poly, dotindxs, dots, txtr);
+	repairspherenormal(++poly, dotindxs, dots, txtr);
 	dotindxs[0] = 1;
 	dotindxs[1]++;
 	dotindxs[2]--;
-	surfing(++poly, dotindxs, dots, txtr);
+	repairspherenormal(++poly, dotindxs, dots, txtr);
 }
