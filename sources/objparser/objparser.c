@@ -14,7 +14,7 @@ char	*vrtxparser(char *line, t_list *vt, t_list *vn, t_vrtx *vrtx)
 {
 	int	indx;
 
-	vrtx->dot = ft_atoi(line);
+	vrtx->dot = ft_atoi(line) - 1;
 	line = skipnumnspaces(line);
 	if (ft_atoi(++line))
 		vrtx->uv = *(getcart(vt, ft_atoi(line)));
@@ -28,9 +28,6 @@ void	interpolatednorm(t_cart *norm, t_vrtx vrtxs[3])
 {
 	t_cart	vns[3];
 
-	vectorsizing(1.f / 3, &vrtxs[0].srcnorm, &vns[0], NULL);
-	vectorsizing(1.f / 3, &vrtxs[1].srcnorm, &vns[1], NULL);
-	vectorsizing(1.f / 3, &vrtxs[2].srcnorm, &vns[2], NULL);
 	cartbuilder(0, 0, 0, norm);
 	vectodot(norm, &vns[0]);
 	vectodot(norm, &vns[1]);
@@ -47,7 +44,6 @@ char	*notendedline(char *line)
 
 void	facefiller(t_import *imp, char *line, t_bool *interpolate)
 {
-	t_cart	dots[3];
 	t_poly	*poly;
 	t_poly	*newpoly;
 
@@ -72,7 +68,7 @@ void	facefiller(t_import *imp, char *line, t_bool *interpolate)
 	*interpolate = FALSE;
 }
 
-void	vrtxfiller(t_list **v, char *line)
+void	vrtxfiller(t_list **v, char *line, t_bool normilize)
 {
 	t_cart	*vertex;
 
@@ -82,6 +78,8 @@ void	vrtxfiller(t_list **v, char *line)
 	vertex->y = ft_atof(line);
 	line = skipnumnspaces(line);
 	vertex->z = ft_atof(line);
+	if (normilize)
+		vectorsizing(1, vertex, vertex, NULL);
 	ft_lstadd_back(v, ft_lstnew(vertex));
 }
 
@@ -94,14 +92,14 @@ void	modelparser(int fd, t_import *imp)
 	line = get_next_line(fd);
 	while (line)
 	{
-		if (*line != 'v' || *line != 'f')
+		if (*line != 'v' && *line != 'f' && *line != 's')
 			;
 		else if (!ft_strncmp(line, "v ", 2))
-			vrtxfiller(&imp->v, line + 2);
+			vrtxfiller(&imp->v, line + 2, FALSE);
 		else if (!ft_strncmp(line, "vn ", 3))
-			vrtxfiller(&imp->vn, line + 3);
+			vrtxfiller(&imp->vn, line + 3, TRUE);
 		else if (!ft_strncmp(line, "vt ", 3))
-			vrtxfiller(&imp->vt, line + 3);
+			vrtxfiller(&imp->vt, line + 3, FALSE);
 		else if (!ft_strncmp(line, "s ", 2))
 			interpolate++;
 		else if (!ft_strncmp(line, "f ", 2))
@@ -109,6 +107,35 @@ void	modelparser(int fd, t_import *imp)
 		free(line);
 		line = get_next_line(fd);
 	}
+	ft_lstclear(&imp->vn, &free);
+	ft_lstclear(&imp->vt, &free);
+}
+
+void	importobj(t_import *imp, t_obj *obj)
+{
+	t_list	*crsr;
+	int		i;
+
+	obj->dots.dotsnum = ft_lstsize(imp->v);
+	obj->dots.dots = malloc(sizeof(obj->dots.dots) * obj->dots.dotsnum);
+	crsr = imp->v;
+	i = -1;
+	while (++i < obj->dots.dotsnum)
+	{
+		obj->dots.dots[i] = *(t_cart *)crsr->content;
+		crsr = crsr->next;
+	}
+	ft_lstclear(&imp->v, &free);
+	obj->polys.polynum = ft_lstsize(imp->f);
+	obj->polys.poly = malloc(sizeof(*obj->polys.poly) * obj->polys.polynum);
+	crsr = imp->f;
+	i = -1;
+	while (++i < obj->polys.polynum)
+	{
+		obj->polys.poly[i] = *(t_poly *)crsr->content;
+		crsr = crsr->next;
+	}
+	ft_lstclear(&imp->f, &free);
 }
 
 t_obj	*objparser(char *model, char *txtr, char *heightmap, t_info *info)
@@ -124,6 +151,7 @@ t_obj	*objparser(char *model, char *txtr, char *heightmap, t_info *info)
 	fd = file_check(model, info->prog);
 	modelparser(fd, &imp);
 	obj = malloc(sizeof(*obj));
+	importobj(&imp, obj);
 	obj->polys.txtr->img = NULL;
 	if (txtr)
 	{
