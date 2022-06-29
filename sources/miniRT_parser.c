@@ -3,29 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_parser.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/25 13:50:18 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/29 20:52:36 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-static void	light_definition(char *line, t_light *a_light, t_light *lights, char *prog)
+static void	light_definition(char *line, t_light *a_light, t_list **lights, char *prog)
 {
 	t_light	*light;
-
-	light = a_light;
+	t_list	*new;
+	
+	new = NULL;
 	if (*line++ == 'L')
-		light = lights;
-	if (light->determined)
-		customerr(prog, DUPDET, TRUE);
+	{
+		light = (t_light *)malloc(sizeof(t_light));
+		if (!light)
+			customerr(prog, ERR_TEXT, TRUE);
+		new = ft_lstnew(light);
+		ft_lstadd_back(lights, new);
+	}
+	else
+		light = a_light;
 	light->determined = TRUE;
 	while (ft_strchr(SPACES, *line))
 		line++;
-	if (light == lights)
-		line = ft_get_position_values(prog, line, &lights->pos);
+	if (new)
+		line = ft_get_position_values(prog, line, &((t_light *)(new->content))->pos);
 	while (ft_strchr(SPACES, *line))
 		line++;
 	if (!ft_strchr("+01.", *line))
@@ -67,6 +74,7 @@ static void	ft_fill_camera_info(char *str, t_camera *camera, t_rot *rot, char *p
 	if (*str != '\n' && *str)
 		customerr(prog, INVDEF, TRUE);
 	camera->rot = rot;
+	camera->lightpos = NULL;	
 }
 
 static void	primitivesbuilder(char *str, t_list **objs, char *prog, t_rot *rot)
@@ -121,6 +129,7 @@ void	ft_read_information(int fd, t_info *info)
 	char	*crsr;
 
 	info->objects = NULL;
+	info->lights = NULL;
 	line = get_next_line(fd);
 	while (line)
 	{
@@ -136,7 +145,7 @@ void	ft_read_information(int fd, t_info *info)
 		free(line);
 		line = get_next_line(fd);
 	}
-	if (!(info->win.camera.determined * info->lights.determined * info->a_light.determined))
+	if (!info->lights->content || !(info->win.camera.determined * ((t_light *)(info->lights->content))->determined * info->a_light.determined))
 		customerr(info->prog, "undefined camera and/or lights", TRUE);
 	definecamera(&info->win.camera, &info->win.cntr);
 }

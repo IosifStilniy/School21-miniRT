@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hooks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/25 18:02:24 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/29 18:37:40 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int	btnup(int btn, int x, int y, t_info *info)
 	else if (inbounds(info->interface.attach, x, y) && attachobj(&info->win.camera, info->interface.selected, info->objects) && ++refresh)
 		info->interface.selected = NULL;
 	if (refresh)
-		initview(info->objects, &info->win.camera, &info->lights);
+		initview(info->objects, &info->win.camera, info->lights);
 	if (refresh)
 		ft_draw_screen(info);
 	if (!refresh)

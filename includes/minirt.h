@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/26 20:49:56 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/29 19:38:34 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,7 @@ typedef struct s_camera {
 	float		fov;
 	t_list		*objs;
 	t_rot		*rot;
-	t_cart		lightpos;
+	t_cart		*lightpos;
 	t_bool		determined;
 	t_cart		corners[CRNRS];
 	t_attach	attached;
@@ -330,7 +330,7 @@ typedef struct s_info
 	t_win		win;
 	t_light		a_light;
 	t_list		*objects;
-	t_light		lights;
+	t_list		*lights;
 	t_rot		rot;
 	t_data		data;
 	char		*prog;
@@ -419,7 +419,7 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 
 void	createcamobjs(t_list **camobjs, t_list *objs);
 void	createframerouts(t_list *objs);
-void	initview(t_list *objs, t_camera *camera, t_light *light);
+void	initview(t_list *objs, t_camera *camera, t_list *lights);
 void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img);
 t_bool	objinframe(t_obj *obj, t_res *winctr, float focus);
 void	paintline(t_cart src[2], t_ui color, float focus, t_data *img);

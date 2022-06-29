@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   keycontrol.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:43:02 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/25 17:59:45 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/29 18:37:50 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	keyshifting(t_cart *dir, t_cart *axis, t_info *info)
 	}
 	else
 		crdstmrotbyaxis(&info->win.camera.crdstm, &res, NULL);
-	initview(info->objects, &info->win.camera, &info->lights);
+	initview(info->objects, &info->win.camera, info->lights);
 }
 
 void	rotateattached(t_cart *dir, t_axis *axis, t_info *info)
@@ -60,7 +60,7 @@ void	rotateattached(t_cart *dir, t_axis *axis, t_info *info)
 		crdstmrotbyaxis(&info->win.camera.attached.crdstm, axis, NULL);
 	}
 	camfromobjcrdstm(&info->win.camera.crdstm, &info->win.camera.attached);
-	initview(info->objects, &info->win.camera, &info->lights);
+	initview(info->objects, &info->win.camera, info->lights);
 }
 
 int	finish(void)

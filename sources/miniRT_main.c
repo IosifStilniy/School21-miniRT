@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_main.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/25 18:22:00 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/29 20:43:50 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	initobjs(char *file, t_info *info)
 
 	fd = file_check(file, info->prog);
 	info->a_light.determined = FALSE;
-	info->lights.determined = FALSE;
+	// info->lights.determined = FALSE;
 	info->win.camera.determined = FALSE;
 	ft_read_information(fd, info);
 	createframerouts(info->objects);
@@ -83,9 +83,8 @@ int	main(int argc, char **argv)
 	wininit(&info, info.prog, *argv);
 	initobjs(*argv, &info);
 	initinterface(&info.interface, info.mlx_ptr, &info.win.res);
-	initview(info.objects, &info.win.camera, &info.lights);
+	initview(info.objects, &info.win.camera, info.lights);
 	pudge(&info);
-	printf("%d\n", objcast(info.objects)->polys.polynum * ft_lstsize(info.objects));
 	ft_draw_screen(&info);
 	mlx_loop(info.mlx_ptr);
 	return (0);

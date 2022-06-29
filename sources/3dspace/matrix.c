@@ -73,3 +73,4 @@ void	transpos(t_cart	*pos, float transmatrix[4][4])
 	}
 	cartbuilder(k[0], k[1], k[2], pos);
 }
+

@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/08 16:44:18 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/27 12:31:05 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/06/29 20:46:41 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,30 +101,57 @@ static int	ft_get_color_value(float color_koef[3], float al_color,
 unsigned int	ft_shadowing(t_cart *phit, t_cart *object_norm,
 			t_cart *object_color, t_info *info)
 {
+	t_list	*currl;
+	int		i;
 	t_cart	n_vect[4];
 	t_cart	mltvec;
 	t_cart	lk[2];
 	float	ck[3];
+	t_cart	color;
 
 	if (phit->x == INFINITY || phit->y == INFINITY || phit->z == INFINITY)
 		return (0x00000000);
 	ck[0] = info->a_light.light_ratio;
 	ft_multiply_vectors(&info->a_light.color, object_color, &lk[0]);
-	if (!ft_is_in_shadow(phit, info->win.camera.objs, &info->win.camera.lightpos))
-		return (ft_create_trgb(0, ck[0] * lk[0].x * 255,
-				ck[0] * lk[0].y * 255, ck[0] * lk[0].z * 255));
-	ft_inverse_vector(phit, &n_vect[0]);
-	ft_get_vector_norm(&n_vect[0]);
-	ft_substract_vectors(&info->win.camera.lightpos, phit, &n_vect[1]);
-	ft_get_vector_norm(&n_vect[1]);
-	n_vect[2] = *object_norm;
-	ft_get_dot_product(&n_vect[1], &n_vect[2], &ck[1]);
-	ft_multiply_vector(&n_vect[2], 2 * ck[1], &mltvec);
-	ft_substract_vectors(&mltvec, &n_vect[1], &n_vect[3]);
-	ft_get_vector_norm(&n_vect[3]);
-	ck[1] = ft_max(ck[1], 0.0f) * info->lights.light_ratio;
-	ft_get_dot_product(&n_vect[3], &n_vect[0], &ck[2]);
-	ck[2] = powf(ft_max(ck[2], 0.0f), 1000.0f) * info->lights.light_ratio;
-	ft_multiply_vectors(&info->lights.color, object_color, &lk[1]);
-	return (ft_create_trgb(0, ft_get_color_value(ck, lk[0].x, lk[1].x), ft_get_color_value(ck, lk[0].y, lk[1].y), ft_get_color_value(ck, lk[0].z, lk[1].z)));
+	i = -1;
+	color.x = 0.0f;
+	color.y = 0.0f;
+	color.z = 0.0f;
+	currl = info->lights;
+	while (currl)
+	{
+		if (!ft_is_in_shadow(phit, info->win.camera.objs, &info->win.camera.lightpos[++i]))
+		{
+			color.x += lk[0].x * ck[0] * 255;
+			color.y += lk[0].y * ck[0] * 255;
+			color.z += lk[0].z * ck[0] * 255;
+		}
+		else
+		{
+			ft_inverse_vector(phit, &n_vect[0]);
+			ft_get_vector_norm(&n_vect[0]);
+			ft_substract_vectors(&info->win.camera.lightpos[i], phit, &n_vect[1]);
+			ft_get_vector_norm(&n_vect[1]);
+			n_vect[2] = *object_norm;
+			ft_get_dot_product(&n_vect[1], &n_vect[2], &ck[1]);
+			ft_multiply_vector(&n_vect[2], 2 * ck[1], &mltvec);
+			ft_substract_vectors(&mltvec, &n_vect[1], &n_vect[3]);
+			ft_get_vector_norm(&n_vect[3]);
+			ck[1] = ft_max(ck[1], 0.0f) * ((t_light *)(currl->content))->light_ratio;
+			ft_get_dot_product(&n_vect[3], &n_vect[0], &ck[2]);
+			ck[2] = powf(ft_max(ck[2], 0.0f), 1000.0f) * ((t_light *)(currl->content))->light_ratio;
+			ft_multiply_vectors(&((t_light *)(currl->content))->color, object_color, &lk[1]);
+			color.x += ft_get_color_value(ck, lk[0].x, lk[1].x);
+			color.y += ft_get_color_value(ck, lk[0].y, lk[1].y);
+			color.z += ft_get_color_value(ck, lk[0].z, lk[1].z);
+		}
+		currl = currl->next;
+	}
+	if (color.x > 255.0f)
+		color.x = 255.0f;
+	if (color.y > 255.0f)
+		color.y = 255.0f;
+	if (color.z > 255.0f)
+		color.z = 255.0f;
+	return (ft_create_trgb(0, color.x, color.y, color.z));
 }

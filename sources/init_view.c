@@ -34,16 +34,24 @@ void	checkplanenorm(t_crdstm *plane, t_poly *poly, t_dots *dots)
 	vectorsizing(1, &poly->norm, &poly->norm, NULL);
 }
 
-void	initview(t_list *objs, t_camera *camera, t_light *light)
+void	initview(t_list *objs, t_camera *camera, t_list *light)
 {
 	t_trans	trans;
 	t_list	*crsr;
 	t_list	*camcrsr;
 	t_obj	*camobj;
+	int		i;
 
-	worldtocammatrix(trans.trans, trans.crdstm, trans.pos, &camera->crdstm);
-	camera->lightpos = light->pos;
-	transpos(&camera->lightpos, trans.trans);
+	worldtocammatrix(trans.trans, trans.crdstm, trans.pos, &camera->crdstm);		
+	i = -1;
+	if (!camera->lightpos)
+		camera->lightpos = malloc(sizeof(t_cart) * ft_lstsize(light));
+	while (light)
+	{
+		camera->lightpos[++i] = ((t_light *)(light->content))->pos;
+		transpos(&camera->lightpos[i], trans.trans);
+		light = light->next;
+	}
 	crsr = objs;
 	camcrsr = camera->objs;
 	while (crsr)
