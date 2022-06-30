@@ -18,7 +18,7 @@ static void	definelnguv(t_cart *ref, t_vrtx *vrtx, t_axis *axis)
 		vrtx->uv.x = 0.75f - 0.25f * axis->ang / M_PI_2;
 }
 
-static void	spherepolymapping(t_vrtx *vrtx, t_cart *dot)
+static void	spherepolymapping(t_vrtx *vrtx)
 {
 	t_cart	xoy;
 	t_axis	axis;
@@ -32,18 +32,16 @@ static void	spherepolymapping(t_vrtx *vrtx, t_cart *dot)
 	definelnguv(&vrtx->srcnorm, vrtx, &axis);
 }
 
-void	spheremapping(t_cart *dots, t_poly *polys, int polynum)
+void	spheremapping(t_poly *polys, int polynum)
 {
-	t_cart	xoy;
-	t_axis	axis;
 	int		i;
 
 	i = -1;
 	while (++i < polynum)
 	{
-		spherepolymapping(&polys[i].vrtxs[0], dots);
-		spherepolymapping(&polys[i].vrtxs[1], dots);
-		spherepolymapping(&polys[i].vrtxs[2], dots);
+		spherepolymapping(&polys[i].vrtxs[0]);
+		spherepolymapping(&polys[i].vrtxs[1]);
+		spherepolymapping(&polys[i].vrtxs[2]);
 	}
 }
 

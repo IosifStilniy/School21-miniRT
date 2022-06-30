@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/25 18:22:00 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/06/30 21:08:17 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,16 +60,27 @@ void	pudge(t_info *info)
 
 void	initobjs(char *file, t_info *info)
 {
-	int		fd;
+	t_camera	*camera;
+	t_list		*crsr;
+	int			fd;
 
 	fd = file_check(file, info->prog);
-	info->a_light.determined = FALSE;
-	info->lights.determined = FALSE;
-	info->win.camera.determined = FALSE;
+	info->objects = NULL;
+	info->lights = NULL;
+	info->win.cameras = NULL;
 	ft_read_information(fd, info);
+	if (ft_lstsize(info->lights) != 1)
+		customerr(info->prog, DUPDET, TRUE);
 	createframerouts(info->objects);
-	info->win.camera.objs = NULL;
-	createcamobjs(&info->win.camera.objs, info->objects);
+	crsr = info->win.cameras;
+	while (crsr)
+	{
+		camera = crsr->content;
+		camera->objs = NULL;
+		camera->lightcount = ft_lstsize(info->lights);
+		createcamobjs(&camera->objs, info->objects, &camera->lightpos, camera->lightcount);
+		crsr = crsr->next;
+	}
 }
 
 int	main(int argc, char **argv)
@@ -83,9 +94,8 @@ int	main(int argc, char **argv)
 	wininit(&info, info.prog, *argv);
 	initobjs(*argv, &info);
 	initinterface(&info.interface, info.mlx_ptr, &info.win.res);
-	initview(info.objects, &info.win.camera, &info.lights);
+	initview(info.objects, info.win.camera, info.lights);
 	pudge(&info);
-	printf("%d\n", objcast(info.objects)->polys.polynum * ft_lstsize(info.objects));
 	ft_draw_screen(&info);
 	mlx_loop(info.mlx_ptr);
 	return (0);

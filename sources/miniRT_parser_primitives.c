@@ -30,7 +30,7 @@ float	sphereparser(char *str, t_obj *obj, char *prog)
 	float	rad;
 
 	rad = ft_atof(str) / 2.0f;
-	str = skipnumnspaces(str);
+	str = skipnumnspaces(str, FALSE);
 	str = ft_get_color_values(str, obj->colrs, prog);
 	vectorbuilder(1, 0, 0, &obj->crdstm.ox);
 	vectorbuilder(0, 1, 0, &obj->crdstm.oy);
@@ -50,9 +50,9 @@ float	cylinderparser(char *str, t_obj *obj, char *prog)
 		&obj->crdstm.oz.length);
 	crdstmdefiner(&obj->crdstm);
 	rad = ft_atof(str) / 2;
-	str = skipnumnspaces(str);
+	str = skipnumnspaces(str, FALSE);
 	height = ft_atof(str);
-	str = skipnumnspaces(str);
+	str = skipnumnspaces(str, FALSE);
 	ft_get_color_values(str, obj->colrs, prog);
 	return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
 }

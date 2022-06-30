@@ -47,8 +47,9 @@ t_bool	changecamparams(int	arrow, t_win *win, t_step *fov)
 		changevalue(&fov->step, fov->stepping, increase);
 		return (FALSE);
 	}
-	changevalue(&win->camera.fov, fov->step, increase);
-	win->camera.focus = win->cntr.x / tanf(win->camera.fov);
+	changevalue(&win->camera->fov, fov->step, increase);
+	win->camera->focus = win->cntr.x / tanf(win->camera->fov);
+	cornerbuilder(win->camera->corners, &win->cntr, win->camera->focus);
 	return (TRUE);
 }
 

@@ -12,26 +12,22 @@ t_cart	*getcart(t_list *v, int indx)
 
 char	*vrtxparser(char *line, t_list *vt, t_list *vn, t_vrtx *vrtx)
 {
-	int	indx;
-
 	vrtx->dot = ft_atoi(line) - 1;
-	line = skipnumnspaces(line);
+	line = skipnumnspaces(line, FALSE);
 	if (ft_atoi(++line))
 		vrtx->uv = *(getcart(vt, ft_atoi(line)));
-	line = skipnumnspaces(line);
+	line = skipnumnspaces(line, FALSE);
 	vrtx->srcnorm = *(getcart(vn, ft_atoi(++line)));
-	line = skipnumnspaces(line);
+	line = skipnumnspaces(line, FALSE);
 	return (line);
 }
 
 void	interpolatednorm(t_cart *norm, t_vrtx vrtxs[3])
 {
-	t_cart	vns[3];
-
 	cartbuilder(0, 0, 0, norm);
-	vectodot(norm, &vns[0]);
-	vectodot(norm, &vns[1]);
-	vectodot(norm, &vns[2]);
+	vectodot(norm, &vrtxs[0].srcnorm);
+	vectodot(norm, &vrtxs[1].srcnorm);
+	vectodot(norm, &vrtxs[2].srcnorm);
 	vectorsizing(1, norm, norm, NULL);
 }
 
@@ -74,9 +70,9 @@ void	vrtxfiller(t_list **v, char *line, t_bool normilize)
 
 	vertex = malloc(sizeof(*vertex));
 	vertex->x = ft_atof(line);
-	line = skipnumnspaces(line);
+	line = skipnumnspaces(line, FALSE);
 	vertex->y = ft_atof(line);
-	line = skipnumnspaces(line);
+	line = skipnumnspaces(line, FALSE);
 	vertex->z = ft_atof(line);
 	if (normilize)
 		vectorsizing(1, vertex, vertex, NULL);
@@ -103,7 +99,7 @@ void	modelparser(int fd, t_import *imp)
 		else if (!ft_strncmp(line, "s ", 2))
 			interpolate++;
 		else if (!ft_strncmp(line, "f ", 2))
-			facefiller(&imp->f, line + 2, &interpolate);
+			facefiller(imp, line + 2, &interpolate);
 		free(line);
 		line = get_next_line(fd);
 	}
@@ -138,7 +134,13 @@ void	importobj(t_import *imp, t_obj *obj)
 	ft_lstclear(&imp->f, &free);
 }
 
-t_obj	*objparser(char *model, char *txtr, char *heightmap, t_info *info)
+void	importimg(char *file, void *mlx, t_data *img)
+{
+	mlx_xpm_file_to_image(mlx, file, &img->res.x, &img->res.y);
+	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
+}
+
+void	objparser(char *model, char *txtr, char *heightmap, t_info *info)
 {
 	t_import	imp;
 	t_obj		*obj;
@@ -152,16 +154,11 @@ t_obj	*objparser(char *model, char *txtr, char *heightmap, t_info *info)
 	modelparser(fd, &imp);
 	obj = malloc(sizeof(*obj));
 	importobj(&imp, obj);
-	obj->polys.txtr->img = NULL;
+	obj->polys.txtr.img = NULL;
 	if (txtr)
-	{
-		mlx_xpm_file_to_image(info->mlx_ptr, txtr, &obj->polys.txtr->res.x, &obj->polys.txtr->res.y);
-		obj->polys.txtr->addr = mlx_get_data_addr(obj->polys.txtr->img, &obj->polys.txtr->bits_per_pixel, &obj->polys.txtr->line_length, &obj->polys.txtr->endian);
-	}
-	obj->polys.heightmap->img = NULL;
+		importimg(txtr, info->mlx_ptr, &obj->polys.txtr);
+	obj->polys.heightmap.img = NULL;
 	if (heightmap)
-	{
-		mlx_xpm_file_to_image(info->mlx_ptr, heightmap, &obj->polys.heightmap->res.x, &obj->polys.heightmap->res.y);
-		obj->polys.txtr->addr = mlx_get_data_addr(obj->polys.heightmap->img, &obj->polys.heightmap->bits_per_pixel, &obj->polys.heightmap->line_length, &obj->polys.heightmap->endian);
-	}
+		importimg(txtr, info->mlx_ptr, &obj->polys.heightmap);
+	ft_lstadd_front(&info->objects, ft_lstnew(obj));
 }

@@ -64,7 +64,7 @@ float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height)
 		dots->dots[2 + RNDSGMNTS + i].z = height / 2;
 	}
 	polys->poly = malloc(sizeof(*polys->poly) * polys->polynum);
-	surfdefiner(polys->poly - 1, dots->dots, polys->txtr, dots->dotsnum);
+	surfdefiner(polys->poly - 1, dots->dots, &polys->txtr, dots->dotsnum);
 	buttsurf(0, 2, &polys->poly[2 * RNDSGMNTS], dots->dots);
 	buttsurf(1, RNDSGMNTS + 2, &polys->poly[3 * RNDSGMNTS], dots->dots);
 	cylindermapping(dots->dots, polys->poly, polys->polynum);

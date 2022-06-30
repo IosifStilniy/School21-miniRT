@@ -30,7 +30,7 @@ void	camshifting(t_camera *camera, t_info *info, t_cart *dir, float step)
 	}
 	else
 		vectodot(&camera->crdstm.pos, &camdir);
-	initview(info->objects, camera, &info->lights);
+	initview(info->objects, camera, info->lights);
 }
 
 void	camrotating(t_camera *camera, t_info *info, int x, int y)
@@ -54,5 +54,5 @@ void	camrotating(t_camera *camera, t_info *info, int x, int y)
 	}
 	else
 		crdstmrotbyaxis(&camera->crdstm, &curpos, NULL);
-	initview(info->objects, camera, &info->lights);
+	initview(info->objects, camera, info->lights);
 }

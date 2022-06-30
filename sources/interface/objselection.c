@@ -77,7 +77,7 @@ void	roundselected(t_cart *pos, float outframe, t_win *win, void *mlx)
 	t_res	imgpos;
 	int		size;
 
-	outframe *= win->camera.focus / pos->z * 1.3;
+	outframe *= win->camera->focus / pos->z * 1.3;
 	size = lrintf(ceilf(outframe)) * 2 + 10;
 	if (size > win->res.x)
 		return ;
@@ -91,9 +91,9 @@ void	roundselected(t_cart *pos, float outframe, t_win *win, void *mlx)
 	transparentimg(&img);
 	circledotsfiller(dots, outframe, NULL, FALSE);
 	paintgradcircle(&img, dots);
-	imgpos.x = lrintf(pos->x * win->camera.focus / pos->z) +
+	imgpos.x = lrintf(pos->x * win->camera->focus / pos->z) +
 		win->cntr.x - img.cntr.x;
-	imgpos.y = lrintf(pos->y * win->camera.focus / pos->z) +
+	imgpos.y = lrintf(pos->y * win->camera->focus / pos->z) +
 		win->cntr.y - img.cntr.y;
 	mlx_put_image_to_window(mlx, win->win, img.img, imgpos.x, imgpos.y);
 	mlx_destroy_image(mlx, img.img);
