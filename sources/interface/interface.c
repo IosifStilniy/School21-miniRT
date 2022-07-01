@@ -34,11 +34,11 @@ void	printcaminterface(void *mlx, t_win *win, t_intrfc *interface, t_info *info)
 		interface->campos.y + 45, info);
 	printvalue(interface->settings.sens.kval, interface->campos.x + 90,
 		interface->campos.y + 68, info);
-	printvalue(win->camera.fov * 360 / M_PI, interface->campos.x + 83,
+	printvalue(win->camera->fov * 360 / M_PI, interface->campos.x + 83,
 		interface->campos.y + 127, info);
 	printvalue(interface->settings.fov.step * 360 / M_PI,
 		interface->campos.x + 83, interface->campos.y + 152, info);
-	if (info->win.camera.attached.obj)
+	if (info->win.camera->attached.obj)
 		mlx_string_put(info->mlx_ptr, info->win.win, interface->campos.x + 80,
 			interface->campos.y + 172, 0x0000FF00, "TRUE");
 	else
@@ -75,7 +75,7 @@ void	interfacebuilder(t_info *info)
 	selected = info->interface.selected;
 	if (info->interface.selected)
 	{
-		if (objinframe(selected, &info->win.cntr, info->win.camera.focus))
+		if (objinframe(selected, &info->win.cntr, info->win.camera->focus))
 			roundselected(&selected->crdstm.pos, selected->outframe,
 				&info->win, info->mlx_ptr);
 		printobjinterface(info->mlx_ptr, &info->win, &info->interface, info);

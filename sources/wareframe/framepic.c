@@ -102,8 +102,8 @@ void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img)
 		i = -1;
 		while (obj->dots.dotsnum && inframe && ++i < obj->dots.routsize)
 		{
-			paintdots[0] = obj->dots.pos[obj->dots.rout[i][0]].dot;
-			paintdots[1] = obj->dots.pos[obj->dots.rout[i][1]].dot;
+			paintdots[0] = obj->dots.pos[obj->dots.rout[i][0]];
+			paintdots[1] = obj->dots.pos[obj->dots.rout[i][1]];
 			paintline(paintdots, color, camera->focus, img);
 		}
 		camobjs = camobjs->next;

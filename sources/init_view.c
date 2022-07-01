@@ -1,6 +1,6 @@
 #include "minirt.h"
 
-void	createcamobjs(t_list **camobjs, t_list *objs)
+void	createcamobjs(t_list **camobjs, t_list *objs, t_cart **lightpos, int lightcount)
 {
 	t_obj	*camobj;
 	t_obj	*obj;
@@ -21,6 +21,7 @@ void	createcamobjs(t_list **camobjs, t_list *objs)
 		camobj->colrs = obj->colrs;
 		objs = objs->next;
 	}
+	*lightpos = malloc(sizeof(**lightpos) * lightcount);
 }
 
 void	checkplanenorm(t_crdstm *plane, t_poly *poly, t_dots *dots)
@@ -34,36 +35,52 @@ void	checkplanenorm(t_crdstm *plane, t_poly *poly, t_dots *dots)
 	vectorsizing(1, &poly->norm, &poly->norm, NULL);
 }
 
-void	initview(t_list *objs, t_camera *camera, t_list *light)
+void	objtrans(t_obj *camobj, t_obj *obj, t_trans *trans)
+{
+	camobj->crdstm = obj->crdstm;
+	transpos(&camobj->crdstm.pos, trans->trans);
+	transpos(&camobj->crdstm.ox.vector, trans->crdstm);
+	transpos(&camobj->crdstm.oy.vector, trans->crdstm);
+	transpos(&camobj->crdstm.oz.vector, trans->crdstm);
+	checkplanenorm(&camobj->crdstm, camobj->polys.poly, &camobj->dots);
+	engine(&camobj->dots, &camobj->polys, &camobj->crdstm, &camobj->outframe);
+}
+
+void	cornerbuilder(t_cart corners[CRNRS], t_res *wincntr, float focus)
+{
+	int	i;
+
+	cartbuilder(0, 0, 1, &corners[0]);
+	cartbuilder(-wincntr->x, -wincntr->y, focus, &corners[1]);
+	cartbuilder(wincntr->x, -wincntr->y, focus, &corners[2]);
+	cartbuilder(wincntr->x, wincntr->y, focus, &corners[3]);
+	cartbuilder(-wincntr->x, wincntr->y, focus, &corners[4]);
+	i = 0;
+	while (++i < CRNRS)
+		vectorsizing(1, &corners[i], &corners[i], NULL);
+}
+
+void	initview(t_list *objs, t_camera *camera, t_list *lights)
 {
 	t_trans	trans;
 	t_list	*crsr;
 	t_list	*camcrsr;
-	t_obj	*camobj;
 	int		i;
 
-	worldtocammatrix(trans.trans, trans.crdstm, trans.pos, &camera->crdstm);		
+	worldtocammatrix(trans.trans, trans.crdstm, trans.pos, &camera->crdstm);
 	i = -1;
-	if (!camera->lightpos)
-		camera->lightpos = malloc(sizeof(t_cart) * ft_lstsize(light));
-	while (light)
+	crsr = lights;
+	while (crsr)
 	{
-		camera->lightpos[++i] = ((t_light *)(light->content))->pos;
+		camera->lightpos[++i] = lightcast(crsr)->pos;
 		transpos(&camera->lightpos[i], trans.trans);
-		light = light->next;
+		crsr = crsr->next;	
 	}
 	crsr = objs;
 	camcrsr = camera->objs;
 	while (crsr)
 	{
-		camobj = camcrsr->content;
-		camobj->crdstm = objcast(crsr)->crdstm;
-		transpos(&camobj->crdstm.pos, trans.trans);
-		transpos(&camobj->crdstm.ox.vector, trans.crdstm);
-		transpos(&camobj->crdstm.oy.vector, trans.crdstm);
-		transpos(&camobj->crdstm.oz.vector, trans.crdstm);
-		checkplanenorm(&camobj->crdstm, camobj->polys.poly, &camobj->dots);
-		engine(&camobj->dots, &camobj->polys, &camobj->crdstm, &camobj->outframe);
+		objtrans(camcrsr->content, crsr->content, &trans);
 		camcrsr = camcrsr->next;
 		crsr = crsr->next;
 	}

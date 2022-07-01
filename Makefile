@@ -57,7 +57,6 @@ clean:
 
 fclean: clean
 		@$(MAKE) -C $(MLX) clean
-		rm -f $(LIBPATH)/$(LIBNAME)
 		rm -f $(DINLIB)
 		rm -f $(NAME)
 

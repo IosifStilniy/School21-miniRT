@@ -5,23 +5,18 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/08 16:44:18 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/29 20:46:41 by ncarob           ###   ########.fr       */
+/*   Created: 2022/07/01 19:57:32 by ncarob            #+#    #+#             */
+/*   Updated: 2022/07/01 21:07:48 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-unsigned int	ft_create_trgb(int t, int r, int g, int b)
-{
-	return (t << 24 | r << 16 | g << 8 | b);
-}
-
 static void	ft_get_sphere_cone_shadow(t_ray ray, t_polys *polys,
-			t_vrtx *dots, float *closest_distance)
+			t_cart *dots, float *closest_distance)
 {
 	int		i;
-	t_vrtx	p[3];
+	t_cart	p[3];
 	t_cart	phit;
 	float	dist[2];
 
@@ -29,16 +24,15 @@ static void	ft_get_sphere_cone_shadow(t_ray ray, t_polys *polys,
 	dist[0] = INFINITY;
 	while (++i < polys->polynum)
 	{
-		ft_intersect_plane(ray, &polys->poly[i].norm,
-			&dots[polys->poly[i].dots[0]].dot, &dist[1]);
+		ft_intersect_poly_plane(ray, &polys->poly[i].norm, &dots[polys->poly[i].vrtxs[0].dot], &dist[1]);
 		if (dist[1] < dist[0])
 		{
-			p[0] = dots[polys->poly[i].dots[0]];
-			p[1] = dots[polys->poly[i].dots[1]];
-			p[2] = dots[polys->poly[i].dots[2]];
+			p[0] = dots[polys->poly[i].vrtxs[0].dot];
+			p[1] = dots[polys->poly[i].vrtxs[1].dot];
+			p[2] = dots[polys->poly[i].vrtxs[2].dot];
 			ft_multiply_vector(&ray.dir, dist[1] + 0.0001f, &phit);
 			ft_summ_vectors(&phit, &ray.orig, &phit);
-			if (ft_intersect_triangle(p, phit, polys->poly[i].norm, NULL))
+			if (ft_intersect_triangle(phit, &polys->poly[i], dots, NULL))
 			{
 				*closest_distance = dist[1];
 				return ;
@@ -67,7 +61,7 @@ static int	ft_is_in_shadow(t_cart *phit, t_list *object, t_cart *lightpos)
 		else if (!current->dots.dotsnum)
 		{
 			ft_multiply_vector(&new_ray.orig, 1 - 50 * __FLT_EPSILON__, &new_ray.orig);
-			ft_intersect_plane(new_ray, &current->crdstm.oz.vector, &current->crdstm.pos, &distance_to_object);
+			ft_intersect_plane(new_ray, NULL, NULL, current, &distance_to_object);
 		}
 		if (distance_to_object < distance_to_light)
 			return (0);
@@ -76,17 +70,11 @@ static int	ft_is_in_shadow(t_cart *phit, t_list *object, t_cart *lightpos)
 	return (1);
 }
 
-static int	ft_get_color_value(float color_koef[3], float al_color,
-			float l_color)
+static int	ft_get_color_value(float color_koef[3], float l_color)
 {
 	float	color;
 
-	color = color_koef[0] * al_color + color_koef[1]
-		* l_color + color_koef[2] * l_color;
-	if (color < 0)
-		color = 0;
-	else if (color > 1)
-		color = 1;
+	color = color_koef[1] * l_color + color_koef[2] * l_color;
 	return (color * 255);
 }
 
@@ -114,23 +102,17 @@ unsigned int	ft_shadowing(t_cart *phit, t_cart *object_norm,
 	ck[0] = info->a_light.light_ratio;
 	ft_multiply_vectors(&info->a_light.color, object_color, &lk[0]);
 	i = -1;
-	color.x = 0.0f;
-	color.y = 0.0f;
-	color.z = 0.0f;
+	color.x = lk[0].x * ck[0] * 255;
+	color.y = lk[0].y * ck[0] * 255;
+	color.z = lk[0].z * ck[0] * 255;
 	currl = info->lights;
 	while (currl)
 	{
-		if (!ft_is_in_shadow(phit, info->win.camera.objs, &info->win.camera.lightpos[++i]))
-		{
-			color.x += lk[0].x * ck[0] * 255;
-			color.y += lk[0].y * ck[0] * 255;
-			color.z += lk[0].z * ck[0] * 255;
-		}
-		else
+		if (ft_is_in_shadow(phit, info->win.camera->objs, &info->win.camera->lightpos[++i]))
 		{
 			ft_inverse_vector(phit, &n_vect[0]);
 			ft_get_vector_norm(&n_vect[0]);
-			ft_substract_vectors(&info->win.camera.lightpos[i], phit, &n_vect[1]);
+			ft_substract_vectors(&info->win.camera->lightpos[i], phit, &n_vect[1]);
 			ft_get_vector_norm(&n_vect[1]);
 			n_vect[2] = *object_norm;
 			ft_get_dot_product(&n_vect[1], &n_vect[2], &ck[1]);
@@ -139,11 +121,11 @@ unsigned int	ft_shadowing(t_cart *phit, t_cart *object_norm,
 			ft_get_vector_norm(&n_vect[3]);
 			ck[1] = ft_max(ck[1], 0.0f) * ((t_light *)(currl->content))->light_ratio;
 			ft_get_dot_product(&n_vect[3], &n_vect[0], &ck[2]);
-			ck[2] = powf(ft_max(ck[2], 0.0f), 1000.0f) * ((t_light *)(currl->content))->light_ratio;
+			ck[2] = powf(ft_max(ck[2], 0.0f), 150.0f) * ((t_light *)(currl->content))->light_ratio;
 			ft_multiply_vectors(&((t_light *)(currl->content))->color, object_color, &lk[1]);
-			color.x += ft_get_color_value(ck, lk[0].x, lk[1].x);
-			color.y += ft_get_color_value(ck, lk[0].y, lk[1].y);
-			color.z += ft_get_color_value(ck, lk[0].z, lk[1].z);
+			color.x += ft_get_color_value(ck, lk[1].x);
+			color.y += ft_get_color_value(ck, lk[1].y);
+			color.z += ft_get_color_value(ck, lk[1].z);
 		}
 		currl = currl->next;
 	}

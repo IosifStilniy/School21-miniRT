@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/29 19:38:34 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/01 21:07:41 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@
 # define KEY_SHIFT 257
 # define KEY_SPACE 49
 # define KEY_CNTRL 256
+# define KEY_CLBRCT 30
+# define KEY_OPBRCT 33
 # define LMB 1
 # define MMB 3
 # define SCRL_UP 5
@@ -124,7 +126,7 @@
 # endif
 
 # ifndef DUPDET
-#  define DUPDET "ambient light, lightspot or camera have more than one definition"
+#  define DUPDET "ambient light, lightspot or camera have more than one definition or none of them"
 # endif
 
 # ifndef INVDEF
@@ -201,30 +203,31 @@ typedef struct s_crdstm {
 }	t_crdstm;
 
 typedef struct s_light {
-	double		light_ratio;
+	float		light_ratio;
 	t_cart		color;
 	t_cart		pos;
-	t_bool		determined;
 }	t_light;
 
-typedef struct s_poly {
-	int		dots[3];
-	t_data	*txtr;
-	t_data	*heightmap;
-	t_cart	srcnorm;
-	t_cart	norm;
-}	t_poly;
-
 typedef struct s_vrtx {
-	t_cart	dot;
+	int		dot;
+	t_cart	srcnorm;
 	t_cart	norm;
 	t_cart	uv;
 }	t_vrtx;
 
+typedef struct s_poly {
+	t_vrtx	vrtxs[3];
+	t_data	*txtr;
+	t_data	*heightmap;
+	t_bool	interpolate;
+	t_cart	srcnorm;
+	t_cart	norm;
+}	t_poly;
+
 typedef struct s_dots {
 	int		dotsnum;
-	t_vrtx	*dots;
-	t_vrtx	*pos;
+	t_cart	*dots;
+	t_cart	*pos;
 	t_cart	*scale;
 	int		(*rout)[2];
 	int		routsize;
@@ -232,8 +235,8 @@ typedef struct s_dots {
 
 typedef struct s_polys {
 	int			polynum;
-	t_data		*txtr;
-	t_data		*heightmap;
+	t_data		txtr;
+	t_data		heightmap;
 	t_poly		*poly;
 }	t_polys;
 
@@ -259,20 +262,19 @@ typedef struct s_attach {
 
 typedef struct s_camera {
 	t_crdstm	crdstm;
-	t_bool		framemod;
 	float		focus;
 	float		fov;
 	t_list		*objs;
-	t_rot		*rot;
 	t_cart		*lightpos;
-	t_bool		determined;
+	int			lightcount;
 	t_cart		corners[CRNRS];
 	t_attach	attached;
 }	t_camera;
 
 typedef struct s_win {
 	void		*win;
-	t_camera	camera;
+	t_camera	*camera;
+	t_list		*cameras;
 	t_res		res;
 	t_res		cntr;
 	char		*header;
@@ -334,10 +336,21 @@ typedef struct s_info
 	t_rot		rot;
 	t_data		data;
 	char		*prog;
+	char		*camtext;
 	t_mouse		mouse;
 	t_keybrd	keybrd;
 	t_intrfc	interface;
 }	t_info;
+
+typedef struct s_import {
+	t_list	*v;
+	t_list	*vn;
+	t_list	*vt;
+	t_list	*f;
+	t_data	*txtr;
+	t_data	*heightmap;
+}	t_import;
+
 
 // Parsing the file.
 
@@ -346,6 +359,7 @@ float	cylinderparser(char *str, t_obj *obj, char *prog);
 int		file_check(char *file, char *prog);
 void	ft_read_information(int fd, t_info *info);
 void	planeparser(char *str, t_obj *obj, char *prog);
+int		primitivedefiner(char *str);
 float	sphereparser(char *str, t_obj *obj, char *prog);
 
 // Parsing utilities.
@@ -354,7 +368,7 @@ float	ft_atof(const char *num);
 int		ft_clear_char_array(char **array);
 char	*ft_get_color_values(char *str, t_cart *color, char *prog);
 char	*ft_get_position_values(char *prog, char *str, t_cart *pos);
-char	*skipnumnspaces(char *str);
+char	*skipnumnspaces(char *str, t_bool onlyspaces);
 
 /*
 We can modify atoi so it checks whether the string ends with the number. 
@@ -363,17 +377,18 @@ So no 10.1 in simple integers.
 
 // Object-like elements information.
 
-int		circledotsfiller(t_vrtx *dots, float radius, t_axis *rotcircle, t_bool skippols);
+int		circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols);
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
-void	cylindermapping(t_vrtx *dots);
-void	definevrtxsnorms(t_dots *dots, t_polys *polys);
-void	definepols(t_vrtx *dots, float radius, t_axis *rotcircle);
-void	polarjointing(t_vrtx *dots, t_poly *poly, void *txtr, int dotnum);
-void	polarsurfing(t_vrtx *dots, t_poly **poly, int lttd, void *txtr);
-void	repairspherenormal(t_poly *poly, int dotindxs[3], t_vrtx *dots, void *txtr);
+void	cylindermapping(t_cart *dots, t_poly *polys, int polynum);
+void	definecylindervrtxs(t_cart *dots, t_poly *polys, int polynum);
+void	definespherevrtxs(t_cart *dots, t_poly *polys, int polynum);
+void	definepols(t_cart *dots, float radius, t_axis *rotcircle);
+void	polarjointing(t_cart *dots, t_poly *poly, void *txtr, int dotnum);
+void	polarsurfing(t_cart *dots, t_poly **poly, int lttd, void *txtr);
+void	repairspherenormal(t_poly *poly, int dotindxs[3], t_cart *dots, void *txtr);
 float	spherebuilder(t_dots *dots, t_polys *polys, float radius);
-void	spheremapping(t_vrtx *dots, int dotsnum);
-void	surfing(t_poly *poly, int *dotindxs, t_vrtx *dots, void *txtr);
+void	spheremapping(t_poly *polys, int polynum);
+void	surfing(t_poly *poly, int *dotindxs, t_cart *dots, void *txtr);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
 int		ft_fill_plane_info(char **piece, t_info *info);
@@ -417,7 +432,8 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm);
 
 // View constructor
 
-void	createcamobjs(t_list **camobjs, t_list *objs);
+void	cornerbuilder(t_cart corners[CRNRS], t_res *wincntr, float focus);
+void	createcamobjs(t_list **camobjs, t_list *objs, t_cart **lightpos, int lightcount);
 void	createframerouts(t_list *objs);
 void	initview(t_list *objs, t_camera *camera, t_list *lights);
 void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img);
@@ -427,6 +443,7 @@ void	planeframing(t_obj *plane, t_camera *camera, t_data *img);
 
 // Interface
 
+t_bool	attachobj(t_camera *camera, t_obj *camobj, t_list *objs);
 t_bool	changeparams(int x, int y, t_intrfc *intrfc, t_win *win);
 t_bool	inbounds(t_button btn, int x, int y);
 void	initinterface(t_intrfc *interface, void *mlx, t_res *win);
@@ -453,11 +470,15 @@ int		btnup(int btn, int x, int y, t_info *info);
 t_bool	comparef(float num, float ref, float interval);
 void	customerr(char *prog, char *txt, t_bool infile);
 int		error_handler(char *prog, char *place, int funcres);
+t_light	*lightcast(t_list *lst);
 t_obj	*objcast(t_list *lst);
 
 // MyFUncs
 
 t_ui	ft_create_trgb(int t, int r, int g, int b);
+int		get_r(int trgb);
+int		get_g(int trgb);
+int		get_b(int trgb);
 void	ft_draw_screen(t_info *info);
 
 float	ft_max(float a, float b);
@@ -476,11 +497,9 @@ void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin);
 unsigned int	ft_shadowing(t_cart *phit, t_cart *object_norm, t_cart *object_color, t_info *info); 
 
 float	ft_intersect_sphere(t_ray ray, t_obj *sphere);
-void	ft_intersect_plane(t_ray ray, t_cart *norm_vector, t_cart *pos, float *closest_distance);
-void	ft_intersect_polygon(t_ray ray, t_cart *closest_norm, t_obj *object, float *closest_distance);
-
-int	ft_intersect_triangle(t_vrtx p[3], t_cart phit, t_cart norm, float k[3]);
-
-// int		ft_intersect_triangle(t_vrtx p[3], t_cart *phit, float dist[2], t_cart *closest_norm, t_cart *norm);
+void	ft_intersect_poly_plane(t_ray ray, t_cart *norm_vector, t_cart *pos, float *closest_distance);
+void	ft_intersect_plane(t_ray ray, t_cart *norm_vector, t_cart *closest_color, t_obj *object, float *closest_distance);
+void	ft_intersect_polygon(t_ray ray, t_cart *closest_norm, t_cart *closest_color, t_obj *object, float *closest_distance);
+int		ft_intersect_triangle(t_cart phit, t_poly *poly, t_cart *dots, float k[3]);
 
 #endif

@@ -40,7 +40,7 @@ void	gridprinter(t_cart *start, t_obj *plane, float focus, t_data *img)
 	lineprinter(dst, color, focus, img);
 }
 
-void	gridbuilder(t_obj *plane, t_vrtx *pos, float focus, t_data *img)
+void	gridbuilder(t_obj *plane, t_cart *pos, float focus, t_data *img)
 {
 	t_cart	start;
 	int		i;
@@ -48,10 +48,10 @@ void	gridbuilder(t_obj *plane, t_vrtx *pos, float focus, t_data *img)
 	i = -1;
 	while (++i < CRNRS)
 	{
-		if (pos[i].dot.x == INFINITY || pos[i].dot.y == INFINITY)
+		if (pos[i].x == INFINITY || pos[i].y == INFINITY)
 			continue ;
-		start.x = (lrintf(pos[i].dot.x) / GRIDSIZE - GRIDLINES / 2) * GRIDSIZE;
-		start.y = (lrintf(pos[i].dot.y) / GRIDSIZE - GRIDLINES / 2) * GRIDSIZE;
+		start.x = (lrintf(pos[i].x) / GRIDSIZE - GRIDLINES / 2) * GRIDSIZE;
+		start.y = (lrintf(pos[i].y) / GRIDSIZE - GRIDLINES / 2) * GRIDSIZE;
 		start.z = 0;
 		gridprinter(&start, plane, focus,img);
 	}
@@ -77,12 +77,12 @@ void	planeframing(t_obj *plane, t_camera *camera, t_data *img)
 	i = -1;
 	while (++i < CRNRS)
 	{
-		cartbuilder(INFINITY, INFINITY, INFINITY, &plane->dots.pos[i].dot);
+		cartbuilder(INFINITY, INFINITY, INFINITY, &plane->dots.pos[i]);
 		dotcrdstmtrnsltn(&camera->corners[i], &corners[i], NULL, &cam);
 		if (corners[i].z * cam.pos.z > 0 || !++inframe)
 			continue ;
-		vectorsizing(fabsf(cam.pos.z / corners[i].z), &corners[i], &plane->dots.pos[i].dot, NULL);
-		vectodot(&plane->dots.pos[i].dot, &cam.pos);
+		vectorsizing(fabsf(cam.pos.z / corners[i].z), &corners[i], &plane->dots.pos[i], NULL);
+		vectodot(&plane->dots.pos[i], &cam.pos);
 	}
 	if (inframe)
 		gridbuilder(plane, plane->dots.pos, camera->focus, img);

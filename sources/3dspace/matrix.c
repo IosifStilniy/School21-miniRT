@@ -60,9 +60,6 @@ void	transpos(t_cart	*pos, float transmatrix[4][4])
 	p[1] = pos->y;
 	p[2] = pos->z;
 	p[3] = 1;
-	pos->x = 0;
-	pos->y = 0;
-	pos->z = 0;
 	i = -1;
 	while (++i < 4)
 	{
@@ -73,4 +70,3 @@ void	transpos(t_cart	*pos, float transmatrix[4][4])
 	}
 	cartbuilder(k[0], k[1], k[2], pos);
 }
-

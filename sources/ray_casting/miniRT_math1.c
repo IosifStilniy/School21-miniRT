@@ -6,9 +6,11 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/04 13:26:35 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/26 20:44:12 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/01 19:58:31 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../includes/minirt.h"
 
 #include "../includes/minirt.h"
 
@@ -19,7 +21,8 @@ void	ft_get_vector_length(t_cart *vect, float *dest)
 
 void	ft_get_dot_product(t_cart *vect_a, t_cart *vect_b, float *dest)
 {
-	*dest = vect_a->x * vect_b->x + vect_a->y * vect_b->y + vect_a->z * vect_b->z;
+	*dest = vect_a->x * vect_b->x + vect_a->y * vect_b->y
+		+ vect_a->z * vect_b->z;
 }
 
 void	ft_substract_vectors(t_cart *vect_a, t_cart *vect_b, t_cart *dest)

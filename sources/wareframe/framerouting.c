@@ -29,13 +29,15 @@ void	createroutlstelem(int dot1, int dot2, t_list **routs)
 
 void	createroutlist(t_poly *polys, int polynum, t_list **routs)
 {
-	int	*dots;
+	int	dots[3];
 	int	i;
 
 	i = -1;
 	while (++i < polynum)
 	{
-		dots = polys[i].dots;
+		dots[0] = polys[i].vrtxs[0].dot;
+		dots[1] = polys[i].vrtxs[1].dot;
+		dots[2] = polys[i].vrtxs[2].dot;
 		if (!checkrout(dots[0], dots[1], *routs))
 			createroutlstelem(dots[0], dots[1], routs);
 		if (!checkrout(dots[1], dots[2], *routs))

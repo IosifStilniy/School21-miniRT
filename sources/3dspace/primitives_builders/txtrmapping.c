@@ -1,62 +1,70 @@
 #include "minirt.h"
 
-static void	definelnguv(t_cart *ref, t_vrtx *dot, t_axis *axis)
+static void	definelnguv(t_cart *ref, t_vrtx *vrtx, t_axis *axis)
 {
 	t_cart	xoz;
 
-	cartbuilder(dot->dot.x, 0, dot->dot.z, &xoz);
+	cartbuilder(ref->x, 0, ref->z, &xoz);
 	vectorsizing(1, &xoz, &xoz, NULL);
 	axisbuilder(ref, &xoz, axis);
-	dot->uv.x = 0.5f - 0.25f * axis->ang / M_PI_2;
+	vrtx->uv.x = 0.5f - 0.25f * axis->ang / M_PI_2;
 	if (comparef(ref->y, 0, 0.001))
-		dot->uv.x = 0.5f + 0.5f * (ref->x < 0);
+		vrtx->uv.x = 0.5f + 0.5f * (ref->x < 0);
 	else if (ref->x < 0 && ref->y > 0)
-		dot->uv.x = 0.25f * axis->ang / M_PI_2;
+		vrtx->uv.x = 0.25f * axis->ang / M_PI_2;
 	else if (ref->x < 0 && ref->y < 0)
-		dot->uv.x = 1.f - 0.25f * axis->ang / M_PI_2;
+		vrtx->uv.x = 1.f - 0.25f * axis->ang / M_PI_2;
 	else if (ref->x > 0 && ref->y < 0)
-		dot->uv.x = 0.75f - 0.25f * axis->ang / M_PI_2;
+		vrtx->uv.x = 0.75f - 0.25f * axis->ang / M_PI_2;
 }
 
-void	spheremapping(t_vrtx *dots, int dotsnum)
+static void	spherepolymapping(t_vrtx *vrtx)
 {
 	t_cart	xoy;
-	t_cart	ref;
 	t_axis	axis;
-	int		i;
 
-	dots[0].uv.x = 0.5f;
-	dots[0].uv.y = 0.5f;
-	dots[1].uv.x = 1.f;
-	dots[1].uv.y = 0.5f;
-	i = 1;
-	while (++i < dotsnum)
-	{
-		vectorsizing(1, &dots[i].dot, &ref, NULL);
-		cartbuilder(dots[i].dot.x, dots[i].dot.y, 0, &xoy);
-		vectorsizing(1, &xoy, &xoy, NULL);
-		axisbuilder(&ref, &xoy, &axis);
-		dots[i].uv.y = (1.f + axis.ang / M_PI_2) * 0.5f;
-		if (dots[i].dot.z > 0)
-			dots[i].uv.y = (1.f - axis.ang / M_PI_2) * 0.5f;
-		definelnguv(&ref, &dots[i], &axis);
-	}
+	cartbuilder(vrtx->srcnorm.x, vrtx->srcnorm.y, 0, &xoy);
+	vectorsizing(1, &xoy, &xoy, NULL);
+	axisbuilder(&vrtx->srcnorm, &xoy, &axis);
+	vrtx->uv.y = (1.f + axis.ang / M_PI_2) * 0.5f;
+	if (vrtx->srcnorm.z > 0)
+		vrtx->uv.y = (1.f - axis.ang / M_PI_2) * 0.5f;
+	definelnguv(&vrtx->srcnorm, vrtx, &axis);
 }
 
-void	cylindermapping(t_vrtx *dots)
+void	spheremapping(t_poly *polys, int polynum)
 {
 	int		i;
 
 	i = -1;
-	while (++i < RNDSGMNTS && ++dots)
+	while (++i < polynum)
 	{
-		dots->uv.y = 1.f;
-		dots->uv.x = (float)i / (float)(RNDSGMNTS - 1);
+		spherepolymapping(&polys[i].vrtxs[0]);
+		spherepolymapping(&polys[i].vrtxs[1]);
+		spherepolymapping(&polys[i].vrtxs[2]);
 	}
-	i = -1;
-	while (++i < RNDSGMNTS && ++dots)
+}
+
+static void	cylinderpolymapping(t_vrtx *vrtx, t_cart *dots)
+{
+	vrtx->uv.y = (dots[vrtx->dot].z < 0);
+	if (!vrtx->dot || vrtx->dot == 1)
 	{
-		dots->uv.y = 0.f;
-		dots->uv.x = (float)i / (float)(RNDSGMNTS - 1);
+		vrtx->uv.x = (dots[vrtx->dot].z < 0);
+		return ;
+	}
+	vrtx->uv.x = (float)((vrtx->dot - 2) % RNDSGMNTS) / (RNDSGMNTS - 1);
+}
+
+void	cylindermapping(t_cart *dots, t_poly *polys, int polynum)
+{
+	int		i;
+
+	i = -1;
+	while (++i < polynum)
+	{
+		cylinderpolymapping(&polys[i].vrtxs[0], dots);
+		cylinderpolymapping(&polys[i].vrtxs[1], dots);
+		cylinderpolymapping(&polys[i].vrtxs[2], dots);
 	}
 }
