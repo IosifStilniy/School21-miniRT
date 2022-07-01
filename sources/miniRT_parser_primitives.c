@@ -25,8 +25,9 @@ void	crdstmdefiner(t_crdstm *crdstm)
 	axisbuilder(&crdstm->oz.vector, &crdstm->ox.vector, &crdstm->oy);
 }
 
-float	sphereparser(char *str, t_obj *obj, char *prog)
+float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx)
 {
+	t_data	*txtr;
 	float	rad;
 
 	rad = ft_atof(str) / 2.0f;
@@ -35,12 +36,21 @@ float	sphereparser(char *str, t_obj *obj, char *prog)
 	vectorbuilder(1, 0, 0, &obj->crdstm.ox);
 	vectorbuilder(0, 1, 0, &obj->crdstm.oy);
 	vectorbuilder(0, 0, 1, &obj->crdstm.oz);
+	str = skipnumnspaces(str, TRUE);
+	if (*str == '\n' || *str == '\0')
+		return (spherebuilder(&obj->dots, &obj->polys, rad));
+	str = getfilename(str, str + ft_strlen(str));
+	txtr = &obj->polys.txtr;
+	mlx_xpm_file_to_image(mlx, str, &txtr->res.x, &txtr->res.y);
+	free(str);
+	txtr->addr = mlx_get_data_addr(txtr->img, &txtr->bits_per_pixel, &txtr->line_length, &txtr->endian);
 	return (spherebuilder(&obj->dots, &obj->polys, rad));
 }
 
-float	cylinderparser(char *str, t_obj *obj, char *prog)
+float	cylinderparser(char *str, t_obj *obj, char *prog, void *mlx)
 {
 	t_cart	norm;
+	t_data	*txtr;
 	float	rad;
 	float	height;
 
@@ -53,20 +63,35 @@ float	cylinderparser(char *str, t_obj *obj, char *prog)
 	str = skipnumnspaces(str, FALSE);
 	height = ft_atof(str);
 	str = skipnumnspaces(str, FALSE);
-	ft_get_color_values(str, obj->colrs, prog);
+	str = ft_get_color_values(str, obj->colrs, prog);
+	if (*str == '\n' || *str == '\0')
+		return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
+	str = getfilename(str, str + ft_strlen(str));
+	txtr = &obj->polys.txtr;
+	mlx_xpm_file_to_image(mlx, str, &txtr->res.x, &txtr->res.y);
+	free(str);
+	txtr->addr = mlx_get_data_addr(txtr->img, &txtr->bits_per_pixel, &txtr->line_length, &txtr->endian);
 	return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
 }
 
-void	planeparser(char *str, t_obj *obj, char *prog)
+void	planeparser(char *str, t_obj *obj, char *prog, void *mlx)
 {
 	t_cart	norm;
+	t_data	*txtr;
 
 	str = ft_get_position_values(prog, str, &norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &obj->crdstm.oz);
 	vectorsizing(1, &obj->crdstm.oz.vector, &obj->crdstm.oz.vector,
 		&obj->crdstm.oz.length);
 	crdstmdefiner(&obj->crdstm);
-	ft_get_color_values(str, obj->colrs, prog);
+	str = ft_get_color_values(str, obj->colrs, prog);
 	obj->dots.dotsnum = 0;
 	obj->polys.polynum = 0;
+	if (*str == '\n' || *str == '\0')
+		return ;
+	str = getfilename(str, str + ft_strlen(str));
+	txtr = &obj->polys.txtr;
+	mlx_xpm_file_to_image(mlx, str, &txtr->res.x, &txtr->res.y);
+	free(str);
+	txtr->addr = mlx_get_data_addr(txtr->img, &txtr->bits_per_pixel, &txtr->line_length, &txtr->endian);
 }

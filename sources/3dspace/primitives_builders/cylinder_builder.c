@@ -67,6 +67,7 @@ float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height)
 	surfdefiner(polys->poly - 1, dots->dots, &polys->txtr, dots->dotsnum);
 	buttsurf(0, 2, &polys->poly[2 * RNDSGMNTS], dots->dots);
 	buttsurf(1, RNDSGMNTS + 2, &polys->poly[3 * RNDSGMNTS], dots->dots);
+	definecylindervrtxs(dots->dots, polys->poly, polys->polynum);
 	cylindermapping(dots->dots, polys->poly, polys->polynum);
 	return (sqrtf(powf(height / 2, 2) + powf(radius, 2)));
 }

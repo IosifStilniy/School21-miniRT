@@ -5,11 +5,11 @@ t_bool	comparef(float num, float ref, float interval)
 	return (ref - interval < num && num < ref + interval);
 }
 
-int	file_check(char *file, char *prog)
+int	file_check(char *file, char *prog, t_bool scenefile)
 {
 	int	fd;
 
-	if (!ft_strnstr(file + ft_strlen(file) - 3, ".rt", -1))
+	if (scenefile && !ft_strnstr(file + ft_strlen(file) - 3, ".rt", -1))
 		customerr(prog, INVINP, FALSE);
 	fd = 0;
 	if (!access(file, F_OK) && !access(file, R_OK))

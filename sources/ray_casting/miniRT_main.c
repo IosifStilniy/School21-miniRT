@@ -86,9 +86,8 @@ void	ft_draw_screen(t_info *info)
 	// if (info->keybrd.render)
 	// 	ft_raytracing_algorithm(info);
 	// else
-	// {
-		framepic(info->win.camera, &info->win.cntr, info->win.camera->objs, &info->data);
-		mlx_string_put(info->mlx_ptr, info->win.win, 10, 10, FRAMECLR, info->camtext);
-	// }
+	framepic(info->win.camera, &info->win.cntr, info->win.camera->objs, &info->data);
 	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img, info->win.cntr.x - info->data.cntr.x, info->win.cntr.y - info->data.cntr.y);
+	// if (!info->keybrd.render)
+		mlx_string_put(info->mlx_ptr, info->win.win, 8, 15, FRAMECLR, info->camtext);
 }

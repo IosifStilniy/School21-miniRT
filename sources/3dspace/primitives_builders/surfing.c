@@ -11,14 +11,14 @@ void	surfing(t_poly *poly, int dotindxs[3], t_cart *dots, void *txtr)
 
 void	repairspherenormal(t_poly *poly, int dotindxs[3], t_cart *dots, void *txtr)
 {
-	int		buf;
+	t_vrtx	buf;
 
 	surfing(poly, dotindxs, dots, txtr);
 	if (ft_get_dot_product(&dots[dotindxs[0]], &poly->srcnorm) > 0)
 		return ;
-	buf = poly->vrtxs[2].dot;
-	poly->vrtxs[2].dot = poly->vrtxs[1].dot;
-	poly->vrtxs[1].dot = buf;
+	buf = poly->vrtxs[2];
+	poly->vrtxs[2] = poly->vrtxs[1];
+	poly->vrtxs[1] = buf;
 	normbuilder(&dots[poly->vrtxs[0].dot], &dots[poly->vrtxs[1].dot], &dots[poly->vrtxs[2].dot], &poly->srcnorm);
 }
 

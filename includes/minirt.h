@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/30 21:23:37 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/01 20:52:54 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -347,20 +347,23 @@ typedef struct s_import {
 	t_list	*vn;
 	t_list	*vt;
 	t_list	*f;
-	t_data	*txtr;
-	t_data	*heightmap;
 }	t_import;
 
 
 // Parsing the file.
 
 void	crdstmdefiner(t_crdstm *crdstm);
-float	cylinderparser(char *str, t_obj *obj, char *prog);
-int		file_check(char *file, char *prog);
+float	cylinderparser(char *str, t_obj *obj, char *prog, void *mlx);
+int		file_check(char *file, char *prog, t_bool scenefile);
 void	ft_read_information(int fd, t_info *info);
-void	planeparser(char *str, t_obj *obj, char *prog);
+t_cart	*getcart(t_list *v, int indx);
+char	*getfilename(char *start, char *end);
+void	modelparser(int fd, t_import *imp);
+char	*notendedline(char *line);
+float	objparser(char *line, t_obj *obj, char *prog, void *mlx);
+void	planeparser(char *str, t_obj *obj, char *prog, void *mlx);
 int		primitivedefiner(char *str);
-float	sphereparser(char *str, t_obj *obj, char *prog);
+float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx);
 
 // Parsing utilities.
 
@@ -444,10 +447,12 @@ void	planeframing(t_obj *plane, t_camera *camera, t_data *img);
 // Interface
 
 t_bool	attachobj(t_camera *camera, t_obj *camobj, t_list *objs);
+t_bool	changecart(int arrow, t_cart *param, float bounds[2], t_step *step);
 t_bool	changeparams(int x, int y, t_intrfc *intrfc, t_win *win);
 t_bool	inbounds(t_button btn, int x, int y);
 void	initinterface(t_intrfc *interface, void *mlx, t_res *win);
 void	interfacebuilder(t_info *info);
+t_bool	resizeobj(int arrow, t_intrfc *intrfc);
 void	roundselected(t_cart *pos, float outframe, t_win *win, void *mlx);
 t_obj	*selectobject(t_list *camobjs, t_cart *vec);
 
