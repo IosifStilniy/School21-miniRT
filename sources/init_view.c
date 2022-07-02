@@ -18,6 +18,9 @@ void	createcamobjs(t_list **camobjs, t_list *objs, t_cart **lightpos, int lightc
 		camobj->polys = obj->polys;
 		if (!camobj->polys.polynum)
 			camobj->polys.poly = malloc(sizeof(*camobj->polys.poly));
+		// 
+		camobj->polys.txtr.img = NULL;
+		// 
 		camobj->colrs = obj->colrs;
 		objs = objs->next;
 	}

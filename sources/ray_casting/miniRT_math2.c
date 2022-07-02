@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/04 13:26:35 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/01 19:58:23 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/02 10:30:17 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,28 +19,28 @@ float	ft_max(float a, float b)
 	return (b);
 }
 
-void	ft_multiply_vector(t_cart *vect, float multiplier, t_cart *dest)
+void	ft_multvect(t_cart *vect, float multiplier, t_cart *dest)
 {
 	dest->x = vect->x * multiplier;
 	dest->y = vect->y * multiplier;
 	dest->z = vect->z * multiplier;
 }
 
-void	ft_multiply_vectors(t_cart *vect_a, t_cart *vect_b, t_cart *dest)
+void	ft_multvects(t_cart *vect_a, t_cart *vect_b, t_cart *dest)
 {
 	dest->x = vect_a->x * vect_b->x;
 	dest->y = vect_a->y * vect_b->y;
 	dest->z = vect_a->z * vect_b->z;
 }
 
-void	ft_inverse_vector(t_cart *vect, t_cart *dest)
+void	ft_invvect(t_cart *vect, t_cart *dest)
 {
 	dest->x = -vect->x;
 	dest->y = -vect->y;
 	dest->z = -vect->z;
 }
 
-void	ft_summ_vectors(t_cart *vect_a, t_cart *vect_b, t_cart *dest)
+void	ft_summvects(t_cart *vect_a, t_cart *vect_b, t_cart *dest)
 {
 	dest->x = vect_a->x + vect_b->x;
 	dest->y = vect_a->y + vect_b->y;

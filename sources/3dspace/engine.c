@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/26 19:18:00 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/01 19:50:31 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,24 @@ void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, t_cart *scale, t_crdstm *crdstm)
 	dst->x += src->z * crdstm->oz.vector.x * scale->z;
 	dst->y += src->z * crdstm->oz.vector.y * scale->z;
 	dst->z += src->z * crdstm->oz.vector.z * scale->z;
+}
+
+t_bool	resizeobj(int arrow, t_intrfc *intrfc)
+{
+	t_poly	*polys;
+	t_cart	*pos;
+	int		i;
+
+	if (!changecart(arrow, intrfc->selected->dots.scale, NULL,
+					&intrfc->settings.size))
+		return (FALSE);
+	polys = intrfc->selected->polys.poly;
+	pos = intrfc->selected->dots.pos;
+	i = -1;
+	while (++i < intrfc->selected->polys.polynum)
+		normbuilder(&pos[polys[i].vrtxs[0].dot], &pos[polys[i].vrtxs[1].dot],
+			&pos[polys[i].vrtxs[2].dot], &polys[i].srcnorm);
+	return (TRUE);
 }
 
 void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, float *outframe)

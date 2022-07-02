@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/30 21:28:38 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/01 22:45:35 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static void	ft_fill_camera_info(char *str, t_list **cameras, char *prog)
 	ft_lstadd_back(cameras, ft_lstnew(camera));
 }
 
-static void	primitivesbuilder(char *str, t_list **objs, char *prog, t_rot *rot)
+static void	primitivesbuilder(char *str, t_list **objs, t_info *info, t_rot *rot)
 {
 	int		i;
 	t_obj	*obj;
@@ -71,21 +71,24 @@ static void	primitivesbuilder(char *str, t_list **objs, char *prog, t_rot *rot)
 	ft_lstadd_front(objs, ft_lstnew(obj));
 	obj->rot = rot;
 	i = primitivedefiner(str);
-	// if (i == NUMPRMTVS)
-	// 	objparser(str, obj);
+	if (i == NUMPRMTVS)
+	{
+		obj->outframe = objparser(str, obj, info->prog, info->mlx_ptr);
+		return ;
+	}
 	// if (i == NUMPRMTVS)
 	// 	return ;
 	str += 2;
-	str = ft_get_position_values(prog, str, &obj->crdstm.pos);
+	str = ft_get_position_values(info->prog, str, &obj->crdstm.pos);
 	obj->colrs = malloc(sizeof(*obj->colrs));
 	obj->dots.scale = malloc(sizeof(*obj->dots.scale));
 	cartbuilder(1, 1, 1, obj->dots.scale);
 	if (!i)
-		obj->outframe = sphereparser(str, obj, prog);
+		obj->outframe = sphereparser(str, obj, info->prog, info->mlx_ptr);
 	else if (i == 1)
-		planeparser(str, obj, prog);
+		planeparser(str, obj, info->prog, info->mlx_ptr);
 	else if (i == 2)
-		obj->outframe = cylinderparser(str, obj, prog);
+		obj->outframe = cylinderparser(str, obj, info->prog, info->mlx_ptr);
 	// else
 	// 	customerr(prog, INVDEF, TRUE);
 }
@@ -95,8 +98,10 @@ static char	*definecameras(t_camera **wincam, t_list *cameras, t_res *wincntr)
 	t_camera	*camera;
 	char		*buf;
 	char		*camtxt;
+	int			camcount;
 
 	*wincam = cameras->content;
+	camcount = ft_lstsize(cameras);
 	while (cameras)
 	{
 		camera = cameras->content;
@@ -107,7 +112,7 @@ static char	*definecameras(t_camera **wincam, t_list *cameras, t_res *wincntr)
 		cornerbuilder(camera->corners, wincntr, camera->focus);
 		cameras = cameras->next;
 	}
-	buf = ft_itoa(ft_lstsize(cameras));
+	buf = ft_itoa(camcount);
 	camtxt = ft_strjoin("Camera: 1 of ", buf);
 	free(buf);
 	return (camtxt);
@@ -131,7 +136,7 @@ void	ft_read_information(int fd, t_info *info)
 		else if (*crsr == 'C' && ++dets[1])
 			ft_fill_camera_info(++crsr, &info->win.cameras, info->prog);
 		else if (*crsr && *crsr != '\n')
-			primitivesbuilder(crsr, &info->objects, info->prog, &info->rot);
+			primitivesbuilder(crsr, &info->objects, info, &info->rot);
 		free(line);
 		line = get_next_line(fd);
 	}

@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/01 20:59:18 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/02 14:11:15 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,45 +18,46 @@ void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin)
 {
 	ray->dir = *direction;
 	ray->orig = *origin;
-	ft_get_vector_norm(&ray->dir);
+	ft_vectnorm(&ray->dir);
 }
 
-static void	ft_get_color_from_shapes(t_ui *color, t_ray ray,
+static void	ft_trace_color(unsigned int *color, t_ray ray,
 			t_list *objects, t_info *info)
 {
 	t_obj	*obj;
 	t_cart	c_phit;
 	float	dist[2];
-	t_cart	norm[2];
-	t_cart	colr[2];
+	t_cart	nc0[2];
+	t_cart	nc1[2];
 
 	dist[0] = INFINITY;
+	dist[1] = INFINITY;
 	while (objects)
 	{
 		obj = (t_obj *)objects->content;
-		if (obj->dots.dotsnum && ft_intersect_sphere(ray, obj) < INFINITY)
-			ft_intersect_polygon(ray, &norm[1], &colr[1], obj, &dist[1]);
+		if (obj->dots.dotsnum && ft_hit_sphere(ray, obj) < INFINITY)
+			ft_hit_poly(ray, nc1, obj, &dist[1]);
 		else if (!obj->dots.dotsnum)
-			ft_intersect_plane(ray, &norm[1], &colr[1], obj, &dist[1]);
+			ft_hit_plane(ray, nc1, obj, &dist[1]);
 		if (dist[1] < dist[0])
 		{
 			dist[0] = dist[1];
-			colr[0] = colr[1];
-			norm[0] = norm[1];
+			nc0[1] = nc1[1];
+			nc0[0] = nc1[0];
 		}
 		objects = objects->next;
 	}
-	ft_multiply_vector(&ray.dir, dist[0], &c_phit);
-	*color = ft_shadowing(&c_phit, &norm[0], &colr[0], info);
+	ft_multvect(&ray.dir, dist[0], &c_phit);
+	ft_shadowing(color, &c_phit, nc0, info);
 }
 
 static void	ft_raytracing_algorithm(t_info *info)
 {
-	t_ray	ray;
-	t_cart	origin;
-	t_cart	direction;
-	t_cart	pixel;
-	t_ui	color;
+	t_ray			ray;
+	t_cart			origin;
+	t_cart			direction;
+	t_cart			pixel;
+	unsigned int	color;
 
 	origin.x = 0.0f;
 	origin.y = 0.0f;
@@ -72,7 +73,7 @@ static void	ft_raytracing_algorithm(t_info *info)
 			direction.y = pixel.y - info->win.cntr.y;
 			direction.z = pixel.z;
 			ft_cast_ray(&ray, &direction, &origin);
-			ft_get_color_from_shapes(&color, ray, info->win.camera->objs, info);
+			ft_trace_color(&color, ray, info->win.camera->objs, info);
 			my_mlx_pixel_put(&info->data, pixel.x, pixel.y, color);
 		}
 	}

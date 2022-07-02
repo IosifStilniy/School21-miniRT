@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/01 21:07:41 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/02 14:10:48 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,7 @@ typedef struct s_crdstm {
 }	t_crdstm;
 
 typedef struct s_light {
-	float		light_ratio;
+	double		light_ratio;
 	t_cart		color;
 	t_cart		pos;
 }	t_light;
@@ -347,20 +347,23 @@ typedef struct s_import {
 	t_list	*vn;
 	t_list	*vt;
 	t_list	*f;
-	t_data	*txtr;
-	t_data	*heightmap;
 }	t_import;
 
 
 // Parsing the file.
 
 void	crdstmdefiner(t_crdstm *crdstm);
-float	cylinderparser(char *str, t_obj *obj, char *prog);
-int		file_check(char *file, char *prog);
+float	cylinderparser(char *str, t_obj *obj, char *prog, void *mlx);
+int		file_check(char *file, char *prog, t_bool scenefile);
 void	ft_read_information(int fd, t_info *info);
-void	planeparser(char *str, t_obj *obj, char *prog);
+t_cart	*getcart(t_list *v, int indx);
+char	*getfilename(char *start, char *end);
+void	modelparser(int fd, t_import *imp);
+char	*notendedline(char *line);
+float	objparser(char *line, t_obj *obj, char *prog, void *mlx);
+void	planeparser(char *str, t_obj *obj, char *prog, void *mlx);
 int		primitivedefiner(char *str);
-float	sphereparser(char *str, t_obj *obj, char *prog);
+float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx);
 
 // Parsing utilities.
 
@@ -444,10 +447,12 @@ void	planeframing(t_obj *plane, t_camera *camera, t_data *img);
 // Interface
 
 t_bool	attachobj(t_camera *camera, t_obj *camobj, t_list *objs);
+t_bool	changecart(int arrow, t_cart *param, float bounds[2], t_step *step);
 t_bool	changeparams(int x, int y, t_intrfc *intrfc, t_win *win);
 t_bool	inbounds(t_button btn, int x, int y);
 void	initinterface(t_intrfc *interface, void *mlx, t_res *win);
 void	interfacebuilder(t_info *info);
+t_bool	resizeobj(int arrow, t_intrfc *intrfc);
 void	roundselected(t_cart *pos, float outframe, t_win *win, void *mlx);
 t_obj	*selectobject(t_list *camobjs, t_cart *vec);
 
@@ -482,24 +487,23 @@ int		get_b(int trgb);
 void	ft_draw_screen(t_info *info);
 
 float	ft_max(float a, float b);
-void	ft_get_vector_norm(t_cart *vector);
-void	ft_inverse_vector(t_cart *vect, t_cart *dest);
-void	ft_get_vector_length(t_cart *vect, float *dest);
-void	ft_summ_vectors(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
-void	ft_get_dot_product(t_cart *vect_a, t_cart *vect_b, float *dest);
-void	ft_multiply_vector(t_cart *vect, float multiplier, t_cart *dest);
-void	ft_multiply_vectors(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
-void	ft_substract_vectors(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
-void	ft_get_cross_product(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+void	ft_vectnorm(t_cart *vector);
+void	ft_vectlen(t_cart *vect, float *dest);
+void	ft_invvect(t_cart *vect, t_cart *dest);
+void	ft_dotprod(t_cart *vect_a, t_cart *vect_b, float *dest);
+void	ft_subvects(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+void	ft_multvect(t_cart *vect, float multiplier, t_cart *dest);
+void	ft_multvects(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+void	ft_summvects(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+void	ft_crossprod(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
 
 void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin);
+void	ft_shadowing(unsigned int *color, t_cart *phit, t_cart norm_colr[2], t_info *info);
 
-unsigned int	ft_shadowing(t_cart *phit, t_cart *object_norm, t_cart *object_color, t_info *info); 
-
-float	ft_intersect_sphere(t_ray ray, t_obj *sphere);
-void	ft_intersect_poly_plane(t_ray ray, t_cart *norm_vector, t_cart *pos, float *closest_distance);
-void	ft_intersect_plane(t_ray ray, t_cart *norm_vector, t_cart *closest_color, t_obj *object, float *closest_distance);
-void	ft_intersect_polygon(t_ray ray, t_cart *closest_norm, t_cart *closest_color, t_obj *object, float *closest_distance);
-int		ft_intersect_triangle(t_cart phit, t_poly *poly, t_cart *dots, float k[3]);
+float	ft_hit_sphere(t_ray ray, t_obj *sphere);
+int		ft_hit_triangle(t_cart phit, t_poly *poly, t_cart *dots, float k[3]);
+void	ft_hit_poly(t_ray ray, t_cart *c_norm_colr, t_obj *object, float *c_dist);
+void	ft_hit_pplane(t_ray ray, t_cart *norm_vector, t_cart *pos, float *closest_distance);
+void	ft_hit_plane(t_ray ray, t_cart *norm_colr, t_obj *object, float *closest_distance);
 
 #endif
