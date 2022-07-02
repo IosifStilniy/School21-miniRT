@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/01 22:54:01 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/02 20:57:26 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ void	pudge(t_info *info)
 {
 	info->keybrd.render = FALSE;
 	info->keybrd.interface = FALSE;
+	info->keybrd.normalpaint = FALSE;
 	info->mouse.yshift = 0;
 	mlx_mouse_hide();
 	mlx_hook(info->win.win, 2, 1L, &keydownhndlr, info);

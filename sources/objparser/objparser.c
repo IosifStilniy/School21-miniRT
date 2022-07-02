@@ -52,7 +52,7 @@ char	*readfile(char *line, int *fd, char *prog)
 	return (bound);
 }
 
-static float	getoutframe(t_cart *dots, int dotnum)
+static float	getoutframe(t_cart *dots, int dotnum, t_cart *scale)
 {
 	float	outframe;
 	float	length;
@@ -66,13 +66,15 @@ static float	getoutframe(t_cart *dots, int dotnum)
 		if (length > outframe)
 			outframe = length;
 	}
+	cartbuilder(1, 1, 1, scale);
+	if (outframe < 10)
+		cartbuilder(10 / outframe, 10 / outframe, 10 / outframe, scale);
 	return (outframe);
 }
 
 float	objparser(char *line, t_obj *obj, char *prog, void *mlx)
 {
 	t_cart	norm;
-	t_data	*txtr;
 	int		fd;
 
 	line = readfile(line, &fd, prog);
@@ -84,15 +86,11 @@ float	objparser(char *line, t_obj *obj, char *prog, void *mlx)
 	obj->colrs = malloc(sizeof(*obj->colrs));
 	line = ft_get_color_values(line, obj->colrs, prog);
 	obj->dots.scale = malloc(sizeof(*obj->dots.scale));
-	cartbuilder(1, 1, 1, obj->dots.scale);
 	obj->polys.txtr.img = NULL;
 	line = skipnumnspaces(line, TRUE);
+	obj->polys.txtr.img = NULL;
 	if (*line == '\n' || *line == '\0')
-		return getoutframe(obj->dots.dots, obj->dots.dotsnum);
-	line = getfilename(line, line + ft_strlen(line));
-	txtr = &obj->polys.txtr;
-	mlx_xpm_file_to_image(mlx, line, &txtr->res.x, &txtr->res.y);
-	free(line);
-	txtr->addr = mlx_get_data_addr(txtr->img, &txtr->bits_per_pixel, &txtr->line_length, &txtr->endian);
-	return (getoutframe(obj->dots.dots, obj->dots.dotsnum));
+		return (getoutframe(obj->dots.dots, obj->dots.dotsnum, obj->dots.scale));
+	txtrparsing(line, &obj->polys.txtr, mlx);
+	return (getoutframe(obj->dots.dots, obj->dots.dotsnum, obj->dots.scale));
 }

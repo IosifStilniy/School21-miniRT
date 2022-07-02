@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:20:57 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/30 21:23:10 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/02 19:19:09 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ float	ft_atof(const char *num)
 		result += ((float)(*num++ - '0')) / divider;
 		divider *= 10;
 	}
+	if (*num == 'E' && ++num && ++num)
+		result /= powf(10, ft_atoi(num));
 	return (sign * result);
 }
 

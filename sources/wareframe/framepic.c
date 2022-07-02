@@ -84,28 +84,23 @@ t_bool	objinframe(t_obj *obj, t_res *winctr, float focus)
 	return (0 <= objpos.y && objpos.y <= RESY);
 }
 
-void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img)
+void	framepic(t_win *win, t_bool normalprint, t_list *camobjs, t_data *img)
 {
 	t_obj	*obj;
 	t_bool	inframe;
-	t_cart	paintdots[2];
 	t_ui	color;
-	int		i;
 
 	while (camobjs)
 	{
 		obj = camobjs->content;
 		if (!obj->dots.dotsnum)
-			planeframing(obj, camera, img);
-		inframe = objinframe(obj, wincntr, camera->focus);
+			planeframing(obj, win->camera, img);
+		inframe = objinframe(obj, &win->cntr, win->camera->focus);
 		color = ft_create_trgb(0, obj->colrs->x * 255, obj->colrs->y * 255, obj->colrs->z * 255);
-		i = -1;
-		while (obj->dots.dotsnum && inframe && ++i < obj->dots.routsize)
-		{
-			paintdots[0] = obj->dots.pos[obj->dots.rout[i][0]];
-			paintdots[1] = obj->dots.pos[obj->dots.rout[i][1]];
-			paintline(paintdots, color, camera->focus, img);
-		}
+		if (inframe)
+			framepainter(&obj->dots, win->camera->focus, img, color);
+		if (inframe && normalprint)
+			normpainter(obj, win->camera->focus, img);
 		camobjs = camobjs->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/30 21:02:10 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/02 21:00:10 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,12 @@ int	keyuphndlr(int keycode, t_info *info)
 {
 	if (keycode == KEY_I)
 		interfacehandler(info);
-	else if (keycode == KEY_R)
+	else if (keycode == KEY_R || keycode == KEY_N)
 	{
-		info->keybrd.render = !info->keybrd.render;
+		if (keycode == KEY_R)
+			info->keybrd.render = !info->keybrd.render;
+		else if (keycode == KEY_N)
+			info->keybrd.normalpaint = (!info->keybrd.normalpaint);
 		ft_draw_screen(info);
 		if (info->keybrd.interface && !info->keybrd.render)
 			interfacebuilder(info);

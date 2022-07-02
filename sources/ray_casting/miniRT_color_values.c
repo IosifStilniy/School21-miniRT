@@ -1,29 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   miniRT_color_values.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/16 19:02:34 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/02 20:31:16 by ncarob           ###   ########.fr       */
+/*   Created: 2022/07/01 20:14:42 by ncarob            #+#    #+#             */
+/*   Updated: 2022/07/01 20:14:49 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+unsigned int	ft_create_trgb(int t, int r, int g, int b)
+{
+	return (t << 24 | r << 16 | g << 8 | b);
+}
 
-# include <unistd.h>
-# include <stdlib.h>
-# include <limits.h>
+int	get_r(int trgb)
+{
+	return ((trgb >> 16) & 0xFF);
+}
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 4096
+int	get_g(int trgb)
+{
+	return ((trgb >> 8) & 0xFF);
+}
 
-# endif /* BUFFER_SIZE */
-
-char	*get_next_line(int fd);
-char	*ft_strchr(const char *s, int c);
-char	*add_buffer(const char *s1, const char *s2);
-
-#endif /* GET_NEXT_LINE_H */
+int	get_b(int trgb)
+{
+	return (trgb & 0xFF);
+}

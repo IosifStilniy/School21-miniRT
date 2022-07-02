@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/01 20:52:54 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/02 22:43:38 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 # define KEY_C 8
 # define KEY_R 15
 # define KEY_I 34
+# define KEY_N 45
 # define KEY_UP 126
 # define KEY_LEFT 123
 # define KEY_DOWN 125
@@ -83,6 +84,10 @@
 
 # ifndef FRAMECLR
 #  define FRAMECLR 0x00FFFFFF
+# endif
+
+# ifndef NORMCLR
+#  define NORMCLR 0x00FF0000
 # endif
 
 # ifndef CRNRS
@@ -288,6 +293,7 @@ typedef struct s_keybrd {
 	t_bool	render;
 	t_bool	interface;
 	t_bool	legend;
+	t_bool	normalpaint;
 }	t_keybrd;
 
 typedef struct s_button {
@@ -352,18 +358,22 @@ typedef struct s_import {
 
 // Parsing the file.
 
+char	*avoidonelinevrtxs(t_vrtx vrtxs[3], char *line, t_import *imp);
 void	crdstmdefiner(t_crdstm *crdstm);
 float	cylinderparser(char *str, t_obj *obj, char *prog, void *mlx);
+void	checkvrtxsnorms(t_vrtx vrtxs[3], t_cart *polynorm);
 int		file_check(char *file, char *prog, t_bool scenefile);
 void	ft_read_information(int fd, t_info *info);
 t_cart	*getcart(t_list *v, int indx);
 char	*getfilename(char *start, char *end);
 void	modelparser(int fd, t_import *imp);
+char	*vrtxparser(char *line, t_list *vt, t_list *vn, t_vrtx *vrtx);
 char	*notendedline(char *line);
 float	objparser(char *line, t_obj *obj, char *prog, void *mlx);
 void	planeparser(char *str, t_obj *obj, char *prog, void *mlx);
 int		primitivedefiner(char *str);
 float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx);
+void	txtrparsing(char *str, t_data *txtr, void *mlx);
 
 // Parsing utilities.
 
@@ -439,7 +449,9 @@ void	cornerbuilder(t_cart corners[CRNRS], t_res *wincntr, float focus);
 void	createcamobjs(t_list **camobjs, t_list *objs, t_cart **lightpos, int lightcount);
 void	createframerouts(t_list *objs);
 void	initview(t_list *objs, t_camera *camera, t_list *lights);
-void	framepic(t_camera *camera, t_res *wincntr, t_list *camobjs, t_data *img);
+void	framepainter(t_dots *dots, float focus, t_data *img, t_ui color);
+void	framepic(t_win *win, t_bool normalprint, t_list *camobjs, t_data *img);
+void	normpainter(t_obj *obj, float focus, t_data *img);
 t_bool	objinframe(t_obj *obj, t_res *winctr, float focus);
 void	paintline(t_cart src[2], t_ui color, float focus, t_data *img);
 void	planeframing(t_obj *plane, t_camera *camera, t_data *img);
@@ -481,26 +493,29 @@ t_obj	*objcast(t_list *lst);
 // MyFUncs
 
 t_ui	ft_create_trgb(int t, int r, int g, int b);
+int		get_r(int trgb);
+int		get_g(int trgb);
+int		get_b(int trgb);
 void	ft_draw_screen(t_info *info);
 
 float	ft_max(float a, float b);
-t_cart	ft_inverse_vector(t_cart *vect);
-float	ft_get_vector_length(t_cart *vect);
-t_cart	ft_summ_vectors(t_cart *vect_a, t_cart *vect_b);
-t_cart	ft_get_vector_norm(t_cart *vector, float length);
-float	ft_get_dot_product(t_cart *vect_a, t_cart *vect_b);
-t_cart	ft_multiply_vector(t_cart *vect, float multiplier);
-t_cart	ft_multiply_vectors(t_cart *vect_a, t_cart *vect_b);
-t_cart	ft_substract_vectors(t_cart *vect_a, t_cart *vect_b);
-t_cart	ft_get_cross_product(t_cart *vect_a, t_cart *vect_b);
+void	ft_vectnorm(t_cart *vector);
+void	ft_vectlen(t_cart *vect, float *dest);
+void	ft_invvect(t_cart *vect, t_cart *dest);
+void	ft_dotprod(t_cart *vect_a, t_cart *vect_b, float *dest);
+void	ft_subvects(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+void	ft_multvect(t_cart *vect, float multiplier, t_cart *dest);
+void	ft_multvects(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+void	ft_summvects(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+void	ft_crossprod(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
 
 void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin);
+void	ft_shadowing(unsigned int *color, t_cart *phit, t_cart norm_colr[2], t_info *info);
 
-t_ui	ft_shadowing(t_cart *phit, t_cart *object_norm, t_cart *object_color, t_info *info); 
-
-float	ft_intersect_sphere(t_ray ray, t_obj *sphere);
-void	ft_intersect_plane(t_ray ray, t_cart *norm_vector, t_cart *pos, float *closest_distance);
-void	ft_intersect_polygon(t_ray ray, t_cart *closest_norm, t_obj *object, float *closest_distance);
-int		ft_intersect_triangle(t_vrtx p[3], t_cart *phit, float dist[2], t_cart *closest_norm, t_cart *norm);
+float	ft_hit_sphere(t_ray ray, t_obj *sphere);
+int		ft_hit_triangle(t_cart phit, t_poly *poly, t_cart *dots, float k[3]);
+void	ft_hit_poly(t_ray ray, t_cart *c_norm_colr, t_obj *object, float *c_dist);
+void	ft_hit_pplane(t_ray ray, t_cart *norm_vector, t_cart *pos, float *closest_distance);
+void	ft_hit_plane(t_ray ray, t_cart *norm_colr, t_obj *object, float *closest_distance);
 
 #endif

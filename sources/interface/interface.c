@@ -9,16 +9,20 @@ t_bool	inbounds(t_button btn, int x, int y)
 
 static void	printvalue(float value, int x, int y, t_info *info)
 {
-	char	*valstr;
-	char	*buf;
-	char	*res;
+	char		*valstr;
+	char		*buf;
+	char		*res;
+	long int	dec;
+	long int	fract;
 
-	valstr = ft_itoa(lrintf(truncf(value)));
+	dec = lrintf(truncf(value));
+	fract = lrintf((value - truncf(value)) * 10);
+	dec += (fract >= 10);
+	fract -= 10 * (fract >= 10);
+	valstr = ft_itoa(dec);
 	buf = ft_strjoin(valstr, ".");
 	free(valstr);
-	value -= truncf(value);
-	value *= 10;
-	valstr = ft_itoa(lrintf(value));
+	valstr = ft_itoa(fract);
 	res = ft_strjoin(buf, valstr);
 	free(buf);
 	free(valstr);
