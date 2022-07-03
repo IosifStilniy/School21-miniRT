@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_main.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 21:40:01 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 23:11:12 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,14 +82,21 @@ static void	ft_raytracing_algorithm(t_info *info)
 void	ft_draw_screen(t_info *info)
 {
 	mlx_destroy_image(info->mlx_ptr, info->data.img);
-	info->data.img = mlx_new_image(info->mlx_ptr, info->data.res.x, info->data.res.y);
-	info->data.addr = mlx_get_data_addr(info->data.img, &info->data.bits_per_pixel, &info->data.line_length, &info->data.endian);
+	info->data.img = mlx_new_image(info->mlx_ptr,
+			info->data.res.x, info->data.res.y);
+	info->data.addr = mlx_get_data_addr(info->data.img,
+			&info->data.bits_per_pixel, &info->data.line_length,
+			&info->data.endian);
 	ft_bzero(info->data.addr, info->data.line_length * info->data.res.y);
 	if (info->keybrd.render)
 		ft_raytracing_algorithm(info);
 	else
-		framepic(&info->win, info->keybrd.normalpaint, info->win.camera->objs, &info->data);
-	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img, info->win.cntr.x - info->data.cntr.x, info->win.cntr.y - info->data.cntr.y);
+		framepic(&info->win, info->keybrd.normalpaint,
+			info->win.camera->objs, &info->data);
+	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img,
+		info->win.cntr.x - info->data.cntr.x,
+		info->win.cntr.y - info->data.cntr.y);
 	if (!info->keybrd.render)
-		mlx_string_put(info->mlx_ptr, info->win.win, 8, 15, FRAMECLR, info->camtext);
+		mlx_string_put(info->mlx_ptr, info->win.win, 8, 15,
+			FRAMECLR, info->camtext);
 }

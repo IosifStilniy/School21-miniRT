@@ -6,36 +6,11 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:03:22 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 21:52:47 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 23:13:52 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
-
-void	crdstmdefiner(t_crdstm *crdstm)
-{
-	t_axis	rot;
-
-	vectorbuilder(1, 0, 0, &crdstm->ox);
-	if (crdstm->ox.vector.x == crdstm->oz.vector.x)
-	{
-		vectorbuilder(0, 1, 0, &crdstm->ox);
-		vectorbuilder(0, 0, 1, &crdstm->oy);
-		return ;
-	}
-	axisbuilder(&crdstm->ox.vector, &crdstm->oz.vector, &rot);
-	if (rot.ang < M_PI_2)
-	{
-		negativevector(&rot.vector);
-		rot.ang = M_PI_2 - rot.ang;
-	}
-	else if (!comparef(rot.ang, M_PI, M_PI / 180))
-		rot.ang -= M_PI_2;
-	else
-		vectorbuilder(0, 1, 0, &rot);
-	quartrot(&crdstm->ox.vector, &rot);
-	axisbuilder(&crdstm->oz.vector, &crdstm->ox.vector, &crdstm->oy);
-}
 
 void	txtrparsing(char *str, t_data *txtr, void *mlx, t_bool *checkerboard)
 {
@@ -78,6 +53,8 @@ float	cylinderparser(char *str, t_obj *obj, char *prog, void *mlx)
 	float	height;
 
 	str = ft_get_position_values(prog, str, &norm);
+	if (comparef(vectorlength(&norm), 0, 0.001))
+		customerr(prog, INVDEF, TRUE);
 	vectorbuilder(norm.x, norm.y, norm.z, &obj->crdstm.oz);
 	vectorsizing(1, &obj->crdstm.oz.vector, &obj->crdstm.oz.vector,
 		&obj->crdstm.oz.length);
@@ -99,9 +76,10 @@ void	planeparser(char *str, t_obj *obj, char *prog, void *mlx)
 	t_cart	norm;
 
 	str = ft_get_position_values(prog, str, &norm);
+	if (comparef(vectorlength(&norm), 0, 0.001))
+		customerr(prog, INVDEF, TRUE);
+	vectorsizing(1, &norm, &norm, NULL);
 	vectorbuilder(norm.x, norm.y, norm.z, &obj->crdstm.oz);
-	vectorsizing(1, &obj->crdstm.oz.vector, &obj->crdstm.oz.vector,
-		&obj->crdstm.oz.length);
 	crdstmdefiner(&obj->crdstm);
 	str = ft_get_color_values(str, obj->colrs, prog);
 	obj->dots.dotsnum = 0;

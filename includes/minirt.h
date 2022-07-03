@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 21:51:30 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 23:17:59 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -394,7 +394,7 @@ So no 10.1 in simple integers.
 int		circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols);
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
 void	cylindermapping(t_cart *dots, t_poly *polys, int polynum);
-void	definecylindervrtxs(t_cart *dots, t_poly *polys, int polynum);
+void	definecylindervrtxs(t_cart *dots, t_poly *polys, int polynum, t_data *txtr);
 void	definespherevrtxs(t_cart *dots, t_poly *polys, int polynum);
 void	definepols(t_cart *dots, float radius, t_axis *rotcircle);
 void	polarjointing(t_cart *dots, t_poly *poly, void *txtr, int dotnum);
@@ -509,6 +509,11 @@ void	ft_multvect(t_cart *vect, float multiplier, t_cart *dest);
 void	ft_multvects(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
 void	ft_summvects(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
 void	ft_crossprod(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
+
+void	ft_checker_poly(t_cart *cuv);
+void	my_mlx_get_pixel(t_data *data, t_cart *color);
+void	ft_checker_plane(t_cart *ox, t_cart *oy, t_cart *color, t_cart *phit);
+void	ft_texture_plane(t_crdstm *vects, t_cart *color, t_cart *phit, t_data *data);
 
 void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin);
 void	ft_shadowing(unsigned int *color, t_cart *phit, t_cart norm_colr[2], t_info *info);
