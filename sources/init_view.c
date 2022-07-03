@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init_view.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:02:31 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 18:02:33 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
-void	createcamobjs(t_list **camobjs, t_list *objs, t_cart **lightpos, int lightcount)
+void	createcamobjs(t_list **camobjs, t_list *objs, t_cart **lightpos,
+	int lightcount)
 {
 	t_obj	*camobj;
 	t_obj	*obj;
@@ -14,7 +27,7 @@ void	createcamobjs(t_list **camobjs, t_list *objs, t_cart **lightpos, int lightc
 		camobj->outframe = obj->outframe;
 		camobj->dots = obj->dots;
 		camobj->dots.pos = malloc(sizeof(*camobj->dots.pos)
-			* (camobj->dots.dotsnum + CRNRS * (!camobj->dots.dotsnum)));
+				* (camobj->dots.dotsnum + CRNRS * (!camobj->dots.dotsnum)));
 		camobj->polys = obj->polys;
 		if (!camobj->polys.polynum)
 			camobj->polys.poly = malloc(sizeof(*camobj->polys.poly));
@@ -74,7 +87,7 @@ void	initview(t_list *objs, t_camera *camera, t_list *lights)
 	{
 		camera->lightpos[++i] = lightcast(crsr)->pos;
 		transpos(&camera->lightpos[i], trans.trans);
-		crsr = crsr->next;	
+		crsr = crsr->next;
 	}
 	crsr = objs;
 	camcrsr = camera->objs;

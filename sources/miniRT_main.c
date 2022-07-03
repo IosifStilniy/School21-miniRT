@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/02 20:57:26 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 18:03:06 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,13 @@ void	wininit(t_info *info, char *prog, char *file)
 	info->win.res.x = RESX;
 	info->win.res.y = RESY;
 	info->win.win = mlx_new_window(info->mlx_ptr, info->win.res.x,
-		info->win.res.y, info->win.header);
+			info->win.res.y, info->win.header);
 	info->win.cntr.x = info->win.res.x / 2;
 	info->win.cntr.y = info->win.res.y / 2;
 	info->data.res.x = RESX;
 	info->data.res.y = RESY;
 	info->data.img = mlx_new_image(info->mlx_ptr, info->data.res.x,
-		info->data.res.y);
+			info->data.res.y);
 	info->data.cntr.x = info->data.res.x / 2;
 	info->data.cntr.y = info->data.res.y / 2;
 }
@@ -80,7 +80,8 @@ void	initobjs(char *file, t_info *info)
 		camera = crsr->content;
 		camera->objs = NULL;
 		camera->lightcount = ft_lstsize(info->lights);
-		createcamobjs(&camera->objs, info->objects, &camera->lightpos, camera->lightcount);
+		createcamobjs(&camera->objs, info->objects, &camera->lightpos,
+			camera->lightcount);
 		crsr = crsr->next;
 	}
 }

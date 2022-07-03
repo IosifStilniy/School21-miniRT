@@ -37,13 +37,13 @@ static void	buttsurf(int central, int strnum, t_poly *polys, t_cart *dots)
 		dotindxs[1] = strnum + i + 1;
 		dotindxs[2] = strnum + i;
 		surfing(polys + i, dotindxs, dots, polys->txtr);
-		polys[i].txtr = NULL;
+		polys[i].txtr = polys->txtr;
 	}
 	dotindxs[0] = central;
 	dotindxs[1] = strnum;
 	dotindxs[2] = strnum + i;
 	surfing(polys + i, dotindxs, dots, polys->txtr);
-	polys[i].txtr = NULL;
+	polys[i].txtr = polys->txtr;
 }
 
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height)

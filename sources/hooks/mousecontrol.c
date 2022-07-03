@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:06 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/30 21:03:16 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 18:19:03 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,19 +50,24 @@ int	btnup(int btn, int x, int y, t_info *info)
 
 	if (btn != LMB || !info->keybrd.interface)
 		return (0);
-	vectorbuilder(x - info->win.cntr.x, y - info->win.cntr.y, info->win.camera->focus, &vec);
+	vectorbuilder(x - info->win.cntr.x, y - info->win.cntr.y,
+		info->win.camera->focus, &vec);
 	refresh = changeparams(x, y, &info->interface, &info->win);
 	if (!(info->interface.frame.x <= x && x <= info->win.res.x)
 		|| !(0 <= y && y <= info->interface.frame.y))
-		info->interface.selected = selectobject(info->win.camera->objs, &vec.vector);
-	else if (inbounds(info->interface.attach, x, y) && attachobj(info->win.camera, info->interface.selected, info->objects) && ++refresh)
+		info->interface.selected = selectobject(info->win.camera->objs,
+				&vec.vector);
+	else if (inbounds(info->interface.attach, x, y)
+		&& attachobj(info->win.camera, info->interface.selected,
+			info->objects) && ++refresh)
 		info->interface.selected = NULL;
 	if (refresh)
 		initview(info->objects, info->win.camera, info->lights);
 	if (refresh)
 		ft_draw_screen(info);
 	if (!refresh)
-		mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img, 0, 0);
+		mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img,
+			0, 0);
 	interfacebuilder(info);
 	return (0);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   miniRT_parser_primitives.c                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:03:22 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 20:04:46 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	crdstmdefiner(t_crdstm *crdstm)
@@ -28,10 +40,10 @@ void	crdstmdefiner(t_crdstm *crdstm)
 void	txtrparsing(char *str, t_data *txtr, void *mlx)
 {
 	str = getfilename(str, str + ft_strlen(str));
-	mlx_xpm_file_to_image(mlx, str, &txtr->res.x, &txtr->res.y);
+	txtr->img = mlx_xpm_file_to_image(mlx, str, &txtr->res.x, &txtr->res.y);
 	free(str);
 	txtr->addr = mlx_get_data_addr(txtr->img, &txtr->bits_per_pixel,
-		&txtr->line_length, &txtr->endian);
+			&txtr->line_length, &txtr->endian);
 }
 
 float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx)

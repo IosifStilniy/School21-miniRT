@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/02 22:43:38 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 17:33:05 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -359,6 +359,7 @@ typedef struct s_import {
 // Parsing the file.
 
 char	*avoidonelinevrtxs(t_vrtx vrtxs[3], char *line, t_import *imp);
+void	centroiddefiner(t_cart *dots, int dotsnum);
 void	crdstmdefiner(t_crdstm *crdstm);
 float	cylinderparser(char *str, t_obj *obj, char *prog, void *mlx);
 void	checkvrtxsnorms(t_vrtx vrtxs[3], t_cart *polynorm);

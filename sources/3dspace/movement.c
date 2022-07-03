@@ -1,14 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   movement.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:20:54 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 18:21:18 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	camfromobjcrdstm(t_crdstm *cam, t_attach *attached)
 {
-	dotcrdstmtrnsltn(&attached->crdstm.pos, &cam->pos, NULL, &attached->obj->crdstm);
+	dotcrdstmtrnsltn(&attached->crdstm.pos, &cam->pos, NULL,
+		&attached->obj->crdstm);
 	cam->pos.x += attached->obj->crdstm.pos.x;
 	cam->pos.y += attached->obj->crdstm.pos.y;
 	cam->pos.z += attached->obj->crdstm.pos.z;
-	dotcrdstmtrnsltn(&attached->crdstm.ox.vector, &cam->ox.vector, NULL, &attached->obj->crdstm);
-	dotcrdstmtrnsltn(&attached->crdstm.oy.vector, &cam->oy.vector, NULL, &attached->obj->crdstm);
-	dotcrdstmtrnsltn(&attached->crdstm.oz.vector, &cam->oz.vector, NULL, &attached->obj->crdstm);
+	dotcrdstmtrnsltn(&attached->crdstm.ox.vector, &cam->ox.vector, NULL,
+		&attached->obj->crdstm);
+	dotcrdstmtrnsltn(&attached->crdstm.oy.vector, &cam->oy.vector, NULL,
+		&attached->obj->crdstm);
+	dotcrdstmtrnsltn(&attached->crdstm.oz.vector, &cam->oz.vector, NULL,
+		&attached->obj->crdstm);
 }
 
 void	camshifting(t_camera *camera, t_info *info, t_cart *dir, float step)
@@ -39,7 +55,8 @@ void	camrotating(t_camera *camera, t_info *info, int x, int y)
 	t_cart	oz;
 	t_axis	axis;
 
-	cartbuilder(x, y, 1000 * info->interface.settings.sens.mval, &curpos.vector);
+	cartbuilder(x, y, 1000 * info->interface.settings.sens.mval,
+		&curpos.vector);
 	vectorsizing(1, &curpos.vector, &curpos.vector, NULL);
 	cartbuilder(0, 0, 1, &oz);
 	axisbuilder(&oz, &curpos.vector, &axis);

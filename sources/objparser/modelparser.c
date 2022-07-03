@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   modelparser.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:13:25 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 19:05:18 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 char	*vrtxparser(char *line, t_list *vt, t_list *vn, t_vrtx *vrtx)
@@ -58,7 +70,7 @@ static void	facefiller(t_import *imp, char *line, t_bool *interpolate)
 	*interpolate = FALSE;
 }
 
-static void	vrtxfiller(t_list **v, char *line, t_bool normilize)
+static void	vrtxfiller(t_list **v, char *line, t_bool normilize, t_bool txtr)
 {
 	t_cart	*vertex;
 
@@ -70,6 +82,11 @@ static void	vrtxfiller(t_list **v, char *line, t_bool normilize)
 	vertex->z = ft_atof(line);
 	if (normilize && vectorlength(vertex) > 0)
 		vectorsizing(1, vertex, vertex, NULL);
+	if (txtr)
+	{
+		vertex->x += (vertex->x < 0);
+		vertex->y += (vertex->y < 0);
+	}
 	ft_lstadd_back(v, ft_lstnew(vertex));
 }
 
@@ -85,11 +102,11 @@ void	modelparser(int fd, t_import *imp)
 		if (*line != 'v' && *line != 'f' && *line != 's')
 			;
 		else if (!ft_strncmp(line, "v ", 2))
-			vrtxfiller(&imp->v, line + 2, FALSE);
+			vrtxfiller(&imp->v, line + 2, FALSE, FALSE);
 		else if (!ft_strncmp(line, "vn ", 3))
-			vrtxfiller(&imp->vn, line + 3, TRUE);
+			vrtxfiller(&imp->vn, line + 3, TRUE, FALSE);
 		else if (!ft_strncmp(line, "vt ", 3))
-			vrtxfiller(&imp->vt, line + 3, FALSE);
+			vrtxfiller(&imp->vt, line + 3, FALSE, TRUE);
 		else if (!ft_strncmp(line, "s ", 2))
 			interpolate++;
 		else if (!ft_strncmp(line, "f ", 2))

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/02 21:00:10 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 18:20:08 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ int	keydownhndlr(int keycode, t_info *info)
 
 	keydirbuilder(keycode, &dir);
 	keyaxisbuilder(keycode, &axis.vector);
-	movement = lrintf(dir.x + dir.y + dir.z + axis.vector.x + axis.vector.y + axis.vector.z);
+	movement = lrintf(dir.x + dir.y + dir.z + axis.vector.x + axis.vector.y
+			+ axis.vector.z);
 	if (movement && !info->keybrd.interface)
 		keyshifting(&dir, &axis.vector, info);
 	else if (movement && info->keybrd.interface)
@@ -46,7 +47,6 @@ void	interfacehandler(t_info *info)
 	info->interface.selected = NULL;
 	mlx_mouse_hide();
 	mlx_mouse_move(info->win.win, 0, info->mouse.yshift);
-
 }
 
 char	*changecamtxt(int current, int count)
@@ -67,11 +67,12 @@ char	*changecamtxt(int current, int count)
 	return (buf);
 }
 
-void	switchcam(t_camera **camera, t_list *cameras, int keycode, char **camtxt)
+void	switchcam(t_camera **camera, t_list *cameras, int keycode,
+	char **camtxt)
 {
 	int		camcount;
 	int		i;
-	
+
 	if (keycode == KEY_OPBRCT && *camera == cameras->content)
 		return ;
 	if (keycode == KEY_CLBRCT && *camera == ft_lstlast(cameras)->content)
@@ -104,7 +105,8 @@ int	keyuphndlr(int keycode, t_info *info)
 			interfacebuilder(info);
 	}
 	else if (keycode == KEY_OPBRCT || keycode == KEY_CLBRCT)
-		switchcam(&info->win.camera, info->win.cameras, keycode, &info->camtext);
+		switchcam(&info->win.camera, info->win.cameras, keycode,
+			&info->camtext);
 	else if (keycode == KEY_ESC)
 		exit(0);
 	return (0);

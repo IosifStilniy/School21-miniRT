@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   objparser.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:13:01 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 18:42:22 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 static void	importdotsandpolys(t_list *v, t_list *f, t_obj *obj)
@@ -14,6 +26,7 @@ static void	importdotsandpolys(t_list *v, t_list *f, t_obj *obj)
 	while (++i < obj->polys.polynum)
 	{
 		obj->polys.poly[i] = *(t_poly *)f->content;
+		obj->polys.poly[i].txtr = &obj->polys.txtr;
 		f = f->next;
 	}
 }
@@ -58,6 +71,7 @@ static float	getoutframe(t_cart *dots, int dotnum, t_cart *scale)
 	float	length;
 	int		i;
 
+	centroiddefiner(dots, dotnum);
 	outframe = 0;
 	i = -1;
 	while (++i < dotnum)
@@ -68,7 +82,10 @@ static float	getoutframe(t_cart *dots, int dotnum, t_cart *scale)
 	}
 	cartbuilder(1, 1, 1, scale);
 	if (outframe < 10)
+	{
 		cartbuilder(10 / outframe, 10 / outframe, 10 / outframe, scale);
+		outframe = 10;
+	}
 	return (outframe);
 }
 
@@ -90,7 +107,8 @@ float	objparser(char *line, t_obj *obj, char *prog, void *mlx)
 	line = skipnumnspaces(line, TRUE);
 	obj->polys.txtr.img = NULL;
 	if (*line == '\n' || *line == '\0')
-		return (getoutframe(obj->dots.dots, obj->dots.dotsnum, obj->dots.scale));
+		return (getoutframe(obj->dots.dots, obj->dots.dotsnum,
+				obj->dots.scale));
 	txtrparsing(line, &obj->polys.txtr, mlx);
 	return (getoutframe(obj->dots.dots, obj->dots.dotsnum, obj->dots.scale));
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   vrtxchecker.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:12:06 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 18:12:38 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 static void	repeatvrtxnorm(t_vrtx *vrtx, t_vrtx vrtxs[3])
@@ -42,17 +54,17 @@ char	*avoidonelinevrtxs(t_vrtx vrtxs[3], char *line, t_import *imp)
 	line = vrtxparser(line, imp->vt, imp->vn, &vrtxs[1]);
 	line = vrtxparser(line, imp->vt, imp->vn, &vrtxs[2]);
 	normbuilder(getcart(imp->v, vrtxs[0].dot + 1),
-				getcart(imp->v, vrtxs[1].dot + 1),
-				getcart(imp->v, vrtxs[2].dot + 1),
-				&norm);
+		getcart(imp->v, vrtxs[1].dot + 1),
+		getcart(imp->v, vrtxs[2].dot + 1),
+		&norm);
 	while (vectorlength(&norm) < 0.999 && notendedline(line))
 	{
 		vrtxs[1] = vrtxs[2];
 		line = vrtxparser(line, imp->vt, imp->vn, &vrtxs[2]);
 		normbuilder(getcart(imp->v, vrtxs[0].dot + 1),
-					getcart(imp->v, vrtxs[1].dot + 1),
-					getcart(imp->v, vrtxs[2].dot + 1),
-					&norm);
+			getcart(imp->v, vrtxs[1].dot + 1),
+			getcart(imp->v, vrtxs[2].dot + 1),
+			&norm);
 	}
 	return (line);
 }
