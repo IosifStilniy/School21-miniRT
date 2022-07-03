@@ -1,35 +1,21 @@
 #include "minirt.h"
 
-static void	definelnguv(t_cart *ref, t_vrtx *vrtx, t_axis *axis)
-{
-	t_cart	xoz;
-
-	cartbuilder(ref->x, 0, ref->z, &xoz);
-	vectorsizing(1, &xoz, &xoz, NULL);
-	axisbuilder(ref, &xoz, axis);
-	vrtx->uv.x = 0.5f - 0.25f * axis->ang / M_PI_2;
-	if (comparef(ref->y, 0, 0.001))
-		vrtx->uv.x = 0.5f + 0.5f * (ref->x < 0);
-	else if (ref->x < 0 && ref->y > 0)
-		vrtx->uv.x = 0.25f * axis->ang / M_PI_2;
-	else if (ref->x < 0 && ref->y < 0)
-		vrtx->uv.x = 1.f - 0.25f * axis->ang / M_PI_2;
-	else if (ref->x > 0 && ref->y < 0)
-		vrtx->uv.x = 0.75f - 0.25f * axis->ang / M_PI_2;
-}
-
 static void	spherepolymapping(t_vrtx *vrtx)
 {
-	t_cart	xoy;
-	t_axis	axis;
+	t_cart	ox;
+	t_cart	oy;
+	t_cart	oz;
+	float	scalar;
 
-	cartbuilder(vrtx->srcnorm.x, vrtx->srcnorm.y, 0, &xoy);
-	vectorsizing(1, &xoy, &xoy, NULL);
-	axisbuilder(&vrtx->srcnorm, &xoy, &axis);
-	vrtx->uv.y = (1.f + axis.ang / M_PI_2) * 0.5f;
-	if (vrtx->srcnorm.z > 0)
-		vrtx->uv.y = (1.f - axis.ang / M_PI_2) * 0.5f;
-	definelnguv(&vrtx->srcnorm, vrtx, &axis);
+	cartbuilder(1, 0, 0, &ox);
+	cartbuilder(0, 1, 0, &oy);
+	cartbuilder(0, 0, 1, &oz);
+	ft_dotprod(&vrtx->srcnorm, &oz, &scalar);
+	vrtx->uv.y = 0.5f - 0.5f * scalar;
+	ft_dotprod(&vrtx->srcnorm, &oy, &scalar);
+	vrtx->uv.x = 0.5f - 0.25f * scalar;
+	ft_dotprod(&vrtx->srcnorm, &ox, &scalar);
+	vrtx->uv.x -= 0.25f * scalar;
 }
 
 void	spheremapping(t_poly *polys, int polynum)

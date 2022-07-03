@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 19:25:36 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 20:34:41 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ static void	ft_trace_color(unsigned int *color, t_ray ray,
 		}
 		objects = objects->next;
 	}
-	if (nc0[1].x > 1 || nc0[1].y > 1)
-		printf("%f %f %f\n", nc0[1].x, nc0[1].y, nc0[1].z);
 	ft_multvect(&ray.dir, dist[0], &c_phit);
 	ft_shadowing(color, &c_phit, nc0, info);
 }
