@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:03:22 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 20:04:46 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 21:52:47 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,16 @@ void	crdstmdefiner(t_crdstm *crdstm)
 	axisbuilder(&crdstm->oz.vector, &crdstm->ox.vector, &crdstm->oy);
 }
 
-void	txtrparsing(char *str, t_data *txtr, void *mlx)
+void	txtrparsing(char *str, t_data *txtr, void *mlx, t_bool *checkerboard)
 {
 	str = getfilename(str, str + ft_strlen(str));
+	*checkerboard = FALSE;
+	if (!ft_strncmp("checkerboard", str, ft_strlen(str)))
+	{
+		*checkerboard = TRUE;
+		free(str);
+		return ;
+	}
 	txtr->img = mlx_xpm_file_to_image(mlx, str, &txtr->res.x, &txtr->res.y);
 	free(str);
 	txtr->addr = mlx_get_data_addr(txtr->img, &txtr->bits_per_pixel,
@@ -60,7 +67,7 @@ float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx)
 	obj->polys.txtr.img = NULL;
 	if (*str == '\n' || *str == '\0')
 		return (spherebuilder(&obj->dots, &obj->polys, rad));
-	txtrparsing(str, &obj->polys.txtr, mlx);
+	txtrparsing(str, &obj->polys.txtr, mlx, &obj->polys.checkerboard);
 	return (spherebuilder(&obj->dots, &obj->polys, rad));
 }
 
@@ -83,7 +90,7 @@ float	cylinderparser(char *str, t_obj *obj, char *prog, void *mlx)
 	obj->polys.txtr.img = NULL;
 	if (*str == '\n' || *str == '\0')
 		return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
-	txtrparsing(str, &obj->polys.txtr, mlx);
+	txtrparsing(str, &obj->polys.txtr, mlx, &obj->polys.checkerboard);
 	return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
 }
 
@@ -102,5 +109,5 @@ void	planeparser(char *str, t_obj *obj, char *prog, void *mlx)
 	obj->polys.txtr.img = NULL;
 	if (*str == '\n' || *str == '\0')
 		return ;
-	txtrparsing(str, &obj->polys.txtr, mlx);
+	txtrparsing(str, &obj->polys.txtr, mlx, &obj->polys.checkerboard);
 }

@@ -16,6 +16,8 @@ static void	spherepolymapping(t_vrtx *vrtx)
 	vrtx->uv.x = 0.5f - 0.25f * scalar;
 	ft_dotprod(&vrtx->srcnorm, &ox, &scalar);
 	vrtx->uv.x -= 0.25f * scalar;
+	// vrtx->uv.x = 0.5f + atan2f(vrtx->srcnorm.z, vrtx->srcnorm.x) / (2 * M_PI);
+	// vrtx->uv.y = 0.5f + asinf(vrtx->srcnorm.y) / M_PI;
 }
 
 void	spheremapping(t_poly *polys, int polynum)

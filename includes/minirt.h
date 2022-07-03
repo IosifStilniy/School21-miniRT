@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 17:33:05 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 21:51:30 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,10 +239,10 @@ typedef struct s_dots {
 }	t_dots;
 
 typedef struct s_polys {
-	int			polynum;
-	t_data		txtr;
-	t_data		heightmap;
-	t_poly		*poly;
+	int		polynum;
+	t_data	txtr;
+	t_bool	checkerboard;
+	t_poly	*poly;
 }	t_polys;
 
 typedef struct s_obj {
@@ -374,7 +374,7 @@ float	objparser(char *line, t_obj *obj, char *prog, void *mlx);
 void	planeparser(char *str, t_obj *obj, char *prog, void *mlx);
 int		primitivedefiner(char *str);
 float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx);
-void	txtrparsing(char *str, t_data *txtr, void *mlx);
+void	txtrparsing(char *str, t_data *txtr, void *mlx, t_bool *checkerboard);
 
 // Parsing utilities.
 

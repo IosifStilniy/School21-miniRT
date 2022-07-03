@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:13:01 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 18:42:22 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 21:51:05 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,6 @@ float	objparser(char *line, t_obj *obj, char *prog, void *mlx)
 	if (*line == '\n' || *line == '\0')
 		return (getoutframe(obj->dots.dots, obj->dots.dotsnum,
 				obj->dots.scale));
-	txtrparsing(line, &obj->polys.txtr, mlx);
+	txtrparsing(line, &obj->polys.txtr, mlx, &obj->polys.checkerboard);
 	return (getoutframe(obj->dots.dots, obj->dots.dotsnum, obj->dots.scale));
 }

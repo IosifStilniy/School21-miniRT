@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:10:21 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 18:11:25 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 21:41:09 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,9 +114,9 @@ void	framepic(t_win *win, t_bool normalprint, t_list *camobjs, t_data *img)
 		inframe = objinframe(obj, &win->cntr, win->camera->focus);
 		color = ft_create_trgb(0, obj->colrs->x * 255, obj->colrs->y * 255,
 				obj->colrs->z * 255);
-		if (inframe)
+		if (inframe && obj->dots.dotsnum)
 			framepainter(&obj->dots, win->camera->focus, img, color);
-		if (inframe && normalprint)
+		if (inframe && normalprint && obj->dots.dotsnum)
 			normpainter(obj, win->camera->focus, img);
 		camobjs = camobjs->next;
 	}
