@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   vectors.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:20:41 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 18:20:41 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	vectorbuilder(float x, float y, float z, t_axis *vector)
@@ -5,7 +17,7 @@ void	vectorbuilder(float x, float y, float z, t_axis *vector)
 	vector->length = sqrtf(x * x + y * y + z * z);
 	if (vector->length)
 		cartbuilder(x / vector->length, y / vector->length, z / vector->length,
-		&vector->vector);
+			&vector->vector);
 	else
 		cartbuilder(0, 0, 0, &vector->vector);
 	if (!vector->ang)
@@ -17,7 +29,8 @@ float	vectorlength(t_cart *dot)
 	return (sqrtf(powf(dot->x, 2) + powf(dot->y, 2) + powf(dot->z, 2)));
 }
 
-void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm)
+void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2,
+	t_cart *norm)
 {
 	t_cart	d1;
 	t_cart	d2;
@@ -65,7 +78,8 @@ void	axisbuilder(t_cart *v1, t_cart *v2, t_axis *axis)
 	axis->vector.z /= axis->length;
 }
 
-void	vectorsizing(float newlength, t_cart *src, t_cart *vecres, float *lngthres)
+void	vectorsizing(float newlength, t_cart *src, t_cart *vecres,
+	float *lngthres)
 {
 	float	realsize;
 

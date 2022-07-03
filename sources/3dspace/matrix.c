@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   matrix.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:21:38 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 18:21:38 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 static void	matrixmult(float a[4][4], float b[4][4], float res[4][4])
@@ -20,7 +32,8 @@ static void	matrixmult(float a[4][4], float b[4][4], float res[4][4])
 	}
 }
 
-void	worldtocammatrix(float transmatrix[4][4], float crdstmmatrix[4][4], float posmatrix[4][4], t_crdstm *cam)
+void	worldtocammatrix(float transmatrix[4][4], float crdstmmatrix[4][4],
+	float posmatrix[4][4], t_crdstm *cam)
 {
 	crdstmmatrix[0][0] = cam->ox.vector.x;
 	crdstmmatrix[0][1] = cam->ox.vector.y;

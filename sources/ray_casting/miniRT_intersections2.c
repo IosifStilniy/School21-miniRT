@@ -65,22 +65,6 @@ int	ft_hit_triangle(t_cart phit, t_poly *poly, t_cart *dots, float k[3])
 	return (1);
 }
 
-void	my_mlx_get_pixel(t_data *data, t_cart *color)
-{
-	char			*dst;
-	unsigned int	temp;
-	long int		x;
-	long int		y;
-
-	x = lrintf(data->res.x * color->x);
-	y = lrintf(data->res.y * color->y);
-	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-	temp = *(unsigned int *)dst;
-	(*color).x = get_r(temp);
-	(*color).y = get_g(temp);
-	(*color).z = get_b(temp);
-}
-
 void	ft_hit_poly2(t_obj *obj, float *k, int *i, t_cart *nc)
 {
 	t_cart	phit;
@@ -102,8 +86,10 @@ void	ft_hit_poly2(t_obj *obj, float *k, int *i, t_cart *nc)
 		ft_summvects(&phit, &nc[1], &nc[1]);
 		ft_multvect(&poly->vrtxs[2].uv, k[1], &phit);
 		ft_summvects(&phit, &nc[1], &nc[1]);
-		ft_vectnorm(&nc[1]);
-		my_mlx_get_pixel(poly->txtr, &nc[1]);
+		if (obj->polys.checkerboard)
+			ft_checker_poly(&nc[1]);
+		else
+			my_mlx_get_pixel(poly->txtr, &nc[1]);
 	}
 }
 

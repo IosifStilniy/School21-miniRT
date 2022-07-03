@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:43:02 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/30 21:02:46 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 18:19:28 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ void	keyshifting(t_cart *dir, t_cart *axis, t_info *info)
 
 	if (dir->x + dir->y + dir->z)
 	{
-		camshifting(info->win.camera, info, dir, SHIFT_SPEED * info->interface.settings.sens.kval);
+		camshifting(info->win.camera, info, dir, SHIFT_SPEED
+			* info->interface.settings.sens.kval);
 		return ;
 	}
 	res.ang = DEFANG * M_PI / 180;
@@ -40,7 +41,8 @@ void	keyshifting(t_cart *dir, t_cart *axis, t_info *info)
 	if (info->win.camera->attached.obj)
 	{
 		crdstmrotbyaxis(&info->win.camera->attached.obj->crdstm, &res, NULL);
-		camfromobjcrdstm(&info->win.camera->crdstm, &info->win.camera->attached);
+		camfromobjcrdstm(&info->win.camera->crdstm,
+			&info->win.camera->attached);
 	}
 	else
 		crdstmrotbyaxis(&info->win.camera->crdstm, &res, NULL);

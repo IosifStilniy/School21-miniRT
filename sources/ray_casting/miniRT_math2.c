@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_math2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/04 13:26:35 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/02 10:30:17 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/02 22:44:05 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minirt.h"
+#include "minirt.h"
 
 float	ft_max(float a, float b)
 {

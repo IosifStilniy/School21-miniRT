@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   initinterface.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:16:07 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 18:17:06 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
-static void	definearrows(t_button *decrease, t_button *increase, t_res leftup, t_res *size)
+static void	definearrows(t_button *decrease, t_button *increase, t_res leftup,
+	t_res *size)
 {
 	decrease->leftup = leftup;
 	decrease->bottomright.x = leftup.x + size->x;
@@ -50,11 +63,11 @@ static void	initsettings(t_settings *settings)
 void	initinterface(t_intrfc *interface, void *mlx, t_res *win)
 {
 	interface->cam.img = mlx_xpm_file_to_image(mlx, CAMLEGEND,
-		&interface->cam.res.x, &interface->cam.res.y);
+			&interface->cam.res.x, &interface->cam.res.y);
 	interface->campos.x = win->x - interface->cam.res.x;
 	interface->campos.y = 0;
 	interface->obj.img = mlx_xpm_file_to_image(mlx, OBJLEGEND,
-		&interface->obj.res.x, &interface->obj.res.y);
+			&interface->obj.res.x, &interface->obj.res.y);
 	interface->objpos.x = win->x - interface->obj.res.x;
 	interface->objpos.y = interface->cam.res.y;
 	interface->frame.x = interface->campos.x;

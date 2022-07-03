@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   framerouting.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:09:18 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 18:10:17 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 t_bool	checkrout(int dot1, int dot2, t_list *routs)
@@ -20,7 +32,7 @@ t_bool	checkrout(int dot1, int dot2, t_list *routs)
 void	createroutlstelem(int dot1, int dot2, t_list **routs)
 {
 	int		*rout;
-	
+
 	rout = malloc(sizeof(*rout) * 2);
 	rout[0] = dot1;
 	rout[1] = dot2;
@@ -54,7 +66,7 @@ int	lsttointarr(t_list *routs, int (**routarr)[2])
 	int	*rout;
 
 	size = ft_lstsize(routs);
-	*routarr = malloc(sizeof(int[2]) * size);
+	*routarr = malloc(sizeof(int [2]) * size);
 	i = -1;
 	while (++i < size)
 	{

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   interface.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:15:37 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 18:15:38 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 t_bool	inbounds(t_button btn, int x, int y)
@@ -9,16 +21,20 @@ t_bool	inbounds(t_button btn, int x, int y)
 
 static void	printvalue(float value, int x, int y, t_info *info)
 {
-	char	*valstr;
-	char	*buf;
-	char	*res;
+	char		*valstr;
+	char		*buf;
+	char		*res;
+	long int	dec;
+	long int	fract;
 
-	valstr = ft_itoa(lrintf(truncf(value)));
+	dec = lrintf(truncf(value));
+	fract = lrintf((value - truncf(value)) * 10);
+	dec += (fract >= 10);
+	fract -= 10 * (fract >= 10);
+	valstr = ft_itoa(dec);
 	buf = ft_strjoin(valstr, ".");
 	free(valstr);
-	value -= truncf(value);
-	value *= 10;
-	valstr = ft_itoa(lrintf(value));
+	valstr = ft_itoa(fract);
 	res = ft_strjoin(buf, valstr);
 	free(buf);
 	free(valstr);
@@ -26,7 +42,8 @@ static void	printvalue(float value, int x, int y, t_info *info)
 	free(res);
 }
 
-void	printcaminterface(void *mlx, t_win *win, t_intrfc *interface, t_info *info)
+void	printcaminterface(void *mlx, t_win *win, t_intrfc *interface,
+	t_info *info)
 {
 	mlx_put_image_to_window(mlx, win->win, interface->cam.img,
 		interface->campos.x, interface->campos.y);
@@ -46,7 +63,8 @@ void	printcaminterface(void *mlx, t_win *win, t_intrfc *interface, t_info *info)
 			interface->campos.y + 172, 0x00FF0000, "FALSE");
 }
 
-void	printobjinterface(void *mlx, t_win *win, t_intrfc *interface, t_info *info)
+void	printobjinterface(void *mlx, t_win *win, t_intrfc *interface,
+	t_info *info)
 {
 	mlx_put_image_to_window(mlx, win->win, interface->obj.img,
 		interface->objpos.x, interface->objpos.y);

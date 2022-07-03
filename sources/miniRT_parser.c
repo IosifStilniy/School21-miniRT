@@ -6,13 +6,14 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/01 22:45:35 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 18:04:43 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-static void	light_definition(char *line, t_light *a_light, t_list **lights, char *prog)
+static void	light_definition(char *line, t_light *a_light, t_list **lights,
+	char *prog)
 {
 	t_light	*light;
 
@@ -47,7 +48,8 @@ static void	ft_fill_camera_info(char *str, t_list **cameras, char *prog)
 	str = ft_get_position_values(prog, str, &camera->crdstm.pos);
 	str = ft_get_position_values(prog, str, &norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &camera->crdstm.oz);
-	vectorsizing(1, &camera->crdstm.oz.vector, &camera->crdstm.oz.vector, &camera->crdstm.oz.length);
+	vectorsizing(1, &camera->crdstm.oz.vector, &camera->crdstm.oz.vector,
+		&camera->crdstm.oz.length);
 	crdstmdefiner(&camera->crdstm);
 	str = skipnumnspaces(str, TRUE);
 	if (!ft_strchr("0123456789", *str))
@@ -61,7 +63,8 @@ static void	ft_fill_camera_info(char *str, t_list **cameras, char *prog)
 	ft_lstadd_back(cameras, ft_lstnew(camera));
 }
 
-static void	primitivesbuilder(char *str, t_list **objs, t_info *info, t_rot *rot)
+static void	primitivesbuilder(char *str, t_list **objs, t_info *info,
+	t_rot *rot)
 {
 	int		i;
 	t_obj	*obj;
@@ -142,5 +145,6 @@ void	ft_read_information(int fd, t_info *info)
 	}
 	if (dets[0] != 1 || dets[1] != 1)
 		customerr(info->prog, DUPDET, TRUE);
-	info->camtext = definecameras(&info->win.camera, info->win.cameras, &info->win.cntr);
+	info->camtext = definecameras(&info->win.camera, info->win.cameras,
+			&info->win.cntr);
 }

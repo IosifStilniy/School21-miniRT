@@ -6,11 +6,23 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/05 16:32:15 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/02 13:53:36 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/03 23:10:17 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
+
+void	ft_hit_plane2(t_cart *nc, t_obj *object, t_cart *phit)
+{
+	nc[0] = object->polys.poly->norm;
+	if (object->polys.checkerboard)
+		ft_checker_plane(&object->crdstm.ox.vector,
+			&object->crdstm.oy.vector, &nc[1], phit);
+	else if (!object->polys.txtr.img)
+		nc[1] = *object->colrs;
+	else
+		ft_texture_plane(&object->crdstm, &nc[1], phit, &object->polys.txtr);
+}
 
 void	ft_hit_plane(t_ray ray, t_cart *nc,
 			t_obj *object, float *closest_distance)
@@ -19,14 +31,14 @@ void	ft_hit_plane(t_ray ray, t_cart *nc,
 	float	division;
 	t_cart	new_plane_pos;
 
-	ft_dotprod(&ray.dir, &object->crdstm.oz.vector, &division);
+	ft_dotprod(&ray.dir, &object->polys.poly->norm, &division);
 	if (division < __FLT_EPSILON__ && division > -__FLT_EPSILON__)
 	{
 		*closest_distance = INFINITY;
 		return ;
 	}
 	ft_subvects(&object->crdstm.pos, &ray.orig, &new_plane_pos);
-	ft_dotprod(&new_plane_pos, &object->crdstm.oz.vector, &ray_to_plane);
+	ft_dotprod(&new_plane_pos, &object->polys.poly->norm, &ray_to_plane);
 	ray_to_plane /= division;
 	if (ray_to_plane < __FLT_EPSILON__)
 	{
@@ -34,10 +46,10 @@ void	ft_hit_plane(t_ray ray, t_cart *nc,
 		return ;
 	}
 	*closest_distance = ray_to_plane;
-	if (nc)
-		nc[0] = object->crdstm.oz.vector;
-	if (nc && !object->polys.txtr.img)
-		nc[1] = *object->colrs;
+	if (!nc)
+		return ;
+	ft_multvect(&ray.dir, ray_to_plane, &new_plane_pos);
+	ft_hit_plane2(nc, object, &new_plane_pos);
 }
 
 void	ft_hit_pplane(t_ray ray, t_cart *norm_vector,

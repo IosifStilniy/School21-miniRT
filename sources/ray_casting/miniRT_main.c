@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/02 14:11:15 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/03 23:11:12 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,15 +85,18 @@ void	ft_draw_screen(t_info *info)
 	info->data.img = mlx_new_image(info->mlx_ptr,
 			info->data.res.x, info->data.res.y);
 	info->data.addr = mlx_get_data_addr(info->data.img,
-			&info->data.bits_per_pixel,
-			&info->data.line_length, &info->data.endian);
+			&info->data.bits_per_pixel, &info->data.line_length,
+			&info->data.endian);
 	ft_bzero(info->data.addr, info->data.line_length * info->data.res.y);
 	if (info->keybrd.render)
 		ft_raytracing_algorithm(info);
 	else
-		framepic(info->win.camera, &info->win.cntr,
+		framepic(&info->win, info->keybrd.normalpaint,
 			info->win.camera->objs, &info->data);
 	mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img,
 		info->win.cntr.x - info->data.cntr.x,
 		info->win.cntr.y - info->data.cntr.y);
+	if (!info->keybrd.render)
+		mlx_string_put(info->mlx_ptr, info->win.win, 8, 15,
+			FRAMECLR, info->camtext);
 }

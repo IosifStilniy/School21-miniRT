@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   changesettings.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:17:52 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 18:17:52 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	changevalue(float *param, float step, t_bool increase)
@@ -35,7 +47,7 @@ t_bool	changecart(int arrow, t_cart *param, float bounds[2], t_step *step)
 	return (TRUE);
 }
 
-t_bool	changecamparams(int	arrow, t_win *win, t_step *fov)
+t_bool	changecamparams(int arrow, t_win *win, t_step *fov)
 {
 	int		row;
 	t_bool	increase;
@@ -83,7 +95,7 @@ t_bool	changeparams(int x, int y, t_intrfc *intrfc, t_win *win)
 		return (FALSE);
 	if (intrfc->selected && i / 2 >= 8)
 		return (changecart(i - 16, intrfc->selected->colrs, colorbounds,
-			&intrfc->settings.color));
+				&intrfc->settings.color));
 	else if (intrfc->selected && i / 2 >= 4)
 		return (resizeobj(i - 8, intrfc));
 	else if (i / 2 >= 2)

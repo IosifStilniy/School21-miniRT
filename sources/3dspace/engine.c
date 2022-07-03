@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/01 19:50:31 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 18:32:02 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,14 @@
 
 static void	quartmult(t_axis *q, t_axis *p, t_axis *result)
 {
-	result->ang = q->ang * p->ang - q->vector.x * p->vector.x - q->vector.y * p->vector.y - q->vector.z * p->vector.z;
-	result->vector.x = q->ang * p->vector.x + q->vector.x * p->ang + q->vector.y * p->vector.z - q->vector.z * p->vector.y;
-	result->vector.y = q->ang * p->vector.y - q->vector.x * p->vector.z + q->vector.y * p->ang + q->vector.z * p->vector.x;
-	result->vector.z = q->ang * p->vector.z + q->vector.x * p->vector.y - q->vector.y * p->vector.x + q->vector.z * p->ang;
+	result->ang = q->ang * p->ang - q->vector.x * p->vector.x
+		- q->vector.y * p->vector.y - q->vector.z * p->vector.z;
+	result->vector.x = q->ang * p->vector.x + q->vector.x * p->ang
+		+ q->vector.y * p->vector.z - q->vector.z * p->vector.y;
+	result->vector.y = q->ang * p->vector.y - q->vector.x * p->vector.z
+		+ q->vector.y * p->ang + q->vector.z * p->vector.x;
+	result->vector.z = q->ang * p->vector.z + q->vector.x * p->vector.y
+		- q->vector.y * p->vector.x + q->vector.z * p->ang;
 }
 
 void	quartrot(t_cart *pos, t_axis *axis)
@@ -40,7 +44,8 @@ void	quartrot(t_cart *pos, t_axis *axis)
 	*pos = posq.vector;
 }
 
-void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, t_cart *scale, t_crdstm *crdstm)
+void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, t_cart *scale,
+	t_crdstm *crdstm)
 {
 	t_cart	defscale;
 
@@ -65,7 +70,7 @@ t_bool	resizeobj(int arrow, t_intrfc *intrfc)
 	int		i;
 
 	if (!changecart(arrow, intrfc->selected->dots.scale, NULL,
-					&intrfc->settings.size))
+			&intrfc->settings.size))
 		return (FALSE);
 	polys = intrfc->selected->polys.poly;
 	pos = intrfc->selected->dots.pos;

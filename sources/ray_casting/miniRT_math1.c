@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_math1.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/04 13:26:35 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/02 10:36:32 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/02 22:44:01 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minirt.h"
-
-#include "../includes/minirt.h"
+#include "minirt.h"
 
 void	ft_vectlen(t_cart *vect, float *dest)
 {

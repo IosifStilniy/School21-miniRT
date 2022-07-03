@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   modelparser.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:13:25 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/03 19:05:18 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
-static char	*vrtxparser(char *line, t_list *vt, t_list *vn, t_vrtx *vrtx)
+char	*vrtxparser(char *line, t_list *vt, t_list *vn, t_vrtx *vrtx)
 {
 	vrtx->dot = ft_atoi(line) - 1;
 	line = skipnumnspaces(line, FALSE);
@@ -14,23 +26,24 @@ static char	*vrtxparser(char *line, t_list *vt, t_list *vn, t_vrtx *vrtx)
 
 static void	interpolatednorm(t_cart *norm, t_vrtx vrtxs[3], t_list *dotlist)
 {
-	t_cart	ref;
 	t_vrtx	buf;
+	float	scalar;
 
-	cartbuilder(0, 0, 0, norm);
-	vectodot(norm, &vrtxs[0].srcnorm);
-	vectodot(norm, &vrtxs[1].srcnorm);
-	vectodot(norm, &vrtxs[2].srcnorm);
-	vectorsizing(1, norm, norm, NULL);
 	normbuilder(getcart(dotlist, vrtxs[0].dot + 1),
 		getcart(dotlist, vrtxs[1].dot + 1),
 		getcart(dotlist, vrtxs[2].dot + 1),
-		&ref);
-	if (ref.x * norm->x + ref.y * norm->y + ref.z * norm->z > 0)
+		norm);
+	checkvrtxsnorms(vrtxs, norm);
+	ft_dotprod(&vrtxs[0].srcnorm, norm, &scalar);
+	if (scalar >= 0)
 		return ;
 	buf = vrtxs[2];
 	vrtxs[2] = vrtxs[1];
 	vrtxs[1] = buf;
+	normbuilder(getcart(dotlist, vrtxs[0].dot + 1),
+		getcart(dotlist, vrtxs[1].dot + 1),
+		getcart(dotlist, vrtxs[2].dot + 1),
+		norm);
 }
 
 static void	facefiller(t_import *imp, char *line, t_bool *interpolate)
@@ -39,9 +52,7 @@ static void	facefiller(t_import *imp, char *line, t_bool *interpolate)
 	t_poly	*newpoly;
 
 	poly = malloc(sizeof(*poly));
-	line = vrtxparser(line, imp->vt, imp->vn, &poly->vrtxs[0]);
-	line = vrtxparser(line, imp->vt, imp->vn, &poly->vrtxs[1]);
-	line = vrtxparser(line, imp->vt, imp->vn, &poly->vrtxs[2]);
+	line = avoidonelinevrtxs(poly->vrtxs, line, imp);
 	poly->interpolate = *interpolate;
 	interpolatednorm(&poly->srcnorm, poly->vrtxs, imp->v);
 	ft_lstadd_front(&imp->f, ft_lstnew(poly));
@@ -59,7 +70,7 @@ static void	facefiller(t_import *imp, char *line, t_bool *interpolate)
 	*interpolate = FALSE;
 }
 
-static void	vrtxfiller(t_list **v, char *line, t_bool normilize)
+static void	vrtxfiller(t_list **v, char *line, t_bool normilize, t_bool txtr)
 {
 	t_cart	*vertex;
 
@@ -69,8 +80,13 @@ static void	vrtxfiller(t_list **v, char *line, t_bool normilize)
 	vertex->y = ft_atof(line);
 	line = skipnumnspaces(line, FALSE);
 	vertex->z = ft_atof(line);
-	if (normilize)
+	if (normilize && vectorlength(vertex) > 0)
 		vectorsizing(1, vertex, vertex, NULL);
+	if (txtr)
+	{
+		vertex->x += (vertex->x < 0);
+		vertex->y += (vertex->y < 0);
+	}
 	ft_lstadd_back(v, ft_lstnew(vertex));
 }
 
@@ -86,11 +102,11 @@ void	modelparser(int fd, t_import *imp)
 		if (*line != 'v' && *line != 'f' && *line != 's')
 			;
 		else if (!ft_strncmp(line, "v ", 2))
-			vrtxfiller(&imp->v, line + 2, FALSE);
+			vrtxfiller(&imp->v, line + 2, FALSE, FALSE);
 		else if (!ft_strncmp(line, "vn ", 3))
-			vrtxfiller(&imp->vn, line + 3, TRUE);
+			vrtxfiller(&imp->vn, line + 3, TRUE, FALSE);
 		else if (!ft_strncmp(line, "vt ", 3))
-			vrtxfiller(&imp->vt, line + 3, FALSE);
+			vrtxfiller(&imp->vt, line + 3, FALSE, TRUE);
 		else if (!ft_strncmp(line, "s ", 2))
 			interpolate++;
 		else if (!ft_strncmp(line, "f ", 2))

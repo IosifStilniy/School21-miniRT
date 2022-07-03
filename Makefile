@@ -27,7 +27,7 @@ DINLIB		=	libmlx.dylib
 
 GCC			=	gcc
 
-FLAGS		=	-Wall -Werror -Wextra -Imlx -I$(HEAD) -I$(LIBPATH) -I$(GNL_HEAD) -fsanitize=address -g
+FLAGS		=	-Wall -Werror -Wextra -o3 -Imlx -I$(HEAD) -I$(LIBPATH) -I$(GNL_HEAD) #-fsanitize=address #-g
 
 RM			=	rm -f
 
@@ -57,7 +57,6 @@ clean:
 
 fclean: clean
 		@$(MAKE) -C $(MLX) clean
-		rm -f $(LIBPATH)/$(LIBNAME)
 		rm -f $(DINLIB)
 		rm -f $(NAME)
 
