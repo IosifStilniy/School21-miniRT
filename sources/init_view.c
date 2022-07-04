@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_view.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:02:31 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 21:28:37 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/04 21:06:11 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	checkplanenorm(t_crdstm *plane, t_poly *poly, t_dots *dots)
 	if (dots->dotsnum || plane->pos.z < 1)
 		return ;
 	poly->norm = plane->oz.vector;
-	if (plane->oz.vector.z <= 0.001)
+	if (plane->oz.vector.z <= __FLT_EPSILON__)
 		return ;
 	negativevector(&poly->norm);
 	vectorsizing(1, &poly->norm, &poly->norm, NULL);

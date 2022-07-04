@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_main.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 21:25:20 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/04 22:56:39 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,6 @@ void	initobjs(char *file, t_info *info)
 	info->win.cameras = NULL;
 	ft_read_information(fd, info);
 	close(fd);
-	if (ft_lstsize(info->lights) != 1)
-		customerr(info->prog, DUPDET, TRUE);
 	createframerouts(info->objects);
 	crsr = info->win.cameras;
 	while (crsr)

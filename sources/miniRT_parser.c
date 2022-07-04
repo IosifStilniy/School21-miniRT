@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 18:04:43 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/03 22:09:22 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ static void	ft_fill_camera_info(char *str, t_list **cameras, char *prog)
 	camera = malloc(sizeof(*camera));
 	str = ft_get_position_values(prog, str, &camera->crdstm.pos);
 	str = ft_get_position_values(prog, str, &norm);
+	if (comparef(vectorlength(&norm), 0, 0.001))
+		customerr(prog, INVDEF, TRUE);
 	vectorbuilder(norm.x, norm.y, norm.z, &camera->crdstm.oz);
 	vectorsizing(1, &camera->crdstm.oz.vector, &camera->crdstm.oz.vector,
 		&camera->crdstm.oz.length);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 18:32:02 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/04 21:06:32 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,19 +65,28 @@ void	dotcrdstmtrnsltn(t_cart *src, t_cart *dst, t_cart *scale,
 
 t_bool	resizeobj(int arrow, t_intrfc *intrfc)
 {
-	t_poly	*polys;
-	t_cart	*pos;
-	int		i;
+	t_vrtx		*vrtxs;
+	t_dots		*d;
+	t_cart		src[3];
+	t_crdstm	world;
+	int			i;
 
 	if (!changecart(arrow, intrfc->selected->dots.scale, NULL,
 			&intrfc->settings.size))
 		return (FALSE);
-	polys = intrfc->selected->polys.poly;
-	pos = intrfc->selected->dots.pos;
+	cartbuilder(0, 0, 1, &world.oz.vector);
+	crdstmdefiner(&world);
+	d = &intrfc->selected->dots;
 	i = -1;
 	while (++i < intrfc->selected->polys.polynum)
-		normbuilder(&pos[polys[i].vrtxs[0].dot], &pos[polys[i].vrtxs[1].dot],
-			&pos[polys[i].vrtxs[2].dot], &polys[i].srcnorm);
+	{
+		vrtxs = intrfc->selected->polys.poly[i].vrtxs;
+		dotcrdstmtrnsltn(&d->dots[vrtxs[0].dot], &src[0], d->scale, &world);
+		dotcrdstmtrnsltn(&d->dots[vrtxs[1].dot], &src[1], d->scale, &world);
+		dotcrdstmtrnsltn(&d->dots[vrtxs[2].dot], &src[2], d->scale, &world);
+		normbuilder(&src[0], &src[1], &src[2],
+			&intrfc->selected->polys.poly[i].srcnorm);
+	}
 	return (TRUE);
 }
 

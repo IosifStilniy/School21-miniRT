@@ -36,14 +36,12 @@ static void	buttsurf(int central, int strnum, t_poly *polys, t_cart *dots)
 		dotindxs[0] = central;
 		dotindxs[1] = strnum + i + 1;
 		dotindxs[2] = strnum + i;
-		surfing(polys + i, dotindxs, dots, polys->txtr);
-		polys[i].txtr = polys->txtr;
+		repairspherenormal(polys + i, dotindxs, dots, NULL);
 	}
 	dotindxs[0] = central;
 	dotindxs[1] = strnum;
 	dotindxs[2] = strnum + i;
-	surfing(polys + i, dotindxs, dots, polys->txtr);
-	polys[i].txtr = polys->txtr;
+	repairspherenormal(polys + i, dotindxs, dots, NULL);
 }
 
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height)
@@ -67,7 +65,7 @@ float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height)
 	surfdefiner(polys->poly - 1, dots->dots, &polys->txtr, dots->dotsnum);
 	buttsurf(0, 2, &polys->poly[2 * RNDSGMNTS], dots->dots);
 	buttsurf(1, RNDSGMNTS + 2, &polys->poly[3 * RNDSGMNTS], dots->dots);
-	definecylindervrtxs(dots->dots, polys->poly, polys->polynum);
+	definecylindervrtxs(dots->dots, polys->poly, polys->polynum, &polys->txtr);
 	cylindermapping(dots->dots, polys->poly, polys->polynum);
 	return (sqrtf(powf(height / 2, 2) + powf(radius, 2)));
 }

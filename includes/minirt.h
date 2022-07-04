@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 22:53:51 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/03 23:17:59 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -376,6 +376,14 @@ int		primitivedefiner(char *str);
 float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx);
 void	txtrparsing(char *str, t_data *txtr, void *mlx, t_bool *checkerboard);
 
+// Parsing utilities.
+
+float	ft_atof(const char *num);
+int		ft_clear_char_array(char **array);
+char	*ft_get_color_values(char *str, t_cart *color, char *prog);
+char	*ft_get_position_values(char *prog, char *str, t_cart *pos);
+char	*skipnumnspaces(char *str, t_bool onlyspaces);
+
 /*
 We can modify atoi so it checks whether the string ends with the number. 
 So no 10.1 in simple integers.
@@ -386,7 +394,7 @@ So no 10.1 in simple integers.
 int		circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols);
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
 void	cylindermapping(t_cart *dots, t_poly *polys, int polynum);
-void	definecylindervrtxs(t_cart *dots, t_poly *polys, int polynum);
+void	definecylindervrtxs(t_cart *dots, t_poly *polys, int polynum, t_data *txtr);
 void	definespherevrtxs(t_cart *dots, t_poly *polys, int polynum);
 void	definepols(t_cart *dots, float radius, t_axis *rotcircle);
 void	polarjointing(t_cart *dots, t_poly *poly, void *txtr, int dotnum);
@@ -398,6 +406,13 @@ void	surfing(t_poly *poly, int *dotindxs, t_cart *dots, void *txtr);
 int 	ft_fill_cylinder_info(char **piece, t_info *info);
 int 	ft_fill_sphere_info(char **piece, t_info *info);
 int		ft_fill_plane_info(char **piece, t_info *info);
+
+// Main execution utilities.
+
+int		ft_exit(void);
+int		ft_clear_info(t_info *info);
+int		ft_key_hook(int keycode, t_info *info);
+void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 
 // Orientation and movement in space
 
@@ -478,26 +493,11 @@ t_obj	*objcast(t_list *lst);
 
 // MyFUncs
 
-// Parsing utilities.
-
-float	ft_atof(const char *num);
-int		ft_clear_char_array(char **array);
-char	*ft_get_color_values(char *str, t_cart *color, char *prog);
-char	*ft_get_position_values(char *prog, char *str, t_cart *pos);
-char	*skipnumnspaces(char *str, t_bool onlyspaces);
-
-// Main execution utilities.
-
-int		ft_exit(void);
-int		ft_clear_info(t_info *info);
-int		ft_key_hook(int keycode, t_info *info);
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
-
+t_ui	ft_create_trgb(int t, int r, int g, int b);
 int		get_r(int trgb);
 int		get_g(int trgb);
 int		get_b(int trgb);
 void	ft_draw_screen(t_info *info);
-t_ui	ft_create_trgb(int t, int r, int g, int b);
 
 float	ft_max(float a, float b);
 void	ft_vectnorm(t_cart *vector);
@@ -512,9 +512,10 @@ void	ft_crossprod(t_cart *vect_a, t_cart *vect_b, t_cart *dest);
 
 void	ft_checker_poly(t_cart *cuv);
 void	my_mlx_get_pixel(t_data *data, t_cart *color);
-void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin);
 void	ft_checker_plane(t_cart *ox, t_cart *oy, t_cart *color, t_cart *phit);
 void	ft_texture_plane(t_crdstm *vects, t_cart *color, t_cart *phit, t_data *data);
+
+void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin);
 void	ft_shadowing(unsigned int *color, t_cart *phit, t_cart norm_colr[2], t_info *info);
 
 float	ft_hit_sphere(t_ray ray, t_obj *sphere);

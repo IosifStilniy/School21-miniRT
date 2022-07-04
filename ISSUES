@@ -1,0 +1,20 @@
+◦ Clicking on the red cross on the window’s frame must close the window and
+quit the program cleanly.
+
+◦ Segfault while parsing if there is more information than is neccesary with cylinders
+
+◦ Segfault while parsing if there are spaces after checkerboard/texture
+
+◦ Plane normals sometimes are strange. Plane doesnt reflect diffuse light sometimes.
+
+
+◦
+◦
+◦
+◦
+◦
+◦
+◦
+◦
+◦
+◦
