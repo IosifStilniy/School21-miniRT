@@ -1,6 +1,6 @@
 #include "minirt.h"
 
-static void	surfdefiner(t_poly *polys, t_cart *dots, void *txtr, int dotnum)
+void	cylindersurfdefiner(t_poly *polys, t_cart *dots, void *txtr, int dotnum)
 {
 	int		i;
 	int		dotindxs[3];
@@ -25,7 +25,7 @@ static void	surfdefiner(t_poly *polys, t_cart *dots, void *txtr, int dotnum)
 	surfing(++polys, dotindxs, dots, txtr);
 }
 
-static void	buttsurf(int central, int strnum, t_poly *polys, t_cart *dots)
+void	buttsurf(int central, int strnum, t_poly *polys, t_cart *dots)
 {
 	int		i;
 	int		dotindxs[3];
@@ -62,7 +62,7 @@ float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height)
 		dots->dots[2 + RNDSGMNTS + i].z = height / 2;
 	}
 	polys->poly = malloc(sizeof(*polys->poly) * polys->polynum);
-	surfdefiner(polys->poly - 1, dots->dots, &polys->txtr, dots->dotsnum);
+	cylindersurfdefiner(polys->poly - 1, dots->dots, &polys->txtr, dots->dotsnum);
 	buttsurf(0, 2, &polys->poly[2 * RNDSGMNTS], dots->dots);
 	buttsurf(1, RNDSGMNTS + 2, &polys->poly[3 * RNDSGMNTS], dots->dots);
 	definecylindervrtxs(dots->dots, polys->poly, polys->polynum, &polys->txtr);

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 14:58:29 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 23:17:59 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/04 23:03:53 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@
 # endif
 
 # ifndef PRMTVS
-#  define PRMTVS "spplcy"
+#  define PRMTVS "spplcycnhp"
 # endif
 
 # ifndef NUMPRMTVS
@@ -360,21 +360,24 @@ typedef struct s_import {
 
 char	*avoidonelinevrtxs(t_vrtx vrtxs[3], char *line, t_import *imp);
 void	centroiddefiner(t_cart *dots, int dotsnum);
+float	coneparser(char *str, t_obj *obj, char *prog, void *mlx);
 void	crdstmdefiner(t_crdstm *crdstm);
 float	cylinderparser(char *str, t_obj *obj, char *prog, void *mlx);
 void	checkvrtxsnorms(t_vrtx vrtxs[3], t_cart *polynorm);
 int		file_check(char *file, char *prog, t_bool scenefile);
 void	ft_read_information(int fd, t_info *info);
+float	hyperboloidparser(char *str, t_obj *obj, char *prog, void *mlx);
 t_cart	*getcart(t_list *v, int indx);
-char	*getfilename(char *start, char *end);
+char	*getfilename(char *start, char *end, char *prog, t_bool txtr);
 void	modelparser(int fd, t_import *imp);
 char	*vrtxparser(char *line, t_list *vt, t_list *vn, t_vrtx *vrtx);
 char	*notendedline(char *line);
 float	objparser(char *line, t_obj *obj, char *prog, void *mlx);
 void	planeparser(char *str, t_obj *obj, char *prog, void *mlx);
-int		primitivedefiner(char *str);
+void	primitivesbuilder(char *str, t_list **objs, t_info *info,
+	t_rot *rot);
 float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx);
-void	txtrparsing(char *str, t_data *txtr, void *mlx, t_bool *checkerboard);
+void	txtrparsing(char *str, t_obj *obj, void *mlx, char *prog);
 
 // Parsing utilities.
 
@@ -382,6 +385,7 @@ float	ft_atof(const char *num);
 int		ft_clear_char_array(char **array);
 char	*ft_get_color_values(char *str, t_cart *color, char *prog);
 char	*ft_get_position_values(char *prog, char *str, t_cart *pos);
+float	inverseuv(float uv);
 char	*skipnumnspaces(char *str, t_bool onlyspaces);
 
 /*
@@ -391,14 +395,19 @@ So no 10.1 in simple integers.
 
 // Object-like elements information.
 
+void	buttsurf(int central, int strnum, t_poly *polys, t_cart *dots);
+void	buttvrtxing(t_poly *poly, t_data *txtr);
 int		circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols);
+float	conebuilder(t_dots *dots, t_polys *polys, float radius, float height);
 float	cylinderbuilder(t_dots *dots, t_polys *polys, float radius, float height);
+void	cylindersurfdefiner(t_poly *polys, t_cart *dots, void *txtr, int dotnum);
 void	cylindermapping(t_cart *dots, t_poly *polys, int polynum);
 void	definecylindervrtxs(t_cart *dots, t_poly *polys, int polynum, t_data *txtr);
 void	definespherevrtxs(t_cart *dots, t_poly *polys, int polynum);
 void	definepols(t_cart *dots, float radius, t_axis *rotcircle);
 void	polarjointing(t_cart *dots, t_poly *poly, void *txtr, int dotnum);
 void	polarsurfing(t_cart *dots, t_poly **poly, int lttd, void *txtr);
+void	repairbackpatch(t_vrtx vrtxs[3]);
 void	repairspherenormal(t_poly *poly, int dotindxs[3], t_cart *dots, void *txtr);
 float	spherebuilder(t_dots *dots, t_polys *polys, float radius);
 void	spheremapping(t_poly *polys, int polynum);

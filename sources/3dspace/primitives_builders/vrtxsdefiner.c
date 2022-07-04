@@ -44,6 +44,6 @@ void	definecylindervrtxs(t_cart *dots, t_poly *polys, int polynum, t_data *txtr)
 		cartbuilder(dot->x, dot->y, 0, &norm);
 		vectorsizing(1, &norm, &polys[i].vrtxs[2].srcnorm, NULL);
 	}
-	while (++i < polynum)
-		buttvrtxing(&polys[i], txtr);
+	while (i < polynum)
+		buttvrtxing(&polys[i++], txtr);
 }

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:13:25 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 19:05:18 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/04 18:35:35 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,8 @@ static void	vrtxfiller(t_list **v, char *line, t_bool normilize, t_bool txtr)
 		vectorsizing(1, vertex, vertex, NULL);
 	if (txtr)
 	{
-		vertex->x += (vertex->x < 0);
-		vertex->y += (vertex->y < 0);
+		vertex->x = inverseuv(vertex->x);
+		vertex->y = inverseuv(vertex->x);
 	}
 	ft_lstadd_back(v, ft_lstnew(vertex));
 }

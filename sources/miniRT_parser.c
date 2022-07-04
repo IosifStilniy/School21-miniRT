@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 22:09:22 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/04 22:03:43 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,39 +63,6 @@ static void	ft_fill_camera_info(char *str, t_list **cameras, char *prog)
 	if (*str != '\n' && *str)
 		customerr(prog, INVDEF, TRUE);
 	ft_lstadd_back(cameras, ft_lstnew(camera));
-}
-
-static void	primitivesbuilder(char *str, t_list **objs, t_info *info,
-	t_rot *rot)
-{
-	int		i;
-	t_obj	*obj;
-
-	str = skipnumnspaces(str, TRUE);
-	obj = malloc(sizeof(*obj));
-	ft_lstadd_front(objs, ft_lstnew(obj));
-	obj->rot = rot;
-	i = primitivedefiner(str);
-	if (i == NUMPRMTVS)
-	{
-		obj->outframe = objparser(str, obj, info->prog, info->mlx_ptr);
-		return ;
-	}
-	// if (i == NUMPRMTVS)
-	// 	return ;
-	str += 2;
-	str = ft_get_position_values(info->prog, str, &obj->crdstm.pos);
-	obj->colrs = malloc(sizeof(*obj->colrs));
-	obj->dots.scale = malloc(sizeof(*obj->dots.scale));
-	cartbuilder(1, 1, 1, obj->dots.scale);
-	if (!i)
-		obj->outframe = sphereparser(str, obj, info->prog, info->mlx_ptr);
-	else if (i == 1)
-		planeparser(str, obj, info->prog, info->mlx_ptr);
-	else if (i == 2)
-		obj->outframe = cylinderparser(str, obj, info->prog, info->mlx_ptr);
-	// else
-	// 	customerr(prog, INVDEF, TRUE);
 }
 
 static char	*definecameras(t_camera **wincam, t_list *cameras, t_res *wincntr)

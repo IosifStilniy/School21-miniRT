@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:12:06 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 18:12:38 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/04 21:21:48 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,20 @@ char	*avoidonelinevrtxs(t_vrtx vrtxs[3], char *line, t_import *imp)
 			&norm);
 	}
 	return (line);
+}
+
+float	inverseuv(float uv)
+{
+	float	intgr;
+
+	if (fabsf(uv) < 1)
+	{
+		uv += (uv < 0);
+		return (uv);
+	}
+	if (uv > 0)
+		uv = 1 - modff(uv, &intgr);
+	else if (uv < 0)
+		uv = 1 + modff(uv, &intgr);
+	return (uv);
 }

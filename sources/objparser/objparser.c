@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:13:01 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 21:51:05 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/04 21:53:24 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ char	*readfile(char *line, int *fd, char *prog)
 	bound = line;
 	while (!ft_strchr(SPACES, *bound))
 		bound++;
-	file = getfilename(line, bound);
+	file = getfilename(line, bound, prog, FALSE);
 	*fd = file_check(file, prog, FALSE);
 	free(file);
 	return (bound);
@@ -109,6 +109,6 @@ float	objparser(char *line, t_obj *obj, char *prog, void *mlx)
 	if (*line == '\n' || *line == '\0')
 		return (getoutframe(obj->dots.dots, obj->dots.dotsnum,
 				obj->dots.scale));
-	txtrparsing(line, &obj->polys.txtr, mlx, &obj->polys.checkerboard);
+	txtrparsing(line, obj, mlx, prog);
 	return (getoutframe(obj->dots.dots, obj->dots.dotsnum, obj->dots.scale));
 }
