@@ -19,10 +19,10 @@ void	repairbackpatch(t_vrtx vrtxs[3])
 
 static void	cylinderpolymapping(t_vrtx *vrtx, t_cart *dots)
 {
-	vrtx->uv.y = (dots[vrtx->dot].z < 0);
+	vrtx->uv.y = (dots[vrtx->dot].z > 0);
 	if (!vrtx->dot || vrtx->dot == 1)
 	{
-		vrtx->uv.x = (dots[vrtx->dot].z < 0);
+		vrtx->uv.x = (dots[vrtx->dot].z > 0);
 		return ;
 	}
 	vrtx->uv.x = (float)((vrtx->dot - 2) % RNDSGMNTS) / RNDSGMNTS;

@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:20:57 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/04 22:07:54 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 18:42:04 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,12 +98,22 @@ char	*skipnumnspaces(char *str, t_bool onlyspaces)
 
 void	txtrparsing(char *str, t_obj *obj, void *mlx, char *prog)
 {
+	char	*errtxt;
+	int		fd;
+
 	str = getfilename(str, str + ft_strlen(str), prog, TRUE);
 	if (!ft_strncmp("checkerboard", str, ft_strlen(str)))
 	{
 		obj->polys.checkerboard = TRUE;
 		free(str);
 		return ;
+	}
+	fd = open(str, O_RDWR);
+	close(fd);
+	if (fd == -1)
+	{
+		errtxt = ft_strjoin(str, " doesn't exist or not a file");
+		customerr(prog, errtxt, TRUE);
 	}
 	obj->polys.txtr.img = mlx_xpm_file_to_image(mlx, str,
 		&obj->polys.txtr.res.x, &obj->polys.txtr.res.y);

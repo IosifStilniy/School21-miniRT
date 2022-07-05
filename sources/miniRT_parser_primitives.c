@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:03:22 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/04 23:02:54 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 18:27:38 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,9 @@ float	coneparser(char *str, t_obj *obj, char *prog, void *mlx)
 	obj->polys.txtr.img = NULL;
 	obj->polys.checkerboard = FALSE;
 	if (*str == '\n' || *str == '\0')
-		return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
+		return (conebuilder(&obj->dots, &obj->polys, rad, height));
 	txtrparsing(str, obj, mlx, prog);
-	return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
+	return (conebuilder(&obj->dots, &obj->polys, rad, height));
 }
 
 float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx)
