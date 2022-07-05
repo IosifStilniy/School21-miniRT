@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   circle_builder.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/05 15:07:27 by ncarob            #+#    #+#             */
+/*   Updated: 2022/07/05 15:07:34 by ncarob           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	definepols(t_cart *dots, float radius, t_axis *rotcircle)
@@ -10,7 +22,8 @@ void	definepols(t_cart *dots, float radius, t_axis *rotcircle)
 	quartrot(&dots[1], rotcircle);
 }
 
-int	circledotsfiller(t_cart *dots, float radius, t_axis *rotcircle, t_bool skippols)
+int	circledotsfiller(t_cart *dots, float radius,
+			t_axis *rotcircle, t_bool skippols)
 {
 	float	step;
 	int		dotnum;

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   surfing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/05 15:08:48 by ncarob            #+#    #+#             */
+/*   Updated: 2022/07/05 15:09:07 by ncarob           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	surfing(t_poly *poly, int dotindxs[3], t_cart *dots, void *txtr)
@@ -5,11 +17,13 @@ void	surfing(t_poly *poly, int dotindxs[3], t_cart *dots, void *txtr)
 	poly->vrtxs[0].dot = dotindxs[0];
 	poly->vrtxs[1].dot = dotindxs[1];
 	poly->vrtxs[2].dot = dotindxs[2];
-	normbuilder(&dots[poly->vrtxs[0].dot], &dots[poly->vrtxs[1].dot], &dots[poly->vrtxs[2].dot], &poly->srcnorm);
+	normbuilder(&dots[poly->vrtxs[0].dot], &dots[poly->vrtxs[1].dot],
+		&dots[poly->vrtxs[2].dot], &poly->srcnorm);
 	poly->txtr = txtr;
 }
 
-void	repairspherenormal(t_poly *poly, int dotindxs[3], t_cart *dots, void *txtr)
+void	repairspherenormal(t_poly *poly, int dotindxs[3],
+			t_cart *dots, void *txtr)
 {
 	t_vrtx	buf;
 	float	scalar;
@@ -21,7 +35,8 @@ void	repairspherenormal(t_poly *poly, int dotindxs[3], t_cart *dots, void *txtr)
 	buf = poly->vrtxs[2];
 	poly->vrtxs[2] = poly->vrtxs[1];
 	poly->vrtxs[1] = buf;
-	normbuilder(&dots[poly->vrtxs[0].dot], &dots[poly->vrtxs[1].dot], &dots[poly->vrtxs[2].dot], &poly->srcnorm);
+	normbuilder(&dots[poly->vrtxs[0].dot], &dots[poly->vrtxs[1].dot],
+		&dots[poly->vrtxs[2].dot], &poly->srcnorm);
 }
 
 void	polarsurfing(t_cart *dots, t_poly **poly, int lttd, void *txtr)

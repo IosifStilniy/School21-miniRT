@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:02:31 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/04 21:06:11 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/05 14:59:02 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,10 @@ void	createcamobjs(t_list **camobjs, t_list *objs, t_cart **lightpos,
 	*lightpos = malloc(sizeof(**lightpos) * lightcount);
 }
 
-void	checkplanenorm(t_crdstm *plane, t_poly *poly, t_dots *dots)
+void	checkplanenorm(t_crdstm *plane, t_poly *poly)
 {
-	if (dots->dotsnum || plane->pos.z < 1)
-		return ;
 	poly->norm = plane->oz.vector;
-	if (plane->oz.vector.z <= __FLT_EPSILON__)
+	if (plane->oz.vector.z <= 0.001)
 		return ;
 	negativevector(&poly->norm);
 	vectorsizing(1, &poly->norm, &poly->norm, NULL);
@@ -55,7 +53,8 @@ void	objtrans(t_obj *camobj, t_obj *obj, t_trans *trans)
 	transpos(&camobj->crdstm.ox.vector, trans->crdstm);
 	transpos(&camobj->crdstm.oy.vector, trans->crdstm);
 	transpos(&camobj->crdstm.oz.vector, trans->crdstm);
-	checkplanenorm(&camobj->crdstm, camobj->polys.poly, &camobj->dots);
+	if (!camobj->dots.dotsnum && camobj->crdstm.pos.z > 1)
+		checkplanenorm(&camobj->crdstm, camobj->polys.poly);
 	engine(&camobj->dots, &camobj->polys, &camobj->crdstm, &camobj->outframe);
 }
 

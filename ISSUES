@@ -7,6 +7,8 @@ quit the program cleanly.
 
 ◦ Plane normals sometimes are strange. Plane doesnt reflect diffuse light sometimes.
 
+////// OBJ AND XPM if statements were incorrect. Changed that.
+////// 3dspace/engine ft_summvects instead of manually summing them.
 
 ◦
 ◦

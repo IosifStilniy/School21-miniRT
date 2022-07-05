@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   objparser_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:13:11 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 18:38:00 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 15:03:13 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*notendedline(char *line)
 	return (ft_strchr("123456789", *line));
 }
 
-char	*getfilename(char *start, char *end)
+char	*getfilename(char *start, char *end, char *prog, t_bool txtr)
 {
 	char	*file;
 	int		i;
@@ -41,6 +41,12 @@ char	*getfilename(char *start, char *end)
 	file[i] = '\0';
 	if (file[i - 1] == '\n')
 		file[i - 1] = '\0';
+	if (txtr && (ft_strlen(file) < 4 || ft_strncmp(".xpm",
+				file + ft_strlen(file) - 4, 3)))
+		customerr(prog, "needs file extension .xpm for textures\n", TRUE);
+	else if (!txtr && (ft_strlen(file) < 4 || ft_strncmp(".obj",
+				file + ft_strlen(file) - 4, 3)))
+		customerr(prog, "needs file extension .obj for 3D-model\n", TRUE);
 	return (file);
 }
 

@@ -1,9 +1,11 @@
 SRCS		=	$(wildcard sources/*.c)			\
-				$(wildcard sources/*/*.c)		\
-				$(wildcard sources/*/*/*.c)		\
+				$(wildcard sources/*/*.c)			\
+				$(wildcard sources/*/*/*.c)			\
 				$(wildcard get_next_line/*.c)	\
 
 OBJS		=	$(SRCS:.c=.o)
+
+B_OBJS		=	$(B_SRCS:.c=.o)
 
 HEAD		=	includes
 
@@ -35,6 +37,9 @@ RM			=	rm -f
 $(NAME):	$(HEADS) $(LIB) $(OBJS)
 			$(GCC) $(FLAGS) $(OBJS) $(LIB) $(DINLIB) $(FRAMEWORKS) -o $(NAME)
 
+$(B_NAME):	$(B_HEADS) $(LIB) $(B_OBJS)
+			$(GCC) $(FLAGS) $(B_OBJS) $(LIB)  $(FRAMEWORKS) -o $(B_NAME)
+
 $(LIB):		lib
 
 lib:		
@@ -44,10 +49,11 @@ lib:
 
 all:	$(NAME)
 
-bonus:	$(NAME)
+bonus:	$(B_NAME)
 	
 clean:
 		@$(MAKE) -C $(LIBPATH) clean
+		@$(MAKE) -C $(MLX) clean
 		$(RM) $(OBJS) $(B_OBJS)
 
 fclean: clean

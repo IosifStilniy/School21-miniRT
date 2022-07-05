@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_parser_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:20:57 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 18:03:36 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 14:58:50 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,13 +96,19 @@ char	*skipnumnspaces(char *str, t_bool onlyspaces)
 	return (str);
 }
 
-int	primitivedefiner(char *str)
+void	txtrparsing(char *str, t_obj *obj, void *mlx, char *prog)
 {
-	int	i;
-
-	i = -1;
-	while (++i < NUMPRMTVS)
-		if (!ft_strncmp(&PRMTVS[2 * i], str, 2))
-			break ;
-	return (i);
+	str = getfilename(str, str + ft_strlen(str), prog, TRUE);
+	if (!ft_strncmp("checkerboard", str, ft_strlen(str)))
+	{
+		obj->polys.checkerboard = TRUE;
+		free(str);
+		return ;
+	}
+	obj->polys.txtr.img = mlx_xpm_file_to_image(mlx, str,
+			&obj->polys.txtr.res.x, &obj->polys.txtr.res.y);
+	free(str);
+	obj->polys.txtr.addr = mlx_get_data_addr(obj->polys.txtr.img,
+			&obj->polys.txtr.bits_per_pixel, &obj->polys.txtr.line_length,
+			&obj->polys.txtr.endian);
 }
