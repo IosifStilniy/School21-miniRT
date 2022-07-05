@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/05 16:32:15 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/04 20:52:17 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/05 17:54:28 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	ft_hit_plane2(t_cart *nc, t_obj *object, t_cart *phit)
 {
-	nc[0] = object->polys.poly->norm;
+	nc[0] = object->crdstm.oz.vector;
 	if (object->polys.checkerboard)
 		ft_checker_plane(&object->crdstm.ox.vector,
 			&object->crdstm.oy.vector, &nc[1], phit);
@@ -31,14 +31,14 @@ void	ft_hit_plane(t_ray ray, t_cart *nc,
 	float	division;
 	t_cart	new_plane_pos;
 
-	ft_dotprod(&ray.dir, &object->polys.poly->norm, &division);
+	ft_dotprod(&ray.dir, &object->crdstm.oz.vector, &division);
 	if (division < __FLT_EPSILON__ && division > -__FLT_EPSILON__)
 	{
 		*closest_distance = INFINITY;
 		return ;
 	}
 	ft_subvects(&object->crdstm.pos, &ray.orig, &new_plane_pos);
-	ft_dotprod(&new_plane_pos, &object->polys.poly->norm, &ray_to_plane);
+	ft_dotprod(&new_plane_pos, &object->crdstm.oz.vector, &ray_to_plane);
 	ray_to_plane /= division;
 	if (ray_to_plane < __FLT_EPSILON__)
 	{

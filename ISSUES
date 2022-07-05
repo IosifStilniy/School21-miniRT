@@ -1,22 +1,17 @@
-◦ Clicking on the red cross on the window’s frame must close the window and
-quit the program cleanly.
+/*
 
-◦ Segfault while parsing if there is more information than is neccesary with cylinders
+	Segfaults if the texture file doesnt exist. problems with file_check???
 
-◦ Segfault while parsing if there are spaces after checkerboard/texture
+	Plane normals sometimes are strange. Plane doesnt reflect diffuse light sometimes.
 
-◦ Plane normals sometimes are strange. Plane doesnt reflect diffuse light sometimes.
 
-////// OBJ AND XPM if statements were incorrect. Changed that.
-////// 3dspace/engine ft_summvects instead of manually summing them.
 
-◦
-◦
-◦
-◦
-◦
-◦
-◦
-◦
-◦
-◦
+
+
+
+
+OBJ AND XPM if statements were incorrect. Changed that.
+3dspace/engine ft_summvects instead of manually summing them.
+TEXTURE AND OBJ FILENAME PARSING 
+
+*/

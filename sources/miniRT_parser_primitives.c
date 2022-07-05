@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:03:22 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/05 14:58:47 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/05 17:35:29 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void	planeparser(char *str, t_obj *obj, char *prog, void *mlx)
 	str = ft_get_position_values(prog, str, &norm);
 	if (comparef(vectorlength(&norm), 0, 0.001))
 		customerr(prog, INVDEF, TRUE);
-	vectorsizing(1, &norm, &norm, NULL);
+	ft_vectnorm(&norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &obj->crdstm.oz);
 	crdstmdefiner(&obj->crdstm);
 	str = ft_get_color_values(str, obj->colrs, prog);

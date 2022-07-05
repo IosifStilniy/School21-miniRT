@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:13:11 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/05 15:03:13 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/05 16:21:32 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,13 @@ char	*getfilename(char *start, char *end, char *prog, t_bool txtr)
 	file[i] = '\0';
 	if (file[i - 1] == '\n')
 		file[i - 1] = '\0';
-	if (txtr && (ft_strlen(file) < 4 || ft_strncmp(".xpm",
-				file + ft_strlen(file) - 4, 3)))
+	if (txtr && ft_strlen(file) == 12 && !ft_strncmp("checkerboard", file, 12))
+		return (file);
+	else if (txtr && (ft_strlen(file) < 4 || ft_strncmp(".xpm",
+				file + ft_strlen(file) - 4, 4)))
 		customerr(prog, "needs file extension .xpm for textures\n", TRUE);
 	else if (!txtr && (ft_strlen(file) < 4 || ft_strncmp(".obj",
-				file + ft_strlen(file) - 4, 3)))
+				file + ft_strlen(file) - 4, 4)))
 		customerr(prog, "needs file extension .obj for 3D-model\n", TRUE);
 	return (file);
 }
