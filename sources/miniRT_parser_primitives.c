@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_parser_primitives.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:03:22 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/05 17:35:29 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/05 19:25:28 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,9 @@ float	coneparser(char *str, t_obj *obj, char *prog, void *mlx)
 	obj->polys.txtr.img = NULL;
 	obj->polys.checkerboard = FALSE;
 	if (*str == '\n' || *str == '\0')
-		return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
+		return (conebuilder(&obj->dots, &obj->polys, rad, height));
 	txtrparsing(str, obj, mlx, prog);
-	return (cylinderbuilder(&obj->dots, &obj->polys, rad, height));
+	return (conebuilder(&obj->dots, &obj->polys, rad, height));
 }
 
 float	sphereparser(char *str, t_obj *obj, char *prog, void *mlx)

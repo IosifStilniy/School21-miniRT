@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 23:11:12 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/05 18:54:14 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,9 @@ static void	ft_trace_color(unsigned int *color, t_ray ray,
 			t_list *objects, t_info *info)
 {
 	t_obj	*obj;
-	t_cart	c_phit;
 	float	dist[2];
-	t_cart	nc0[2];
-	t_cart	nc1[2];
+	t_cart	nc0[3];
+	t_cart	nc1[3];
 
 	dist[0] = INFINITY;
 	dist[1] = INFINITY;
@@ -44,11 +43,12 @@ static void	ft_trace_color(unsigned int *color, t_ray ray,
 			dist[0] = dist[1];
 			nc0[1] = nc1[1];
 			nc0[0] = nc1[0];
+			nc0[2].x = obj->dots.dotsnum;
 		}
 		objects = objects->next;
 	}
-	ft_multvect(&ray.dir, dist[0], &c_phit);
-	ft_shadowing(color, &c_phit, nc0, info);
+	ft_multvect(&ray.dir, dist[0], &nc1[2]);
+	ft_shadowing(color, &nc1[2], nc0, info);
 }
 
 static void	ft_raytracing_algorithm(t_info *info)

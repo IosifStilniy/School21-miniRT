@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   defines.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/05 15:21:04 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/05 15:22:56 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/05 19:23:44 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,7 +186,7 @@
 # endif
 
 # ifndef NUMPRMTVS
-#  define NUMPRMTVS 3
+#  define NUMPRMTVS 5
 # endif
 
 # ifndef RNDSGMNTS

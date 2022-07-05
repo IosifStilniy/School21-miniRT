@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 19:57:32 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/05 17:59:13 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/05 18:53:26 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,20 +71,20 @@ static int	ft_is_in_shadow(t_cart *phit, t_list *object, t_cart *lightpos)
 	return (1);
 }
 
-static void	ft_get_color_value(float ck[3], t_cart *al_colr,
+static void	ft_get_color_value(t_cart *ck, t_cart *al_colr,
 			t_cart *dl_colr, t_cart *f_colr)
 {
 	if (al_colr)
 	{
-		f_colr->x = ck[0] * al_colr->x * 255.0f;
-		f_colr->y = ck[0] * al_colr->y * 255.0f;
-		f_colr->z = ck[0] * al_colr->z * 255.0f;
+		f_colr->x = ck->x * al_colr->x * 255.0f;
+		f_colr->y = ck->x * al_colr->y * 255.0f;
+		f_colr->z = ck->x * al_colr->z * 255.0f;
 	}
 	if (dl_colr)
 	{
-		f_colr->x += (ck[1] * dl_colr->x + ck[2] * dl_colr->x) * 255.0f;
-		f_colr->y += (ck[1] * dl_colr->y + ck[2] * dl_colr->y) * 255.0f;
-		f_colr->z += (ck[1] * dl_colr->z + ck[2] * dl_colr->z) * 255.0f;
+		f_colr->x += (ck->y * dl_colr->x + ck->z * dl_colr->x) * 255.0f;
+		f_colr->y += (ck->y * dl_colr->y + ck->z * dl_colr->y) * 255.0f;
+		f_colr->z += (ck->y * dl_colr->z + ck->z * dl_colr->z) * 255.0f;
 	}
 	if (f_colr->x > 255.0f)
 		f_colr->x = 255.0f;
@@ -97,65 +97,63 @@ static void	ft_get_color_value(float ck[3], t_cart *al_colr,
 /*
 	carts[0]	-->	t_cart	n_view; // normal vector from phit towards camera
 	carts[1]	-->	t_cart	n_light; // normal vector from phit towards light
-	carts[2]	-->	t_cart	n_object; // normal vector of object at phit
-	carts[3]	-->	t_cart	n_rlight; // reflected normal vector from phit	
-	towards light around object normal vector at phit 
-	carts[4]	--> t_cart	phit // used for and as tmp in between calculations
-	carts[5]	-->	t_cart	light_coefficient[0] // for ambient lightning
-	carts[6]	-->	t_cart	light_coefficient[1] // for df & sp lightning
-	carts[7]	-->	t_cart	color_object // objects color values
-	carts[8]	-->	t_cart	color	// final r g b values
+	ncd[0]		-->	t_cart	n_object; // normal vector of object at phit
+	carts[2]	-->	t_cart	n_rlight; // reflected normal vector from phit	
+					towards light around object normal vector at phit 
+	carts[3]	--> t_cart	phit // used for and as tmp in between calculations
+	carts[4]	-->	t_cart	light_coefficient[0] // for ambient lightning
+	carts[5]	-->	t_cart	light_coefficient[1] // for df & sp lightning
+	ncd[1]		-->	t_cart	color_object // objects color values
+	carts[6]	-->	t_cart	color	// final r g b values
+	carts[7]	--> t_cart	ck[3] --> 3 floats ambient diffuse spec intensity
 */
 
-void	ft_iter_lights(t_cart *carts, float *ck,
+void	ft_iter_lights(t_cart *carts, t_cart *ncd,
 			t_light *light, t_cart *lightpos)
 {
-	ft_invvect(&carts[4], &carts[0]);
+	ft_invvect(&carts[3], &carts[0]);
 	ft_vectnorm(&carts[0]);
-	ft_subvects(lightpos, &carts[4], &carts[1]);
+	ft_subvects(lightpos, &carts[3], &carts[1]);
 	ft_vectnorm(&carts[1]);
-	ft_dotprod(&carts[1], &carts[2], &ck[1]);
-	ft_multvect(&carts[2], 2 * ck[1], &carts[4]);
-	ft_subvects(&carts[4], &carts[1], &carts[3]);
-	ft_vectnorm(&carts[3]);
-	ck[1] = ft_max(ck[1], 0.0f) * light->light_ratio;
-	if (!ck[1])
+	ft_dotprod(&carts[1], &ncd[0], &carts[7].y);
+	ft_multvect(&ncd[0], 2 * carts[7].y, &carts[3]);
+	ft_subvects(&carts[3], &carts[1], &carts[2]);
+	ft_vectnorm(&carts[2]);
+	carts[7].y = ft_max(carts[7].y, 0.0f) * light->light_ratio;
+	if (!carts[7].y && !ncd[2].x)
 	{
-		ft_invvect(&carts[2], &carts[2]);
-		ft_dotprod(&carts[1], &carts[2], &ck[1]);
+		ft_invvect(&ncd[0], &ncd[0]);
+		ft_dotprod(&carts[1], &ncd[0], &carts[7].y);
 	}
-	ft_dotprod(&carts[3], &carts[0], &ck[2]);
-	ck[2] = powf(ft_max(ck[2], 0.0f), 150.0f) * light->light_ratio;
-	ft_multvects(&light->color, &carts[7], &carts[6]);
-	ft_get_color_value(ck, NULL, &carts[6], &carts[8]);
+	ft_dotprod(&carts[2], &carts[0], &carts[7].z);
+	carts[7].z = powf(ft_max(carts[7].z, 0.0f), 150.0f) * light->light_ratio;
+	ft_multvects(&light->color, &ncd[1], &carts[5]);
+	ft_get_color_value(&carts[7], NULL, &carts[5], &carts[6]);
 }
 
 void	ft_shadowing(unsigned int *color, t_cart *phit,
-			t_cart *nc, t_info *info)
+			t_cart *ncd, t_info *info)
 {
 	int		i;
 	t_list	*curr;
-	float	ck[3];
-	t_cart	carts[9];
+	t_cart	carts[8];
 
 	*color = 0;
 	if (phit->x == INFINITY || phit->y == INFINITY || phit->z == INFINITY)
 		return ;
-	ck[0] = info->a_light.light_ratio;
-	ft_multvects(&info->a_light.color, &nc[1], &carts[5]);
-	ft_get_color_value(ck, &carts[5], NULL, &carts[8]);
+	carts[7].x = info->a_light.light_ratio;
+	ft_multvects(&info->a_light.color, &ncd[1], &carts[4]);
+	ft_get_color_value(&carts[7], &carts[4], NULL, &carts[6]);
 	i = -1;
 	curr = info->lights;
-	carts[2] = nc[0];
-	carts[7] = nc[1];
-	carts[4] = *phit;
+	carts[3] = *phit;
 	while (curr)
 	{
 		if (ft_is_in_shadow(phit, info->win.camera->objs,
 				&info->win.camera->lightpos[++i]))
-			ft_iter_lights(carts, ck, curr->content,
+			ft_iter_lights(carts, ncd, curr->content,
 				&info->win.camera->lightpos[i]);
 		curr = curr->next;
 	}
-	*color = ft_create_trgb(0, carts[8].x, carts[8].y, carts[8].z);
+	*color = ft_create_trgb(0, carts[6].x, carts[6].y, carts[6].z);
 }
