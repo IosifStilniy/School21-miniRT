@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:21:33 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/05 19:22:12 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 22:39:49 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ void	ft_read_information(int fd, t_info *info)
 		free(line);
 		line = get_next_line(fd);
 	}
-	if (dets[0] != 1 || dets[1] != 1)
+	if (dets[0] != 1 || dets[1] < 1)
 		customerr(info->prog, DUPDET, TRUE);
 	info->camtext = definecameras(&info->win.camera, info->win.cameras,
 			&info->win.cntr);

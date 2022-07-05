@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:40 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 18:20:08 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 23:43:01 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,18 +72,20 @@ void	switchcam(t_camera **camera, t_list *cameras, int keycode,
 {
 	int		camcount;
 	int		i;
+	t_bool	done;
 
 	if (keycode == KEY_OPBRCT && *camera == cameras->content)
 		return ;
 	if (keycode == KEY_CLBRCT && *camera == ft_lstlast(cameras)->content)
 		return ;
 	camcount = ft_lstsize(cameras);
+	done = FALSE;
 	i = 0;
-	while (cameras && ++i)
+	while (cameras && !done && ++i)
 	{
-		if (keycode == KEY_OPBRCT && cameras->next->content == *camera)
+		if (keycode == KEY_OPBRCT && cameras->next->content == *camera && ++done)
 			*camera = cameras->content;
-		else if (keycode == KEY_CLBRCT && cameras->content == *camera)
+		else if (keycode == KEY_CLBRCT && cameras->content == *camera && ++done && ++i)
 			*camera = cameras->next->content;
 		cameras = cameras->next;
 	}
@@ -105,8 +107,13 @@ int	keyuphndlr(int keycode, t_info *info)
 			interfacebuilder(info);
 	}
 	else if (keycode == KEY_OPBRCT || keycode == KEY_CLBRCT)
+	{
 		switchcam(&info->win.camera, info->win.cameras, keycode,
 			&info->camtext);
+		ft_draw_screen(info);
+		if (info->keybrd.interface && !info->keybrd.render)
+			interfacebuilder(info);
+	}
 	else if (keycode == KEY_ESC)
 		exit(0);
 	return (0);
