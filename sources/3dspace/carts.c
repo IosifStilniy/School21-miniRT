@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   carts.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/05 15:04:32 by ncarob            #+#    #+#             */
+/*   Updated: 2022/07/05 15:04:33 by ncarob           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	cartbuilder(float x, float y, float z, t_cart *dot)
@@ -24,42 +36,19 @@ void	negativevector(t_cart *dot)
 	dot->z *= -1;
 }
 
-void	vectodot(t_cart *vector, t_cart *start, t_bool normilize)
+void	vectodot(t_cart *vector, t_cart *start)
 {
-	float	length;
-
 	vector->x += start->x;
 	vector->y += start->y;
 	vector->z += start->z;
-	if (!normilize)
-		return ;
-	length = sqrtf(pow(vector->x, 2) + pow(vector->y, 2) + pow(vector->z, 2));
-	if (comparef(length, 0, 0.001))
-		return ;
-	vector->x /= length;
-	vector->y /= length;
-	vector->z /= length;
 }
 
-void	crdstmcopy(t_crdstm *src, t_crdstm *dst)
+void	dottranslation(t_cart *dot, t_cart *direction, float step)
 {
-	cartcopy(&src->pos, &dst->pos, 1);
-	cartcopy(&src->ox.vector, &dst->ox.vector, 1);
-	cartcopy(&src->oy.vector, &dst->oy.vector, 1);
-	cartcopy(&src->oz.vector, &dst->oz.vector, 1);
-}
+	t_cart	res;
 
-void	dotstranslation(t_cart *dots, int dotnum, t_cart *direction, float step)
-{
-	t_axis	res;
-	int		i;
-
-	vectorsizing(step, direction, &res.vector, &res.length);
-	i = -1;
-	while (++i < dotnum)
-	{
-		dots[i].x += res.vector.x;
-		dots[i].y += res.vector.y;
-		dots[i].z += res.vector.z;
-	}
+	vectorsizing(step, direction, &res, NULL);
+	dot->x += res.x;
+	dot->y += res.y;
+	dot->z += res.z;
 }

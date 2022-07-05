@@ -1,15 +1,36 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   vectors.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:20:41 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/05 15:07:22 by ncarob           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	vectorbuilder(float x, float y, float z, t_axis *vector)
 {
 	vector->length = sqrtf(x * x + y * y + z * z);
-	cartbuilder(x / vector->length, y / vector->length, z / vector->length,
-		&vector->vector);
+	if (vector->length)
+		cartbuilder(x / vector->length, y / vector->length, z / vector->length,
+			&vector->vector);
+	else
+		cartbuilder(0, 0, 0, &vector->vector);
 	if (!vector->ang)
 		vector->ang = DEFANG * M_PI / 180;
 }
 
-void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm)
+float	vectorlength(t_cart *dot)
+{
+	return (sqrtf(powf(dot->x, 2) + powf(dot->y, 2) + powf(dot->z, 2)));
+}
+
+void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2,
+	t_cart *norm)
 {
 	t_cart	d1;
 	t_cart	d2;
@@ -17,9 +38,11 @@ void	normbuilder(t_cart *centraldot, t_cart *dot1, t_cart *dot2, t_cart *norm)
 
 	if (centraldot)
 	{
-		cartbuilder(dot1->x - centraldot->x, dot1->y - centraldot->y, dot1->z - centraldot->z, &d1);
+		d1 = *dot1;
+		objtoobjpos(centraldot, &d1);
 		dot1 = &d1;
-		cartbuilder(dot2->x - centraldot->x, dot2->y - centraldot->y, dot2->z - centraldot->z, &d2);
+		d2 = *dot2;
+		objtoobjpos(centraldot, &d2);
 		dot2 = &d2;
 	}
 	norm->x = dot1->y * dot2->z - dot1->z * dot2->y;
@@ -55,15 +78,8 @@ void	axisbuilder(t_cart *v1, t_cart *v2, t_axis *axis)
 	axis->vector.z /= axis->length;
 }
 
-void	vectortoobj(t_cart *from, t_cart *to, t_axis *vector)
-{
-	vector->vector.x = to->x - from->x;
-	vector->vector.y = to->y - from->y;
-	vector->vector.z = to->z - from->z;
-	vector->length = sqrtf(powf(vector->vector.x, 2) + powf(vector->vector.y, 2) + powf(vector->vector.z, 2));
-}
-
-void	vectorsizing(float newlength, t_cart *src, t_cart *vecres, float *lngthres)
+void	vectorsizing(float newlength, t_cart *src, t_cart *vecres,
+	float *lngthres)
 {
 	float	realsize;
 

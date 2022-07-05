@@ -1,24 +1,75 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   movement.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:20:54 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/05 21:30:29 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
-void	camshifting(t_camera *camera, t_cart *camdir, t_cart *objsdir, float step)
+void	camfromobjcrdstm(t_crdstm *cam, t_attach *attached)
 {
-	t_obj	*obj;
-	t_list	*crsr;
-	t_cart	res;
+	dotcrdstmtrnsltn(&attached->crdstm.pos, &cam->pos, NULL,
+		&attached->obj->crdstm);
+	cam->pos.x += attached->obj->crdstm.pos.x;
+	cam->pos.y += attached->obj->crdstm.pos.y;
+	cam->pos.z += attached->obj->crdstm.pos.z;
+	dotcrdstmtrnsltn(&attached->crdstm.ox.vector, &cam->ox.vector, NULL,
+		&attached->obj->crdstm);
+	dotcrdstmtrnsltn(&attached->crdstm.oy.vector, &cam->oy.vector, NULL,
+		&attached->obj->crdstm);
+	dotcrdstmtrnsltn(&attached->crdstm.oz.vector, &cam->oz.vector, NULL,
+		&attached->obj->crdstm);
+}
 
-	vectorsizing(step, camdir, &res, NULL);
-	camera->crdstm.pos.x += res.x;
-	camera->crdstm.pos.y += res.y;
-	camera->crdstm.pos.z += res.z;
-	vectorsizing(step, objsdir, &res, NULL);
-	crsr = camera->objs;
-	while (crsr)
+void	camshifting(t_camera *camera, t_info *info, t_cart *dir, float step)
+{
+	t_cart	camdir;
+
+	camdir = camera->crdstm.ox.vector;
+	if (dir->y)
+		camdir = camera->crdstm.oy.vector;
+	else if (dir->z)
+		camdir = camera->crdstm.oz.vector;
+	if (dir->x + dir->y + dir->z < 0)
+		negativevector(&camdir);
+	vectorsizing(step, &camdir, &camdir, NULL);
+	if (camera->attached.obj)
 	{
-		obj = objcast(crsr);
-		obj->crdstm.pos.x += res.x;
-		obj->crdstm.pos.y += res.y;
-		obj->crdstm.pos.z += res.z;
-		vrtxtranslation(obj->dots.pos, obj->dots.dotsnum, objsdir, step);
-		crsr = crsr->next;
+		vectodot(&camera->attached.obj->crdstm.pos, &camdir);
+		camfromobjcrdstm(&camera->crdstm, &camera->attached);
 	}
+	else
+		vectodot(&camera->crdstm.pos, &camdir);
+	initview(info->objects, camera, info->lights);
+}
+
+void	camrotating(t_camera *camera, t_info *info, int x, int y)
+{
+	t_axis	curpos;
+	t_cart	oz;
+	t_axis	axis;
+
+	cartbuilder(x, y, 1000 * info->interface.settings.sens.mval,
+		&curpos.vector);
+	vectorsizing(1, &curpos.vector, &curpos.vector, NULL);
+	cartbuilder(0, 0, 1, &oz);
+	axisbuilder(&oz, &curpos.vector, &axis);
+	if (comparef(axis.ang, 0, 0.1 * M_PI / 180))
+		return ;
+	dotcrdstmtrnsltn(&axis.vector, &curpos.vector, NULL, &camera->crdstm);
+	curpos.ang = axis.ang;
+	if (camera->attached.obj)
+	{
+		crdstmrotbyaxis(&camera->attached.obj->crdstm, &curpos, NULL);
+		camfromobjcrdstm(&camera->crdstm, &camera->attached);
+	}
+	else
+		crdstmrotbyaxis(&camera->crdstm, &curpos, NULL);
+	initview(info->objects, camera, info->lights);
 }

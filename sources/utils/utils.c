@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/03 18:11:31 by dcelsa            #+#    #+#             */
+/*   Updated: 2022/07/05 21:29:05 by dcelsa           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 t_bool	comparef(float num, float ref, float interval)
@@ -5,11 +17,11 @@ t_bool	comparef(float num, float ref, float interval)
 	return (ref - interval < num && num < ref + interval);
 }
 
-int	file_check(char *file, char *prog)
+int	file_check(char *file, char *prog, t_bool scenefile)
 {
 	int	fd;
 
-	if (!ft_strnstr(file + ft_strlen(file) - 3, ".rt", -1))
+	if (scenefile && !ft_strnstr(file + ft_strlen(file) - 3, ".rt", -1))
 		customerr(prog, INVINP, FALSE);
 	fd = 0;
 	if (!access(file, F_OK) && !access(file, R_OK))
@@ -24,6 +36,11 @@ int	file_check(char *file, char *prog)
 }
 
 t_obj	*objcast(t_list *lst)
+{
+	return (lst->content);
+}
+
+t_light	*lightcast(t_list *lst)
 {
 	return (lst->content);
 }

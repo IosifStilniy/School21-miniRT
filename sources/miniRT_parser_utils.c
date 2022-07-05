@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/03 17:20:57 by ncarob            #+#    #+#             */
-/*   Updated: 2022/06/09 22:02:43 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/07/05 19:59:14 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ float	ft_atof(const char *num)
 		result += ((float)(*num++ - '0')) / divider;
 		divider *= 10;
 	}
+	if (*num == 'E' && ++num && ++num)
+		result /= powf(10, ft_atoi(num));
 	return (sign * result);
 }
 
@@ -46,22 +48,19 @@ char	*ft_get_color_values(char *str, t_cart *color, char *prog)
 	color->x = ft_atoi(str) / 255.0f;
 	if (!(0 <= color->x && color->x <= 1))
 		customerr(prog, INVDEF, TRUE);
-	while (ft_strchr(NUMSPACES, *str))
-		str++;
+	str = skipnumnspaces(str, FALSE);
 	if (*str++ != ',')
 		customerr(prog, INVCRD, TRUE);
 	color->y = ft_atoi(str) / 255.0f;
 	if (!(0 <= color->y && color->y <= 1))
 		customerr(prog, INVDEF, TRUE);
-	while (ft_strchr(NUMSPACES, *str))
-		str++;
+	str = skipnumnspaces(str, FALSE);
 	if (*str++ != ',')
 		customerr(prog, INVCRD, TRUE);
 	color->z = ft_atoi(str) / 255.0f;
 	if (!(0 <= color->z && color->z <= 1))
 		customerr(prog, INVDEF, TRUE);
-	while (ft_strchr("0123456789", *str))
-		str++;
+	str = skipnumnspaces(str, FALSE);
 	return (str);
 }
 
@@ -72,28 +71,54 @@ char	*ft_get_position_values(char *prog, char *str, t_cart *pos)
 	if (!ft_strchr("-+0123456789.", *str))
 		customerr(prog, INVDEF, TRUE);
 	pos->x = ft_atof(str);
-	while (ft_strchr(NUMSPACES, *str))
-		str++;
+	str = skipnumnspaces(str, FALSE);
 	if (*str++ != ',')
 		customerr(prog, INVCRD, TRUE);
 	pos->y = ft_atof(str);
-	while (ft_strchr(NUMSPACES, *str))
-		str++;
+	str = skipnumnspaces(str, FALSE);
 	if (*str++ != ',')
 		customerr(prog, INVCRD, TRUE);
 	pos->z = ft_atof(str);
-	while (ft_strchr("-+0123456789.", *str))
-		str++;
+	str = skipnumnspaces(str, FALSE);
 	return (str);
 }
 
-char	*skipnumnspaces(char *str)
+char	*skipnumnspaces(char *str, t_bool onlyspaces)
 {
 	while (ft_strchr(SPACES, *str))
 		str++;
+	if (onlyspaces)
+		return (str);
 	while (ft_strchr("+-0123456789.", *str))
 		str++;
 	while (ft_strchr(SPACES, *str))
 		str++;
 	return (str);
+}
+
+void	txtrparsing(char *str, t_obj *obj, void *mlx, char *prog)
+{
+	char	*errtxt;
+	int		fd;
+
+	str = getfilename(str, str + ft_strlen(str), prog, TRUE);
+	if (!ft_strncmp("checkerboard", str, ft_strlen(str)))
+	{
+		obj->polys.checkerboard = TRUE;
+		free(str);
+		return ;
+	}
+	fd = open(str, O_RDWR);
+	close(fd);
+	if (fd == -1)
+	{
+		errtxt = ft_strjoin(str, " doesn't exist or not a file");
+		customerr(prog, errtxt, TRUE);
+	}
+	obj->polys.txtr.img = mlx_xpm_file_to_image(mlx, str,
+			&obj->polys.txtr.res.x, &obj->polys.txtr.res.y);
+	free(str);
+	obj->polys.txtr.addr = mlx_get_data_addr(obj->polys.txtr.img,
+			&obj->polys.txtr.bits_per_pixel, &obj->polys.txtr.line_length,
+			&obj->polys.txtr.endian);
 }

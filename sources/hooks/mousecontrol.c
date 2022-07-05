@@ -6,84 +6,68 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:40:06 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/06/10 18:33:09 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 21:29:55 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-void	camrotating(t_camera *camera, void *win, int x, int y)
+t_bool	attachobj(t_camera *camera, t_obj *camobj, t_list *objs)
 {
-	t_axis	curpos;
-	t_cart	oz;
-	t_axis	axis;
-	t_list	*crsr;
-	t_obj	*obj;
-
-	cartbuilder(x, -y, 4000, &curpos.vector);
-	vectorsizing(1, &curpos.vector, &curpos.vector, NULL);
-	cartbuilder(0, 0, 1, &oz);
-	axisbuilder(&oz, &curpos.vector, &axis);
-	if (comparef(axis.ang, 0, 0.5 * M_PI / 180))
-		return ;
-	mlx_mouse_move(win, 0, 270);
-	dotcrdstmtrnsltn(&axis.vector, &curpos.vector, 1, &camera->crdstm);
-	crdstmrotbyaxis(&camera->crdstm, &curpos, NULL);
-	negativevector(&axis.vector);
-	quartrot(&camera->lightpos, &axis);
-	crsr = camera->objs;
-	while (crsr)
+	if (!camobj || camera->attached.obj == camobj || !camobj->dots.dotsnum)
 	{
-		obj = crsr->content;
-		crdstmrotbyaxis(&obj->crdstm, &axis, NULL);
-		quartrot(&obj->crdstm.pos, &axis);
-		engine(&obj->dots, &obj->polys, &obj->crdstm);
-		crsr = crsr->next;
+		camera->attached.obj = NULL;
+		return (FALSE);
 	}
+	while (objs && objcast(objs)->dots.dots != camobj->dots.dots)
+		objs = objs->next;
+	if (!objs)
+		return (FALSE);
+	camera->attached.obj = objs->content;
+	camera->attached.crdstm.pos.x = 0;
+	camera->attached.crdstm.pos.y = -1.3 * camobj->outframe;
+	camera->attached.crdstm.pos.z = -1.3 * camobj->outframe;
+	vectorbuilder(0, 0, 1, &camera->attached.crdstm.oz);
+	crdstmdefiner(&camera->attached.crdstm);
+	camfromobjcrdstm(&camera->crdstm, &camera->attached);
+	return (TRUE);
 }
 
-// void	mouserotating(t_info *info, int x, int y)
-// {
-// 	vectorbuilder(x, y, info->win->view.dstnc, &info->mouse.vpos.v2);
-// 	if (info->keybrd.zrot)
-// 		vectorbuilder(x, y, 0, &info->mouse.vpos.v2);
-// 	axisbuilder(&info->mouse.vpos.v2, &info->mouse.vpos.v1,
-// 		&info->win->view.axis);
-// 	if (info->keybrd.zrot)
-// 		axisbuilder(&info->mouse.vpos.v1, &info->mouse.vpos.v2,
-// 			&info->win->view.axis);
-// 	info->win->view.axis.ang *= 3;
-// 	engine(info->win, info->dots);
-// 	imgdefiner(info->img, info->win, info->mlx);
-// 	paintpic(info->dots, info->img, info->win, info->mlx);
-// 	vectorbuilder(info->mouse.vpos.v2.vector.x, info->mouse.vpos.v2.vector.y,
-// 		info->mouse.vpos.v2.vector.z, &info->mouse.vpos.v1);
-// }
+int	mousemove(int x, int y, t_info *info)
+{
+	if (info->keybrd.interface)
+		return (0);
+	camrotating(info->win.camera, info, x, y);
+	ft_draw_screen(info);
+	mlx_mouse_move(info->win.win, 0, info->mouse.yshift);
+	return (0);
+}
 
-// void	mouseshifting(t_info *info, int x, int y)
-// {
-// 	engine(info->win, info->dots);
-// 	imgdefiner(info->img, info->win, info->mlx);
-// 	paintpic(info->dots, info->img, info->win, info->mlx);
-// 	info->img->shift.crdstm.x = x - info->mouse.pos.x;
-// 	info->img->shift.crdstm.y = y - info->mouse.pos.y;
-// }
+int	btnup(int btn, int x, int y, t_info *info)
+{
+	t_axis	vec;
+	t_bool	refresh;
 
-// void	mousezooming(t_info *info, int y)
-// {
-// 	if (info->keybrd.zoom)
-// 	{
-// 		info->win->view.scale.old = info->win->view.scale.cur;
-// 		info->win->view.scale.cur += info->mouse.pos.y - y
-// 			+ info->img->shift.crdstm.y;
-// 	}
-// 	if (info->keybrd.focus)
-// 		info->win->view.focus += info->mouse.pos.y - y
-// 			+ info->img->shift.crdstm.y;
-// 	info->win->view.scale.cur *= (info->win->view.scale.cur > 0);
-// 	info->win->view.focus *= (info->win->view.focus > 0);
-// 	engine(info->win, info->dots);
-// 	imgdefiner(info->img, info->win, info->mlx);
-// 	paintpic(info->dots, info->img, info->win, info->mlx);
-// 	info->mouse.pos.y = y - info->img->shift.crdstm.y;
-// }
+	if (btn != LMB || !info->keybrd.interface)
+		return (0);
+	vectorbuilder(x - info->win.cntr.x, y - info->win.cntr.y,
+		info->win.camera->focus, &vec);
+	refresh = changeparams(x, y, &info->interface, &info->win);
+	if (!(info->interface.frame.x <= x && x <= info->win.res.x)
+		|| !(0 <= y && y <= info->interface.frame.y))
+		info->interface.selected = selectobject(info->win.camera->objs,
+				&vec.vector);
+	else if (inbounds(info->interface.attach, x, y)
+		&& attachobj(info->win.camera, info->interface.selected,
+			info->objects) && ++refresh)
+		info->interface.selected = NULL;
+	if (refresh)
+		initview(info->objects, info->win.camera, info->lights);
+	if (refresh)
+		ft_draw_screen(info);
+	if (!refresh)
+		mlx_put_image_to_window(info->mlx_ptr, info->win.win, info->data.img,
+			0, 0);
+	interfacebuilder(info);
+	return (0);
+}
