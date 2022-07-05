@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_coloring.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 19:57:32 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 19:21:42 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 17:59:13 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,11 @@ void	ft_iter_lights(t_cart *carts, float *ck,
 	ft_subvects(&carts[4], &carts[1], &carts[3]);
 	ft_vectnorm(&carts[3]);
 	ck[1] = ft_max(ck[1], 0.0f) * light->light_ratio;
+	if (!ck[1])
+	{
+		ft_invvect(&carts[2], &carts[2]);
+		ft_dotprod(&carts[1], &carts[2], &ck[1]);
+	}
 	ft_dotprod(&carts[3], &carts[0], &ck[2]);
 	ck[2] = powf(ft_max(ck[2], 0.0f), 150.0f) * light->light_ratio;
 	ft_multvects(&light->color, &carts[7], &carts[6]);

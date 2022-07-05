@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   vrtxsdefiner.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/05 15:09:10 by ncarob            #+#    #+#             */
+/*   Updated: 2022/07/05 15:09:22 by ncarob           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	definespherevrtxs(t_cart *dots, t_poly *polys, int polynum)
@@ -8,9 +20,12 @@ void	definespherevrtxs(t_cart *dots, t_poly *polys, int polynum)
 	while (++i < polynum)
 	{
 		polys[i].interpolate = TRUE;
-		vectorsizing(1, &dots[polys[i].vrtxs[0].dot], &polys[i].vrtxs[0].srcnorm, NULL);
-		vectorsizing(1, &dots[polys[i].vrtxs[1].dot], &polys[i].vrtxs[1].srcnorm, NULL);
-		vectorsizing(1, &dots[polys[i].vrtxs[2].dot], &polys[i].vrtxs[2].srcnorm, NULL);
+		vectorsizing(1, &dots[polys[i].vrtxs[0].dot],
+			&polys[i].vrtxs[0].srcnorm, NULL);
+		vectorsizing(1, &dots[polys[i].vrtxs[1].dot],
+			&polys[i].vrtxs[1].srcnorm, NULL);
+		vectorsizing(1, &dots[polys[i].vrtxs[2].dot],
+			&polys[i].vrtxs[2].srcnorm, NULL);
 	}	
 }
 
@@ -23,7 +38,8 @@ void	buttvrtxing(t_poly *poly, t_data *txtr)
 	poly->vrtxs[2].srcnorm = poly->srcnorm;
 }
 
-void	definecylindervrtxs(t_cart *dots, t_poly *polys, int polynum, t_data *txtr)
+void	definecylindervrtxs(t_cart *dots, t_poly *polys,
+			int polynum, t_data *txtr)
 {
 	t_cart	norm;
 	t_cart	*dot;

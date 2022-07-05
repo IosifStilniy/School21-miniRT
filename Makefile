@@ -27,11 +27,11 @@ DINLIB		=	libmlx.dylib
 
 GCC			=	gcc
 
-FLAGS		=	-Wall -Werror -Wextra -o3 -Imlx -I$(HEAD) -I$(LIBPATH) -I$(GNL_HEAD) #-fsanitize=address #-g
+FLAGS		=	-Wall -Werror -Wextra -o2 -Imlx -I$(HEAD) -I$(LIBPATH) -I$(GNL_HEAD) #-fsanitize=address #-g
 
 RM			=	rm -f
 
-%.o:	%.c $(HEAD)/minirt.h
+%.o:	%.c $(wildcard $(HEAD)/*.h)
 		$(GCC) $(FLAGS) -c $< -o $@ 
 
 $(NAME):	$(HEADS) $(LIB) $(OBJS)

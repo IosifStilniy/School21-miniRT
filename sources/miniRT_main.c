@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miniRT_main.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 13:34:09 by ncarob            #+#    #+#             */
-/*   Updated: 2022/07/03 21:25:20 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 16:57:12 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	pudge(t_info *info)
 	mlx_hook(info->win.win, 3, 1L << 1, &keyuphndlr, info);
 	mlx_hook(info->win.win, 5, 1L << 3, &btnup, info);
 	mlx_hook(info->win.win, 6, 1L << 6, &repairmouse, info);
+	mlx_hook(info->win.win, X_EVENT_KEY_EXIT, 0, &ft_exit, NULL);
 }
 
 void	initobjs(char *file, t_info *info)
@@ -71,8 +72,6 @@ void	initobjs(char *file, t_info *info)
 	info->win.cameras = NULL;
 	ft_read_information(fd, info);
 	close(fd);
-	if (ft_lstsize(info->lights) != 1)
-		customerr(info->prog, DUPDET, TRUE);
 	createframerouts(info->objects);
 	crsr = info->win.cameras;
 	while (crsr)

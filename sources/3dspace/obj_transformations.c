@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   obj_transformations.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:20:45 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 22:33:54 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 15:07:17 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	objtoobjpos(t_cart *center, t_cart *dot)
 	dot->z -= center->z;
 }
 
-static void exeptionhndlr(t_crdstm *crdstm)
+static void	exeptionhndlr(t_crdstm *crdstm)
 {
 	if (crdstm->oz.vector.x > 0)
 	{

@@ -52,9 +52,6 @@ static void	conemapping(t_cart *dots, t_poly *polys, int polynum)
 		polys[i].vrtxs[0].uv.x = (polys[i].vrtxs[1].uv.x + polys[i].vrtxs[2].uv.x) / 2;
 	}
 	polys[--i].vrtxs[0].uv.x = 1.f - 0.5f / RNDSGMNTS;
-	polys[i].vrtxs[1].uv.x = 1.f;
-	// printf("uvx: %.3f\n", polys[i].vrtxs[1].uv.x);
-	// printf("uvx: %.3f\n", polys[i].vrtxs[2].uv.x);
 }
 
 float	conebuilder(t_dots *dots, t_polys *polys, float radius, float height)

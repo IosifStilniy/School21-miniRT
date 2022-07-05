@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cylindertxtrmapping.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/05 15:08:19 by ncarob            #+#    #+#             */
+/*   Updated: 2022/07/05 15:08:20 by ncarob           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	repairbackpatch(t_vrtx vrtxs[3])
@@ -19,10 +31,10 @@ void	repairbackpatch(t_vrtx vrtxs[3])
 
 static void	cylinderpolymapping(t_vrtx *vrtx, t_cart *dots)
 {
-	vrtx->uv.y = (dots[vrtx->dot].z > 0);
+	vrtx->uv.y = (dots[vrtx->dot].z < 0);
 	if (!vrtx->dot || vrtx->dot == 1)
 	{
-		vrtx->uv.x = (dots[vrtx->dot].z > 0);
+		vrtx->uv.x = (dots[vrtx->dot].z < 0);
 		return ;
 	}
 	vrtx->uv.x = (float)((vrtx->dot - 2) % RNDSGMNTS) / RNDSGMNTS;

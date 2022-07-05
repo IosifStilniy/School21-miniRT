@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 02:39:57 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/03 22:26:52 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 15:07:03 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,16 +103,18 @@ void	engine(t_dots *dots, t_polys *polys, t_crdstm *crdstm, float *outframe)
 		lng = vectorlength(&dots->pos[i]);
 		if (*outframe < lng)
 			*outframe = lng;
-		dots->pos[i].x += crdstm->pos.x;
-		dots->pos[i].y += crdstm->pos.y;
-		dots->pos[i].z += crdstm->pos.z;
+		ft_summvects(&dots->pos[i], &crdstm->pos, &dots->pos[i]);
 	}
 	i = -1;
 	while (++i < polys->polynum)
 	{
-		dotcrdstmtrnsltn(&polys->poly[i].srcnorm, &polys->poly[i].norm, NULL, crdstm);
-		dotcrdstmtrnsltn(&polys->poly[i].vrtxs[0].srcnorm, &polys->poly[i].vrtxs[0].norm, NULL, crdstm);
-		dotcrdstmtrnsltn(&polys->poly[i].vrtxs[1].srcnorm, &polys->poly[i].vrtxs[1].norm, NULL, crdstm);
-		dotcrdstmtrnsltn(&polys->poly[i].vrtxs[2].srcnorm, &polys->poly[i].vrtxs[2].norm, NULL, crdstm);
+		dotcrdstmtrnsltn(&polys->poly[i].srcnorm,
+			&polys->poly[i].norm, NULL, crdstm);
+		dotcrdstmtrnsltn(&polys->poly[i].vrtxs[0].srcnorm,
+			&polys->poly[i].vrtxs[0].norm, NULL, crdstm);
+		dotcrdstmtrnsltn(&polys->poly[i].vrtxs[1].srcnorm,
+			&polys->poly[i].vrtxs[1].norm, NULL, crdstm);
+		dotcrdstmtrnsltn(&polys->poly[i].vrtxs[2].srcnorm,
+			&polys->poly[i].vrtxs[2].norm, NULL, crdstm);
 	}
 }

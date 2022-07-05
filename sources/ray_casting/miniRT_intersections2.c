@@ -77,7 +77,7 @@ void	ft_hit_poly2(t_obj *obj, float *k, int *i, t_cart *nc)
 	ft_multvect(&poly->vrtxs[2].norm, k[1], &phit);
 	ft_summvects(&phit, &nc[0], &nc[0]);
 	ft_vectnorm(&nc[0]);
-	if (!obj->polys.txtr.img)
+	if (!obj->polys.txtr.img && !obj->polys.checkerboard)
 		nc[1] = *obj->colrs;
 	else
 	{
@@ -86,7 +86,7 @@ void	ft_hit_poly2(t_obj *obj, float *k, int *i, t_cart *nc)
 		ft_summvects(&phit, &nc[1], &nc[1]);
 		ft_multvect(&poly->vrtxs[2].uv, k[1], &phit);
 		ft_summvects(&phit, &nc[1], &nc[1]);
-		if (obj->polys.checkerboard)
+		if (obj->polys.checkerboard && !obj->polys.txtr.img)
 			ft_checker_poly(&nc[1]);
 		else
 			my_mlx_get_pixel(poly->txtr, &nc[1]);

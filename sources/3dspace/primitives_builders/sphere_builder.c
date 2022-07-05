@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sphere_builder.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/05 15:08:24 by ncarob            #+#    #+#             */
+/*   Updated: 2022/07/05 15:08:35 by ncarob           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 static void	surfdefiner(t_cart *dots, t_poly **poly, int dotnum, void *txtr)
@@ -78,13 +90,15 @@ float	spherebuilder(t_dots *dots, t_polys *polys, float radius)
 	dotfiller(dots->dots, polys->poly - 1, radius, &polys->txtr);
 	polyshift = ((RNDSGMNTS - 2) * (RNDSGMNTS / 2 - 2)) * 2 - 1;
 	if (polyshift > 0)
-		jointing(dots->dots, polys->poly + polyshift, dots->dotsnum, &polys->txtr);
+		jointing(dots->dots, polys->poly + polyshift,
+			dots->dotsnum, &polys->txtr);
 	polyshift = polys->polynum - RNDSGMNTS * 2 - 1;
 	buf = polys->poly + polyshift;
 	lttd = 0;
 	while (++lttd < RNDSGMNTS / 2)
 		polarsurfing(dots->dots, &buf, lttd, &polys->txtr);
-	polarjointing(dots->dots, polys->poly + polys->polynum - 5, &polys->txtr, dots->dotsnum);
+	polarjointing(dots->dots, polys->poly + polys->polynum - 5,
+		&polys->txtr, dots->dotsnum);
 	definespherevrtxs(dots->dots, polys->poly, polys->polynum);
 	spheremapping(polys->poly, polys->polynum);
 	return (radius);

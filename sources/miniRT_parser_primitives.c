@@ -6,7 +6,7 @@
 /*   By: dcelsa <dcelsa@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:03:22 by dcelsa            #+#    #+#             */
-/*   Updated: 2022/07/05 18:27:38 by dcelsa           ###   ########.fr       */
+/*   Updated: 2022/07/05 19:25:28 by dcelsa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,10 @@ float	hyperboloidparser(char *str, t_obj *obj, char *prog, void *mlx)
 	i = -1;
 	while (++i < RNDSGMNTS)
 		quartrot(&obj->dots.dots[i + 2], &rot);
-	cylindersurfdefiner(obj->polys.poly - 1, obj->dots.dots, &obj->polys.txtr, obj->dots.dotsnum);
-	definecylindervrtxs(obj->dots.dots, obj->polys.poly, obj->polys.polynum, &obj->polys.txtr);
+	cylindersurfdefiner(obj->polys.poly - 1, obj->dots.dots,
+		&obj->polys.txtr, obj->dots.dotsnum);
+	definecylindervrtxs(obj->dots.dots, obj->polys.poly,
+		obj->polys.polynum, &obj->polys.txtr);
 	return (outframe);
 }
 
@@ -107,7 +109,7 @@ void	planeparser(char *str, t_obj *obj, char *prog, void *mlx)
 	str = ft_get_position_values(prog, str, &norm);
 	if (comparef(vectorlength(&norm), 0, 0.001))
 		customerr(prog, INVDEF, TRUE);
-	vectorsizing(1, &norm, &norm, NULL);
+	ft_vectnorm(&norm);
 	vectorbuilder(norm.x, norm.y, norm.z, &obj->crdstm.oz);
 	crdstmdefiner(&obj->crdstm);
 	str = ft_get_color_values(str, obj->colrs, prog);

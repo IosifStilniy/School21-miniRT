@@ -1,0 +1,16 @@
+C				-170,0,-80			1,0,1				110					
+
+A				0.2					255,255,255							
+L				-350,-70,-70		0.9					255,255,255			
+L				150,-70,-70			0.9					255,255,255			
+
+pl				0.0,90.0,0			0,-1.0,0			100,100,100							models_obj/grass.xpm
+pl				0.0,90.0,300		0,0,-1				100,100,100							models_obj/sky.xpm
+sp				-50,20,100			70					40,10,190							models_obj/dino.xpm
+sp				50,20,100			70					98,1,224							models_obj/corgi.xpm
+cy				-60.0,50.0,40.0  	0,1,0				20	80				255,255,70      models_obj/dino.xpm
+cy				60.0,50.0,40.0    	0,1,0				20	80				255,255,70      models_obj/corgi.xpm
+cy				-60.0,50.0,0.0  	0,1,0				20	80				255,255,70		models_obj/dino.xpm
+cy				60.0,50.0,0.0    	0,1,0				20	80				255,255,70      models_obj/corgi.xpm
+models_obj/capibara.obj				-100.0,0.0,-50		1,1,1				10,100,200		models_obj/capibara.xpm
+models_obj/capibara.obj				-80.0,0.0,-50		-1,1,-1				10,100,200		models_obj/capibara.xpm

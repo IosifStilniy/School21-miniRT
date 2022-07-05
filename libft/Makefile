@@ -59,11 +59,11 @@ AR		= ar -rcs
 
 RM		= rm -f
 
-.c.o:
-		$(GCC) -c $(FLAGS) $< -o ${<:.c=.o} -I$(HEADS)
+%.o:	%.c
+		$(GCC) -c $(FLAGS) -I$(HEADS) $< -o $@
 
 $(NAME): $(OBJS)
-		$(AR) $(NAME) $(OBJS)
+		$(AR) $(NAME) $?
 
 all:	$(NAME)
 
