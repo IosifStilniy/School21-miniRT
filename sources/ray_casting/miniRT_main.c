@@ -12,15 +12,6 @@
 
 #include "minirt.h"
 
-#include "minirt.h"
-
-void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin)
-{
-	ray->dir = *direction;
-	ray->orig = *origin;
-	ft_vectnorm(&ray->dir);
-}
-
 static void	ft_trace_color(unsigned int *color, t_ray ray,
 			t_list *objects, t_info *info)
 {
@@ -51,7 +42,7 @@ static void	ft_trace_color(unsigned int *color, t_ray ray,
 	ft_shadowing(color, &c_phit, nc0, info);
 }
 
-static void	ft_raytracing_algorithm(t_info *info)
+static void *ft_raytracing_algorithm(void *thread)
 {
 	t_ray			ray;
 	t_cart			origin;
@@ -62,20 +53,63 @@ static void	ft_raytracing_algorithm(t_info *info)
 	origin.x = 0.0f;
 	origin.y = 0.0f;
 	origin.z = 0.0f;
-	pixel.z = info->win.camera->focus;
+	pixel.z = ((t_thrcast *)thread)->info->win.camera->focus;
 	pixel.y = -1;
 	while (++pixel.y < RESY)
 	{
-		pixel.x = -1;
-		while (++pixel.x < RESX)
+		pixel.x = ((t_thrcast *)thread)->leftx - 1;
+		while (++pixel.x < ((t_thrcast *)thread)->rightx)
 		{
-			direction.x = pixel.x - info->win.cntr.x;
-			direction.y = pixel.y - info->win.cntr.y;
+			direction.x = pixel.x - ((t_thrcast *)thread)->info->win.cntr.x;
+			direction.y = pixel.y - ((t_thrcast *)thread)->info->win.cntr.y;
 			direction.z = pixel.z;
 			ft_cast_ray(&ray, &direction, &origin);
-			ft_trace_color(&color, ray, info->win.camera->objs, info);
-			my_mlx_pixel_put(&info->data, pixel.x, pixel.y, color);
+			ft_trace_color(&color, ray,
+				((t_thrcast *)thread)->info->win.camera->objs,
+				((t_thrcast *)thread)->info);
+			my_mlx_pixel_put(&((t_thrcast *)thread)->info->data, pixel.x,
+				pixel.y, color);
 		}
+	}
+	((t_thrcast *)thread)->done++;
+	return (NULL);
+}
+
+static void	threadinit(int leftx, int rightx, t_info *info, t_thrcast *thread)
+{
+	thread->leftx = leftx;
+	thread->rightx = rightx;
+	thread->done = FALSE;
+	thread->info = info;
+	pthread_create(&thread->thread, NULL, &ft_raytracing_algorithm, thread);
+	pthread_detach(thread->thread);
+}
+
+static void	multithreadcasting(t_info *info)
+{
+	t_thrcast	threads[THREADCOUNT];
+	int			done;
+	int			leftx;
+	int			rightx;
+	int			i;
+
+	leftx = 0;
+	rightx = RESX / THREADCOUNT;
+	i = -1;
+	while (++i < THREADCOUNT - 1)
+	{
+		threadinit(leftx, rightx, info, &threads[i]);
+		leftx += RESX / THREADCOUNT;
+		rightx += RESX / THREADCOUNT;
+	}
+	threadinit(leftx, RESX - leftx, info, &threads[i]);
+	done = 0;
+	while (done < THREADCOUNT)
+	{
+		done = 0;
+		i = -1;
+		while (++i < THREADCOUNT)
+			done += threads[i].done;
 	}
 }
 
@@ -89,7 +123,7 @@ void	ft_draw_screen(t_info *info)
 			&info->data.endian);
 	ft_bzero(info->data.addr, info->data.line_length * info->data.res.y);
 	if (info->keybrd.render)
-		ft_raytracing_algorithm(info);
+		multithreadcasting(info);
 	else
 		framepic(&info->win, info->keybrd.normalpaint,
 			info->win.camera->objs, &info->data);

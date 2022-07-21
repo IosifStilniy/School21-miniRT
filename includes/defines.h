@@ -146,11 +146,11 @@
 # endif
 
 # ifndef RESX
-#  define RESX 800
+#  define RESX 1920
 # endif
 
 # ifndef RESY
-#  define RESY 600
+#  define RESY 1080
 # endif
 
 # ifndef SHIFT_SPEED
@@ -235,6 +235,10 @@
 
 # ifndef WORLD
 #  define WORLD NULL
+# endif
+
+# ifndef THREADCOUNT
+#  define THREADCOUNT 16
 # endif
 
 #endif /* DEFINES_H */

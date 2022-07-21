@@ -23,6 +23,7 @@
 # include <string.h>
 # include <math.h>
 # include <stdio.h>
+# include <pthread.h>
 # include "defines.h"
 
 typedef int				t_bool;
@@ -199,8 +200,7 @@ typedef struct s_intrfc {
 	t_data		obj;
 }	t_intrfc;
 
-typedef struct s_info
-{
+typedef struct s_info {
 	void		*mlx_ptr;
 	t_win		win;
 	t_light		a_light;
@@ -214,6 +214,14 @@ typedef struct s_info
 	t_keybrd	keybrd;
 	t_intrfc	interface;
 }	t_info;
+
+typedef struct s_thrcast {
+	t_info 		*info;
+	int			leftx;
+	int			rightx;
+	t_bool		done;
+	pthread_t	thread;
+}	t_thrcast;
 
 typedef struct s_import {
 	t_list	*v;

@@ -12,6 +12,13 @@
 
 #include "minirt.h"
 
+void	ft_cast_ray(t_ray *ray, t_cart *direction, t_cart *origin)
+{
+	ray->dir = *direction;
+	ray->orig = *origin;
+	ft_vectnorm(&ray->dir);
+}
+
 void	ft_hit_plane2(t_cart *nc, t_obj *object, t_cart *phit)
 {
 	nc[0] = object->crdstm.oz.vector;
