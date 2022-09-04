@@ -23,6 +23,8 @@ LIB			=	$(addprefix $(addsuffix /, $(LIBPATH)), $(LIBNAME))
 
 MLX			=	mlx
 
+MLXNAME		=	libmlx.a
+
 DINLIB		=	libmlx.dylib
 
 GCC			=	gcc
@@ -35,17 +37,16 @@ RM			=	rm -f
 		$(GCC) $(FLAGS) -c $< -o $@ 
 
 $(NAME):	$(HEADS) $(LIB) $(OBJS)
-			$(GCC) $(FLAGS) $(OBJS) $(LIB) $(DINLIB) $(FRAMEWORKS) -o $(NAME)
+			$(GCC) $(FLAGS) $(OBJS) $(LIB) $(MLX)/$(MLXNAME) $(FRAMEWORKS) -o $(NAME)
 
 $(B_NAME):	$(B_HEADS) $(LIB) $(B_OBJS)
-			$(GCC) $(FLAGS) $(B_OBJS) $(LIB)  $(FRAMEWORKS) -o $(B_NAME)
+			$(GCC) $(FLAGS) $(B_OBJS) $(LIB) $(MLX)/$(MLXNAME) $(FRAMEWORKS) -o $(B_NAME)
 
 $(LIB):		lib
 
 lib:		
 			@$(MAKE) -C $(LIBPATH) bonus
 			@$(MAKE) -C $(MLX)
-			mv $(MLX)/$(DINLIB) ./
 
 all:	$(NAME)
 
@@ -58,7 +59,6 @@ clean:
 fclean: clean
 		@$(MAKE) -C $(MLX) clean
 		@$(MAKE) -C $(LIBPATH) fclean
-		rm -f $(DINLIB)
 		rm -f $(NAME)
 
 re:		fclean all

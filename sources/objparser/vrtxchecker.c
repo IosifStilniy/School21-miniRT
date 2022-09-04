@@ -29,14 +29,12 @@ void	checkvrtxsnorms(t_vrtx vrtxs[3], t_cart *polynorm)
 {
 	float	sumlength;
 	int		i;
-	int		j;
 
 	sumlength = vectorlength(&vrtxs[0].srcnorm)
 		+ vectorlength(&vrtxs[1].srcnorm) + vectorlength(&vrtxs[2].srcnorm);
 	i = -1;
 	while (++i < 3)
 	{
-		j = -1;
 		if (comparef(vectorlength(&vrtxs[i].srcnorm), 1, 0.001))
 			continue ;
 		else if (sumlength < 0.999)

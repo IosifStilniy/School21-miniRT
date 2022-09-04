@@ -47,7 +47,7 @@ OBJS	= $(SRCS:.c=.o)
 
 B_OBJS	= $(B_SRCS:.c=.o)
 
-HEADS	= libft.h
+HEADS	= ./
 
 NAME	= libft.a
 

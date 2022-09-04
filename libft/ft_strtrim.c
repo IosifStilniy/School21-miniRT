@@ -37,10 +37,8 @@ static size_t	get_last_occurance(char const *s, char const *set)
 	short	c;
 	size_t	i;
 	size_t	j;
-	size_t	len;
 
 	i = ft_strlen(s);
-	len = i;
 	while (--i > 0)
 	{
 		j = -1;

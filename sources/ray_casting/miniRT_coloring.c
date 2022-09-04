@@ -16,7 +16,6 @@ static void	ft_hit_sppoly(t_ray ray, t_polys *polys,
 			t_cart *dots, float *closest_distance)
 {
 	int		i;
-	t_cart	p[3];
 	t_cart	phit;
 	float	dist[2];
 
@@ -28,9 +27,6 @@ static void	ft_hit_sppoly(t_ray ray, t_polys *polys,
 			&dots[polys->poly[i].vrtxs[0].dot], &dist[1]);
 		if (dist[1] < dist[0])
 		{
-			p[0] = dots[polys->poly[i].vrtxs[0].dot];
-			p[1] = dots[polys->poly[i].vrtxs[1].dot];
-			p[2] = dots[polys->poly[i].vrtxs[2].dot];
 			ft_multvect(&ray.dir, dist[1] + 0.0001f, &phit);
 			ft_summvects(&phit, &ray.orig, &phit);
 			if (ft_hit_triangle(phit, &polys->poly[i], dots, NULL))

@@ -41,7 +41,7 @@ void	ft_checker_plane(t_cart *ox, t_cart *oy, t_cart *color, t_cart *phit)
 		xhit *= -1;
 	xhit = fmod(xhit / 100, 1) < 0.5;
 	yhit = fmod(yhit / 100, 1) < 0.5;
-	if ((xhit || yhit) && !(xhit * yhit))
+	if ((xhit || yhit) && !(xhit && yhit))
 	{
 		color->x = 0.f;
 		color->y = 0.f;
@@ -81,7 +81,7 @@ void	ft_checker_poly(t_cart *cuv)
 
 	pattern[0] = fmod(cuv->x * 7, 1) < 0.5;
 	pattern[1] = fmod(cuv->y * 7, 1) < 0.5;
-	if ((pattern[0] || pattern[1]) && !(pattern[0] * pattern[1]))
+	if ((pattern[0] || pattern[1]) && !(pattern[0] && pattern[1]))
 	{
 		cuv->x = 0.f;
 		cuv->y = 0.f;
