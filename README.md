@@ -45,3 +45,7 @@ And press **R** for rendering:
 At the end of a day mount capibara and fly away like a real hero:
 
 ![ezgif com-gif-maker (9)](https://user-images.githubusercontent.com/89987795/188322316-5d426347-3529-4338-a922-f79d2d0af565.gif)
+
+---
+
+<img width="683" alt="Screen Shot 2022-09-04 at 19 14 37" src="https://user-images.githubusercontent.com/89987795/188323078-03ab1497-aa1a-445e-b79e-fb4b3d21ff06.png">
