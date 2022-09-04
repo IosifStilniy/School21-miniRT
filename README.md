@@ -9,7 +9,7 @@ degree of visual realism.
 
 Before you can even begin to produce such high-quality graphics, you must master the basics: the ***miniRT*** is your first ray tracer coded in C, normed and humble but
 functional.
-The main goal of miniRT is to prove to yourself that you can implement any mathematics or physics formulas without being a mathematician, we will only implement the
+The main goal of ***miniRT*** is to prove to yourself that you can implement any mathematics or physics formulas without being a mathematician, we will only implement the
 most basics ray tracing features here so just keep calm, take a deep breath and don’t
 panic! After this project you’ll be able to show off nice-looking pictures to justify the
 number of hours you’re spending at school...
